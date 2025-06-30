@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Altunga E Spor Merkezi</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    header {
+      background: #6b6e73;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header img {
+      max-height: 100px;
+      display: block;
+      margin: 0 auto 10px auto;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 15px;
+      padding: 20px;
+    }
+
+    .menu-item {
+      background: #fff;
+      padding: 20px;
+      text-align: center;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .menu-item:hover {
+      background: #ddd;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: zoomIn 0.3s ease forwards;
+    }
+
+    .modal-content h2 {
+      margin-top: 0;
+      text-align: center;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .menu-buttons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .menu-buttons-grid button {
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #f0f0f0;
+      transition: 0.3s;
+    }
+
+    .menu-buttons-grid button:hover {
+      background-color: #ddd;
+    }
+
+    .buttons {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .buttons button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      transition: 0.3s;
+    }
+
+    .buttons button:hover {
+      background-color: #0056b3;
+    }
+
+    .masa-oda {
+      margin-top: 20px;
+      text-align: center;
+      display: none;
+      animation: slideDown 0.5s ease forwards;
+    }
+
+    .masa-oda input {
+      padding: 10px;
+      width: 90%;
+      max-width: 400px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .toggle-cart {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1100;
+      background: #dc3545;
+      color: white;
+      padding: 12px 18px;
+      border-radius: 50px;
+      font-size: 16px;
+      border: none;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      cursor: pointer;
+    }
+
+    .toggle-cart:hover {
+      background: #c82333;
+    }
+
+    .cart-box {
+      display: none;
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 1000;
+      max-width: 280px;
+    }
+
+    .cart-box h3 {
+      margin-top: 0;
+      font-size: 18px;
+    }
+
+    .cart-box ul {
+      padding-left: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .cart-box li {
+      font-size: 14px;
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cart-box .empty {
+      font-style: italic;
+      color: #888;
+    }
+
+    .cart-total {
+      margin-top: 10px;
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .clear-cart {
+      margin-top: 10px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    .clear-cart:hover {
+      background: #a71d2a;
+    }
+
+    .remove-btn {
+      background: none;
+      border: none;
+      color: #c00;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .remove-btn:hover {
+      color: #800;
+    }
+
+    /* ✅ Custom Alert */
+    .custom-alert {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #dc3545;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      z-index: 99999;
+      display: none;
+      animation: fadeInOut 3s ease forwards;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateX(-50%) translateY(-10px);}
+      10% { opacity: 1; transform: translateX(-50%) translateY(0);}
+      90% { opacity: 1; transform: translateX(-50%) translateY(0);}
+      100% { opacity: 0; transform: translateX(-50%) translateY(-10px);}
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="logo.png" alt="Altunga Logo" />
+    <h1>Altunga E Spor Merkezi</h1>
+  </header>
+
+  <div class="menu-grid">
+    <div class="menu-item" onclick="showMenu('icecekler')">
+      <img src="icecekler.png"/>
+      <h2>İçecekler</h2>
+    </div>
+    <div class="menu-item" onclick="showMenu('tost')">
+      <img src="tost.png"/>
+      <h2>Tost</h2>
+    </div>
+    <div class="menu-item" onclick="showMenu('doner')">
+      <img src="doner.png"/>
+      <h2>Döner</h2>
+    </div>
+    <div class="menu-item" onclick="showMenu('hamburger')">
+      <img src="hamburger.png"/>
+      <h2>Hamburger</h2>
+    </div>
+  </div>
+
+  <!-- ✅ Custom Alert -->
+  <div class="custom-alert" id="customAlert"></div>
+
+  <!-- Modal Menü -->
+  <div class="modal-overlay" id="menuModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()">×</button>
+      <h2 id="modalTitle"></h2>
+      <div id="modalButtons" class="menu-buttons-grid"></div>
+
+      <div class="buttons">
+        <button onclick="siparisVer()">Sipariş Ver</button>
+        <button onclick="gorevliCagir()">Görevli Çağır</button>
+      </div>
+
+      <div class="masa-oda" id="masaOdaForm">
+        <input type="text" id="masaInput" placeholder="Masa No (örn: Hüma 3)">
+        <br>
+        <input type="text" id="odaInput" placeholder="Oda No (örn: Vip 2)">
+      </div>
+    </div>
+  </div>
+
+  <!-- Sepet Kutusu -->
+  <div class="cart-box" id="cartBox">
+    <h3>Sepet</h3>
+    <ul id="cart-list">
+      <li class="empty">Sepetiniz boş</li>
+    </ul>
+    <div class="cart-total" id="cart-total">Toplam: 0 TL</div>
+    <button class="clear-cart" onclick="sepetiTemizle()">Sepeti Temizle</button>
+  </div>
+
+  <!-- Sepet Aç/Kapa Butonu -->
+  <button class="toggle-cart" onclick="toggleCart()">🛒 Sepet</button>
+
+  <script>
+    const sepet = [];
+
+    const menuData = {
+      icecekler: { title: "İçecekler", items: [{ name: "Kola", price: 25 },{ name: "Ayran", price: 20 },{ name: "Su", price: 10 },{ name: "Ice Tea", price: 25 }]},
+      tost: { title: "Tost", items: [{ name: "Kaşarlı Tost", price: 35 },{ name: "Karışık Tost", price: 45 }]},
+      doner: { title: "Döner", items: [{ name: "Et Döner", price: 70 },{ name: "Tavuk Döner", price: 50 }]},
+      hamburger: { title: "Hamburger", items: [{ name: "Klasik Burger", price: 60 },{ name: "Cheeseburger", price: 65 },{ name: "Double Burger", price: 75 }]}
+    };
+
+    function showMenu(id) {
+      const modal = document.getElementById('menuModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalButtons = document.getElementById('modalButtons');
+      const masaOdaForm = document.getElementById('masaOdaForm');
+
+      masaOdaForm.style.display = 'none';
+
+      const menu = menuData[id];
+      if (!menu) return;
+
+      modalTitle.textContent = menu.title;
+      modalButtons.innerHTML = '';
+
+      menu.items.forEach(item => {
+        const btn = document.createElement('button');
+        btn.textContent = `${item.name} - ${item.price} TL`;
+        btn.onclick = () => {
+          sepeteEkle(item.name, item.price);
+          masaOdaForm.style.display = 'block';
+        };
+        modalButtons.appendChild(btn);
+      });
+
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('menuModal');
+      modal.style.display = 'none';
+    }
+
+    function sepeteEkle(ad, fiyat) {
+      sepet.push({ ad, fiyat });
+      guncelleSepet();
+    }
+
+    function sepettenCikar(index) {
+      sepet.splice(index, 1);
+      guncelleSepet();
+    }
+
+    function sepetiTemizle() {
+      sepet.length = 0;
+      guncelleSepet();
+    }
+
+    function guncelleSepet() {
+      const list = document.getElementById('cart-list');
+      const totalEl = document.getElementById('cart-total');
+      list.innerHTML = '';
+      if (sepet.length === 0) {
+        list.innerHTML = '<li class="empty">Sepetiniz boş</li>';
+        totalEl.textContent = 'Toplam: 0 TL';
+        return;
+      }
+
+      let toplam = 0;
+      sepet.forEach((item, i) => {
+        toplam += item.fiyat;
+        const li = document.createElement('li');
+        li.innerHTML = `${item.ad} - ${item.fiyat} TL <button class="remove-btn" onclick="sepettenCikar(${i})">❌</button>`;
+        list.appendChild(li);
+      });
+
+      totalEl.textContent = `Toplam: ${toplam} TL`;
+    }
+
+    function toggleCart() {
+      const cartBox = document.getElementById('cartBox');
+      cartBox.style.display = cartBox.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function customAlert(msg) {
+      const alertBox = document.getElementById('customAlert');
+      alertBox.textContent = msg;
+      alertBox.style.display = 'block';
+      setTimeout(() => {
+        alertBox.style.display = 'none';
+      }, 3000);
+    }
+
+    function siparisVer() {
+      if (sepet.length === 0) {
+        customAlert('Sepet boş!');
+        return;
+      }
+
+      const masa = document.getElementById('masaInput').value.trim();
+      const oda = document.getElementById('odaInput').value.trim();
+
+      if (!masa && !oda) {
+        customAlert('Masa veya Oda numarası girmelisiniz!');
+        return;
+      }
+
+      const toplam = sepet.reduce((acc, item) => acc + item.fiyat, 0);
+      const urunler = sepet.map(item => `- ${item.ad} (${item.fiyat} TL)`).join("\n");
+
+      let konumBilgisi = "";
+      if (masa) konumBilgisi += `Masa No: ${masa}`;
+      if (oda) konumBilgisi += (konumBilgisi ? " / " : "") + `Oda No: ${oda}`;
+
+      const message = `Merhaba, aşağıdaki ürünleri sipariş etmek istiyorum:\n\n${urunler}\n\nToplam: ${toplam} TL\n${konumBilgisi}`;
+      const phone = "905312691511";
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+
+      sepetiTemizle();
+      closeModal();
+    }
+
+    function gorevliCagir() {
+      const message = encodeURIComponent("Merhaba, masama görevli çağırmak istiyorum.");
+      const phone = "905312691511";
+      window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+    }
+  </script>
+
+</body>
+</html>
