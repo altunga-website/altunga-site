@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+
+  <meta charset="UTF-8" />
+  <title>Arşiv - Geçmiş Siparişler</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+ 
+
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 20px; }
+    h1 { text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+    th, td { padding: 10px; border: 1px solid #ccc; text-align: left; vertical-align: top; }
+    th { background: #222; color: white; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    #controls { margin-bottom: 20px; text-align: center; }
+    button { padding: 8px 16px; margin: 0 5px; background: #333; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    input[type="date"] { padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+<img id="logoImage" src="logopdf.png" style="display:none;" />
+
+  <h1>📦 Arşivlenmiş Siparişler</h1>
+
+  <div id="controls">
+  <input type="date" id="tarihFiltre" onchange="arsivleriGetir()" />
+  <input type="text" id="aramaInput" oninput="arsivleriGetir()" placeholder="🔍 Ürün, masa, durum ara..." style="padding: 8px; border-radius: 5px; border: 1px solid #ccc; margin-left:10px;" />
+<button onclick="listele()" style="padding:10px 15px; background:#111; color:white; border:none; border-radius:6px;">
+    Listele
+  </button> 
+ <button onclick="window.print()">🖨️ Yazdır</button>
+ 
+</div>
+
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th><th>Masa / Oda</th><th>Ürünler</th><th>Toplam</th><th>Saat</th><th>Durum</th>
+      </tr>
+    </thead>
+    <tbody id="arsivListesi"></tbody>
+  </table>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC2kYwYuv7drDw0zViXYN4DqpppbtP_coY",
+      authDomain: "altunga-siparis.firebaseapp.com",
+      projectId: "altunga-siparis",
+      storageBucket: "altunga-siparis.appspot.com",
+      messagingSenderId: "152830720353",
+      appId: "1:152830720353:web:cc3d3646e6a859c0ca2d20",
+      measurementId: "G-JKXK55E39H"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    
+
+ 
+function listele() {
+  const secilen = document.getElementById("tarihFiltre").value;
+  const arama = document.getElementById("aramaInput").value.trim().toLowerCase();
+  let baslangic = null;
+  let bitis = null;
+
+  if (secilen) {
+    const secilenTarih = new Date(secilen);
+    baslangic = new Date(secilenTarih.setHours(0,0,0,0));
+    bitis = new Date(secilenTarih.setHours(23,59,59,999));
+  }
+
+  db.collection("arsiv").orderBy("tarih", "desc").get().then(snapshot => {
+    const tbody = document.getElementById("arsivListesi");
+    tbody.innerHTML = "";
+    const grupMap = new Map();
+
+    snapshot.forEach(doc => {
+      const d = doc.data();
+      const tarih = d.tarih?.toDate ? d.tarih.toDate() : new Date(d.tarih);
+      const saat = tarih.toLocaleTimeString("tr-TR");
+      const tarihStr = tarih.toLocaleDateString("tr-TR", { day: 'numeric', month: 'long', year: 'numeric' });
+      const urunler = d.urunler.map(u => `${u.ad} - ₺${u.fiyat}`).join("<br>");
+      const metin = `${doc.id} ${d.masa || ''} ${d.oda || ''} ${urunler} ${d.durum}`.toLowerCase();
+
+      const tarihUygunMu = !baslangic || (tarih >= baslangic && tarih <= bitis);
+
+      if (tarihUygunMu && metin.includes(arama)) {
+        if (!grupMap.has(tarihStr)) grupMap.set(tarihStr, []);
+        grupMap.get(tarihStr).push({
+          id: doc.id,
+          masa: d.masa || d.oda || '-',
+          urunler,
+          toplam: d.toplam,
+          saat,
+          durum: d.durum
+        });
+      }
+    });
+
+    grupMap.forEach((siparisler, tarihStr) => {
+      const accordionId = "grp_" + tarihStr.replaceAll(" ", "_");
+      const headerRow = document.createElement("tr");
+      headerRow.innerHTML = `
+        <td colspan="6" onclick="toggleGroup('${accordionId}')" style="cursor:pointer; background:#eee; font-weight:bold;">
+          📅 ${tarihStr} ⬇️
+        </td>`;
+      tbody.appendChild(headerRow);
+
+      siparisler.forEach(siparis => {
+        const tr = document.createElement("tr");
+        tr.classList.add(accordionId);
+        tr.style.display = "none";
+        tr.innerHTML = `
+          <td>${siparis.id}</td>
+          <td>${siparis.masa}</td>
+          <td>${siparis.urunler}</td>
+          <td>₺${siparis.toplam}</td>
+          <td>${siparis.saat}</td>
+          <td>${siparis.durum}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    });
+  });
+}
+
+
+</script>
+
+<script>
+function toggleGroup(className) {
+  const rows = document.querySelectorAll(`.${className}`);
+  rows.forEach(row => {
+    row.style.display = row.style.display === "none" ? "table-row" : "none";
+  });
+}
+</script>
+
+
+
+
+
+  
+</body>
+</html>
