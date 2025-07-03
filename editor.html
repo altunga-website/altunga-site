@@ -1,0 +1,300 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editör Paneli</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+  <style>
+    :root {
+      --bg-color: #f4f4f4;
+      --card-color: #fff;
+      --text-color: #333;
+      --primary: #2563eb;
+      --danger: #dc2626;
+    }
+    body {
+      margin: 0;
+      background: var(--bg-color);
+      font-family: 'Segoe UI', sans-serif;
+    }
+    #girisEkrani {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: #1b1b1b;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      flex-direction: column;
+    }
+    #girisPaneli {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    #girisPaneli input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    #girisPaneli button {
+      margin-top: 10px;
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: var(--primary);
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+      color: var(--text-color);
+    }
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+      padding: 20px;
+    }
+    .menu-card {
+      background: var(--card-color);
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .menu-card h3 {
+      margin: 0 0 10px;
+    }
+    .urunler {
+      min-height: 40px;
+    }
+    .urun {
+      padding: 8px;
+      border-radius: 6px;
+      background: #f0f0f0;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .urun small { opacity: 0.6; }
+    .urun button {
+      background: var(--danger);
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .urun-ekle input {
+      padding: 8px;
+      width: 100%;
+      margin: 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .urun-ekle button {
+      background: var(--primary);
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      width: 100%;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+    .kategori-ekle {
+      background: #fff;
+      padding: 20px;
+      max-width: 500px;
+      margin: 10px auto 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .kategori-ekle h2 {
+      margin-top: 0;
+    }
+    .kategori-ekle input, .kategori-ekle button {
+      padding: 10px;
+      width: 100%;
+      margin-top: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .kategori-ekle button {
+      background: var(--primary);
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div id="girisEkrani">
+  <div id="girisPaneli">
+    <img src="logo.png" alt="Logo" style="max-width:120px; margin-bottom: 15px;">
+    <h2>Editör Girişi</h2>
+    <input type="password" id="sifreInput" placeholder="Şifre">
+    <button onclick="girisYap()">Giriş Yap</button>
+  </div>
+</div>
+
+<h1>🛠️ Menü Editör Paneli</h1>
+<div class="kategori-ekle">
+  <h2>+ Menü (Kategori) Ekle</h2>
+  <input type="text" id="katTr" placeholder="Kategori Adı (TR)">
+  <input type="text" id="katEn" placeholder="Kategori Adı (EN)">
+  <input type="file" id="katImg">
+  <button onclick="kategoriEkle()">Kategori Ekle</button>
+</div>
+
+<div class="menu-grid" id="kategoriGrid"></div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyC2kYwYuv7drDw0zViXYN4DqpppbtP_coY",
+    authDomain: "altunga-siparis.firebaseapp.com",
+    projectId: "altunga-siparis",
+    storageBucket: "altunga-siparis.appspot.com"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const storage = firebase.storage();
+
+  function girisYap() {
+    const sifre = document.getElementById('sifreInput').value;
+    if (sifre === "1234") {
+      document.getElementById('girisEkrani').style.display = 'none';
+      kategorileriGetir();
+    } else {
+      alert("Hatalı şifre!");
+    }
+  }
+
+async function kategoriEkle() {
+  const tr = document.getElementById('katTr').value.trim();
+  const en = document.getElementById('katEn').value.trim();
+  const file = document.getElementById('katImg').files[0];
+
+  if (!tr || !en || !file) {
+    alert("Tüm alanları doldurun ve görsel seçin");
+    return;
+  }
+
+  try {
+    console.log("Dosya adı:", file.name);
+
+    const storageRef = storage.ref(`kategoriResimleri/${Date.now()}_${file.name}`);
+    const snapshot = await storageRef.put(file);
+    const downloadURL = await snapshot.ref.getDownloadURL();
+
+    console.log("Görsel yüklendi. URL:", downloadURL);
+
+    await db.collection("menuler").doc(tr.toLowerCase()).set({
+      baslik_tr: tr,
+      baslik_en: en,
+      resim: downloadURL,
+      urunler: []
+    });
+
+    // Temizlik
+    document.getElementById('katTr').value = "";
+    document.getElementById('katEn').value = "";
+    document.getElementById('katImg').value = "";
+
+    kategorileriGetir();
+    alert("Kategori başarıyla eklendi.");
+  } catch (err) {
+    console.error("Hata oluştu:", err);
+    alert("Kategori eklenemedi: " + err.message);
+  }
+}
+
+
+  async function kategorileriGetir() {
+    const grid = document.getElementById('kategoriGrid');
+    grid.innerHTML = '';
+    const snapshot = await db.collection("menuler").get();
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const card = document.createElement('div');
+      card.className = 'menu-card';
+      card.innerHTML = `
+        <h3>${data.baslik_tr}</h3>
+        <img src="${data.resim}" style="max-width:100%; border-radius:8px; margin-bottom:10px;">
+        <div class="urunler" id="urunler-${doc.id}"></div>
+        <div class="urun-ekle">
+          <input type="text" placeholder="Ürün Adı (TR)" id="ad-tr-${doc.id}">
+          <input type="text" placeholder="Ürün Adı (EN)" id="ad-en-${doc.id}">
+          <input type="number" placeholder="Fiyat" id="fiyat-${doc.id}">
+          <button onclick="urunEkle('${doc.id}')">+ Ürün Ekle</button>
+        </div>
+      `;
+      grid.appendChild(card);
+      urunleriListele(doc.id, data.urunler || []);
+    });
+  }
+
+  function urunleriListele(katId, urunler) {
+    const urunlerDiv = document.getElementById(`urunler-${katId}`);
+    urunlerDiv.innerHTML = '';
+    urunler.forEach((u, i) => {
+      const div = document.createElement('div');
+      div.className = 'urun';
+      div.innerHTML = `${u.ad_tr} <small>₺${u.fiyat}</small> <button onclick="urunSil('${katId}', ${i})">Sil</button>`;
+      urunlerDiv.appendChild(div);
+    });
+    Sortable.create(urunlerDiv, {
+      animation: 150,
+      onEnd: async function (evt) {
+        const yeniSira = [...urunler];
+        const [moved] = yeniSira.splice(evt.oldIndex, 1);
+        yeniSira.splice(evt.newIndex, 0, moved);
+        await db.collection("menuler").doc(katId).update({ urunler: yeniSira });
+        urunleriListele(katId, yeniSira);
+      }
+    });
+  }
+
+  async function urunEkle(katId) {
+    const tr = document.getElementById(`ad-tr-${katId}`).value.trim();
+    const en = document.getElementById(`ad-en-${katId}`).value.trim();
+    const fiyat = parseFloat(document.getElementById(`fiyat-${katId}`).value);
+    if (!tr || !en || isNaN(fiyat)) return alert("Tüm alanları doldurun");
+    const ref = db.collection("menuler").doc(katId);
+    const doc = await ref.get();
+    const urunler = doc.data().urunler || [];
+    urunler.push({ ad_tr: tr, ad_en: en, fiyat });
+    await ref.update({ urunler });
+    urunleriListele(katId, urunler);
+  }
+
+  async function urunSil(katId, index) {
+    const ref = db.collection("menuler").doc(katId);
+    const doc = await ref.get();
+    const urunler = doc.data().urunler || [];
+    urunler.splice(index, 1);
+    await ref.update({ urunler });
+    urunleriListele(katId, urunler);
+  }
+</script>
+</body>
+</html>
+
