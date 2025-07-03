@@ -192,7 +192,7 @@ async function kategoriEkle() {
   const tr = document.getElementById('katTr').value.trim();
   const en = document.getElementById('katEn').value.trim();
   const file = document.getElementById('katImg').files[0];
-
+console.log("file:", file);
   if (!tr || !en || !file) {
     alert("Tüm alanları doldurun ve görsel seçin");
     return;
