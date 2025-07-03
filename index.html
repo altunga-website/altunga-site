@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<!-- Firebase SDK: Klasik (compat) sürüm -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+  // Firebase yapılandırman (senin projenin ayarları)
+  const firebaseConfig = {
+    apiKey: "AIzaSyC2kYwYuv7drDw0zViXYN4DqpppbtP_coY",
+    authDomain: "altunga-siparis.firebaseapp.com",
+    databaseURL: "https://altunga-siparis-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "altunga-siparis",
+    storageBucket: "altunga-siparis.appspot.com",
+    messagingSenderId: "152830720353",
+    appId: "1:152830720353:web:cc3d3646e6a859c0ca2d20",
+    measurementId: "G-JKXK55E39H"
+  };
+
+  // Firebase başlat
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore(); // Firestore bağlantısı
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Altunga E Spor Merkezi</title>
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+:root {
+  --bg-color: #f5f5f5;
+  --text-color: #333;
+  --card-color: #fff;
+  --header-color: #6b6e73;
+  --button-color: #007bff;
+  --button-hover: #0056b3;
+}
+.dark-theme {
+  --bg-color: #121212;
+  --text-color: #eee;
+  --card-color: #1e1e1e;
+  --header-color: #333;
+  --button-color: #4444ff;
+  --button-hover: #2222aa;
+}
+body {
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-family: sans-serif;
+  margin: 0;
+}
+header {
+  background: var(--header-color);
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+header img {
+  max-height: 100px;
+  display: block;
+  margin: auto;
+}
+header h1 {
+  margin: 0;
+}
+.controls {
+  margin-top: 10px;
+}
+.controls select, .controls button {
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  margin: 0 5px;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  padding: 15px;
+}
+
+
+.menu-item {
+  background: var(--card-color);
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  height: 160px; /* kutunun yüksekliği */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+
+.menu-item:hover { background: #ddd; }
+.menu-item img {
+  max-height: 60px;
+  width: auto;
+  margin-bottom: 8px;
+  object-fit: contain;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+}
+.modal-content {
+  background: var(--card-color);
+  border-radius: 12px;
+  padding: 30px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: zoomIn 0.3s ease forwards;
+}
+@keyframes zoomIn {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.menu-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+.menu-buttons-grid button {
+  padding: 10px;
+  font-size: 15px;
+  border: none;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.menu-buttons-grid button:hover { background-color: #ddd; }
+
+.masa-oda {
+  margin-top: 20px;
+  text-align: center;
+  display: none;
+  animation: slideDown 0.5s ease forwards;
+}
+@keyframes slideDown {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.masa-oda input {
+  padding: 10px;
+  width: 90%;
+  max-width: 400px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.buttons {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.buttons button {
+  padding: 10px 20px;
+  background: var(--button-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.buttons button:hover { background: var(--button-hover); }
+
+.toggle-cart {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10000;
+  background: #dc3545;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.toggle-cart:hover { background: #c82333; }
+
+.cart-box {
+  display: none;
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background: var(--card-color);
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  z-index: 9999;
+  max-width: 280px;
+}
+.cart-box ul { list-style: none; padding: 0; margin: 0; }
+.cart-box li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.cart-total { text-align: right; margin-top: 10px; font-weight: bold; }
+.clear-cart {
+  margin-top: 10px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 5px 10px;
+  width: 100%;
+  cursor: pointer;
+}
+.remove-btn {
+  background: none;
+  border: none;
+  color: #c00;
+  cursor: pointer;
+}
+
+.custom-alert {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #dc3545;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  z-index: 99999;
+  display: none;
+  animation: fadeInOut 3s ease forwards;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateX(-50%) translateY(-10px);}
+  10% { opacity: 1; transform: translateX(-50%) translateY(0);}
+  90% { opacity: 1; transform: translateX(-50%) translateY(0);}
+  100% { opacity: 0; transform: translateX(-50%) translateY(-10px);}
+}
+
+@media (max-width: 600px) {
+  .menu-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+</style>
+
+</head>
+
+<body>
+<header>
+
+  <img src="logo.png" alt="Logo">
+  <h1 id="headerTitle">Altunga E Spor Merkezi</h1>
+  <div class="controls">
+    <select id="languageSelect" onchange="setLanguage(this.value)">
+      <option value="tr">TR</option>
+      <option value="en">EN</option>
+	  
+    </select>
+    <button onclick="toggleTheme()">🌙/☀️</button>
+  </div>
+</header>
+
+<div class="menu-grid">
+  <div class="menu-item" onclick="showMenu('icecekler')">
+    <img src="icecekler.png"><h2 id="menuIcecekler">İçecekler</h2>
+  </div>
+  <div class="menu-item" onclick="showMenu('tost')">
+    <img src="tost.png"><h2 id="menuTost">Tost</h2>
+  </div>
+  <div class="menu-item" onclick="showMenu('doner')">
+    <img src="doner.png"><h2 id="menuDoner">Döner</h2>
+  </div>
+  <div class="menu-item" onclick="showMenu('hamburger')">
+    <img src="hamburger.png"><h2 id="menuHamburger">Hamburger</h2>
+  </div>
+</div>
+
+<div class="custom-alert" id="customAlert"></div>
+
+<div class="modal-overlay" id="menuModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <h2 id="modalTitle"></h2>
+    <div id="modalButtons" class="menu-buttons-grid"></div>
+
+    <div class="masa-oda" id="masaOdaForm">
+      <input type="text" id="masaInput" placeholder="Masa No">
+      <br>
+      <input type="text" id="odaInput" placeholder="Oda No">
+    </div>
+
+    <div class="buttons">
+      <button id="orderBtn" onclick="siparisVer()">Sipariş Ver</button>
+      <button id="callBtn" onclick="gorevliCagir()">Görevli Çağır</button>
+    </div>
+  </div>
+</div>
+
+<div class="cart-box" id="cartBox">
+  <h3 id="cartTitle">Sepet</h3>
+  <ul id="cart-list"><li class="empty">Sepetiniz boş</li></ul>
+  <div class="cart-total" id="cart-total">Toplam: 0 TL</div>
+  <button class="clear-cart" onclick="sepetiTemizle()">Sepeti Temizle</button>
+</div>
+<button class="toggle-cart" onclick="toggleCart()">🛒 Sepet</button>
+
+<audio id="dingSound" src="ding.mp3" preload="auto"></audio>
+
+<script>
+const translations = {
+  tr: {
+    header: "Altunga E Spor Merkezi",
+    icecekler: "İçecekler",
+    tost: "Tost",
+    doner: "Döner",
+    hamburger: "Hamburger",
+    cart: "Sepet",
+    order: "Sipariş Ver",
+    call: "Görevli Çağır",
+    empty: "Sepetiniz boş",
+    total: "Toplam",
+    masaWarn: "Masa veya Oda numarası girmelisiniz!",
+    emptyCart: "Sepet boş!",
+    table: "Masa No",
+    room: "Oda No",
+    clearCart: "Sepeti Temizle"
+	
+  },
+  en: {
+    header: "Altunga E Sport Center",
+    icecekler: "Drinks",
+    tost: "Toast",
+    doner: "Doner",
+    hamburger: "Burger",
+    cart: "Cart",
+    order: "Order",
+    call: "Call Staff",
+    empty: "Cart is empty",
+    total: "Total",
+    masaWarn: "You must enter Table or Room number!",
+    emptyCart: "Cart is empty!",
+    table: "Table No",
+    room: "Room No",
+    clearCart: "Clear Cart"
+  }
+};
+
+
+let currentLang = 'tr';
+const sepet = [];
+
+const menuData = {
+  icecekler: {
+    title: { tr: "İçecekler", en: "Drinks" },
+    items: [
+      { name: { tr: "Kola", en: "Cola" }, price: 25 },
+      { name: { tr: "Ayran", en: "Ayran" }, price: 20 },
+      { name: { tr: "Su", en: "Water" }, price: 10 },
+      { name: { tr: "Ice Tea", en: "Ice Tea" }, price: 25 }
+    ]
+  },
+  tost: {
+    title: { tr: "Tost", en: "Toast" },
+    items: [
+      { name: { tr: "Kaşarlı Tost", en: "Cheese Toast" }, price: 35 },
+      { name: { tr: "Karışık Tost", en: "Mixed Toast" }, price: 45 }
+    ]
+  },
+  doner: {
+    title: { tr: "Döner", en: "Doner" },
+    items: [
+      { name: { tr: "Et Döner", en: "Beef Doner" }, price: 70 },
+      { name: { tr: "Tavuk Döner", en: "Chicken Doner" }, price: 50 }
+    ]
+  },
+  hamburger: {
+    title: { tr: "Hamburger", en: "Burger" },
+    items: [
+      { name: { tr: "Klasik Burger", en: "Classic Burger" }, price: 60 },
+      { name: { tr: "Cheeseburger", en: "Cheeseburger" }, price: 65 },
+      { name: { tr: "Double Burger", en: "Double Burger" }, price: 75 }
+    ]
+  }
+};
+
+function setLanguage(lang) {
+  currentLang = lang;
+  const t = translations[lang];
+  document.getElementById("headerTitle").innerText = t.header;
+  document.getElementById("menuIcecekler").innerText = t.icecekler;
+  document.getElementById("menuTost").innerText = t.tost;
+  document.getElementById("menuDoner").innerText = t.doner;
+  document.getElementById("menuHamburger").innerText = t.hamburger;
+  document.getElementById("cartTitle").innerText = t.cart;
+  document.getElementById("orderBtn").innerText = t.order;
+  document.getElementById("callBtn").innerText = t.call;
+  document.getElementById('masaInput').placeholder = t.table;
+document.getElementById('odaInput').placeholder = t.room;
+document.querySelector(".toggle-cart").innerText = "🛒 " + t.cart;
+document.querySelector(".clear-cart").innerText = t.clearCart;
+  guncelleSepet();
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('dark-theme');
+}
+
+function showMenu(id) {
+  const modal = document.getElementById('menuModal');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalButtons = document.getElementById('modalButtons');
+  const masaOdaForm = document.getElementById('masaOdaForm');
+
+  masaOdaForm.style.display = 'none';
+  const menu = menuData[id];
+  if (!menu) return;
+
+  modalTitle.textContent = menu.title[currentLang];
+  modalButtons.innerHTML = '';
+
+  menu.items.forEach(item => {
+    const btn = document.createElement('button');
+    btn.textContent = `₺${item.price} - ${item.name[currentLang]}`;
+    btn.onclick = () => {
+      sepeteEkle(item.name[currentLang], item.price);
+      masaOdaForm.style.display = 'block';
+    };
+    modalButtons.appendChild(btn);
+  });
+
+  modal.style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('menuModal').style.display = 'none';
+}
+
+function sepeteEkle(ad, fiyat) {
+  sepet.push({ ad, fiyat });
+  guncelleSepet();
+}
+
+function sepettenCikar(index) {
+  sepet.splice(index, 1);
+  guncelleSepet();
+}
+
+function sepetiTemizle() {
+  sepet.length = 0;
+  guncelleSepet();
+}
+
+function guncelleSepet() {
+  const t = translations[currentLang];
+  const list = document.getElementById('cart-list');
+  const totalEl = document.getElementById('cart-total');
+  list.innerHTML = '';
+  if (sepet.length === 0) {
+    list.innerHTML = `<li class="empty">${t.empty}</li>`;
+    totalEl.textContent = `${t.total}: ₺0`;
+    return;
+  }
+
+  let toplam = 0;
+  sepet.forEach((item, i) => {
+    toplam += item.fiyat;
+    const li = document.createElement('li');
+    li.innerHTML = `₺${item.fiyat} - ${item.ad} <button class="remove-btn" onclick="sepettenCikar(${i})">❌</button>`;
+    list.appendChild(li);
+  });
+
+  totalEl.textContent = `${t.total}: ₺${toplam}`;
+}
+
+function toggleCart() {
+  const cartBox = document.getElementById('cartBox');
+  cartBox.style.display = cartBox.style.display === 'block' ? 'none' : 'block';
+}
+
+function customAlert(msg) {
+  const alertBox = document.getElementById('customAlert');
+  alertBox.textContent = msg;
+  alertBox.style.display = 'block';
+  setTimeout(() => {
+    alertBox.style.display = 'none';
+  }, 3000);
+}
+
+async function siparisVer() {
+  const t = translations[currentLang];
+
+  if (sepet.length === 0) {
+    customAlert(t.emptyCart);
+    return;
+  }
+
+  const masa = document.getElementById('masaInput').value.trim();
+  const oda = document.getElementById('odaInput').value.trim();
+
+  if (!masa && !oda) {
+    customAlert(t.masaWarn);
+    return;
+  }
+
+  const toplam = sepet.reduce((acc, item) => acc + item.fiyat, 0);
+  const tarih = new Date();
+
+  try {
+    await db.collection("siparisler").add({
+      urunler: sepet,
+      masa: masa || null,
+      oda: oda || null,
+      toplam,
+      tarih: tarih.toISOString(),
+      durum: "Beklemede"
+    });
+
+    customAlert("✅ Sipariş alındı!");
+    sepetiTemizle();
+    closeModal();
+  } catch (error) {
+    console.error("❌ Sipariş kaydı başarısız:", error);
+    customAlert("Sipariş gönderilemedi!");
+  }
+}
+
+
+function gorevliCagir() {
+  const ding = document.getElementById('dingSound');
+  ding.play();
+
+  const t = translations[currentLang];
+  const masaOdaForm = document.getElementById('masaOdaForm');
+  masaOdaForm.style.display = 'block';
+
+  const masa = document.getElementById('masaInput').value.trim();
+  const oda = document.getElementById('odaInput').value.trim();
+
+  if (!masa && !oda) {
+    customAlert(t.masaWarn);
+    return;
+  }
+
+  const konum = (masa ? `Masa No: ${masa}` : '') + (oda ? (masa ? ' / ' : '') + `Oda No: ${oda}` : '');
+  const message = encodeURIComponent(`Merhaba, ${konum} için görevli çağırmak istiyorum.`);
+  const phone = "905312691511";
+  window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+}
+
+
+</script>
+
+
+
+</body>
+</html>
