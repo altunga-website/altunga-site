@@ -215,7 +215,7 @@
         tr.id = "row-" + id;
         siparisListesi.appendChild(tr);
       }
-      const urunler = data.urunler.map(u => `• ${u.ad} - ₺${u.fiyat}`).join("<br>");
+      const urunler = data.urunler.map(u => `• ${u.ad}`).join("<br>");
       const tarih = new Date(data.tarih).toLocaleString();
       const silBtn = aktifRol === "admin" ? `<button class='delete-btn' onclick='sil("${id}")'>Sil</button>` : "";
       tr.innerHTML = `
