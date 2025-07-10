@@ -516,15 +516,7 @@ header h1 {
     <button onclick="toggleTheme()">🌙/☀️</button>
   </div>
 </header>
-<script>
-  const oda = new URLSearchParams(window.location.search).get("oda") || "0";
-  const intentUrl = `intent://altunga-site/?oda=${oda}#Intent;scheme=https;package=com.altunga.qrmenu;end`;
 
-  // Uygulama varsa açılacak
-  setTimeout(() => {
-    window.location = intentUrl;
-  }, 100);
-</script>
 
 <div class="menu-grid">
   <div class="menu-item" onclick="showMenu('icecekler')">
