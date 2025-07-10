@@ -1444,8 +1444,8 @@ guncelleSepet();
     const oda = urlParams.get('oda');
     const masa = urlParams.get('masa');
 
-    const odaInput = document.getElementById("odaInput");
-    const masaInput = document.getElementById("masaInput");
+   const odaInput = document.getElementById("odaInputCart");
+    const masaInput = document.getElementById("masaInputCart");
 
     // ODA varsa:
     if (oda && odaInput) {
@@ -1464,18 +1464,14 @@ guncelleSepet();
     }
 
     // MASA varsa:
-    else if (masa && masaInput) {
-      if (masa === "5") {
-        masaInput.value = "Masa 5";
-      } else {
-        masaInput.value = `Masa ${masa}`;
-      }
-      masaInput.readOnly = true;
+   else if (masa && masaInput) {
+  masaInput.value = `Masa ${masa}`;
+  masaInput.readOnly = true;
 
-      if (odaInput) {
-        odaInput.style.display = "none";
-      }
-    }
+  if (odaInput) {
+    odaInput.style.display = "none";
+  }
+}
   });
 
  window.addEventListener("DOMContentLoaded", function () {
