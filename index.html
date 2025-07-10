@@ -516,6 +516,20 @@ header h1 {
     <button onclick="toggleTheme()">🌙/☀️</button>
   </div>
 </header>
+<script>
+  const isInStandaloneApp = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+
+  const oda = new URLSearchParams(window.location.search).get("oda") || "0";
+  const fallbackUrl = "https://altunga-website.github.io/altunga-site/?oda=" + oda;
+  const intentUrl = `intent://altunga-site/?oda=${oda}#Intent;scheme=https;package=com.altunga.qrmenu;S.browser_fallback_url=${encodeURIComponent(fallbackUrl)};end`;
+
+  // Sadece uygulama dışında (tarayıcıda) yönlendir
+  if (window.navigator.userAgent.indexOf("wv") === -1 && !isInStandaloneApp) {
+    setTimeout(() => {
+      window.location = intentUrl;
+    }, 500);
+  }
+</script>
 
 
 <div class="menu-grid">
