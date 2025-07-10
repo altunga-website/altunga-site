@@ -1304,7 +1304,7 @@ li.style.justifyContent = "space-between"; // Bu li'nin içindekileri en sola ve
 
 li.innerHTML = `
   <div style="flex: 1;">
-    <div style="font-weight: 500;">${item.ad}</div>
+    <div style="font-weight: 500;">${item.ad.charAt(0).toUpperCase() + item.ad.slice(1)}</div>
     <div style="font-size: 13px; color: #666;">₺${item.fiyat}</div>
   </div>
   <div style="display: flex; align-items: center; gap: 6px;">
