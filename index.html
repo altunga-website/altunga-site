@@ -1533,42 +1533,54 @@ function showAlert(msg) {
 
 // Sayfa yüklendiğinde, URL parametrelerinden oda ve masa bilgilerini al
 window.addEventListener('DOMContentLoaded', () => {
-  document.getElementById("cartInputsWrapper").style.display = "none";
-  guncelleSepet();
-  
   const urlParams = new URLSearchParams(window.location.search);
   const oda = urlParams.get('oda');
   const masa = urlParams.get('masa');
+  
+  const odaInputCart = document.getElementById("odaInputCart");
+  const masaInputCart = document.getElementById("masaInputCart");
+  
+  const popupOdaInput = document.getElementById("popupOda");
+  const popupMasaInput = document.getElementById("popupMasa");
 
-  const odaInput = document.getElementById("odaInputCart");
-  const masaInput = document.getElementById("masaInputCart");
-
-  // Oda varsa:
-  if (oda && odaInput) {
-    if (oda === "vip3") {
-      odaInput.value = "3. Kat - VIP Playstation";
-    } else if (oda === "ps5") {
-      odaInput.value = "PS5 Odası";
-    } else {
-      odaInput.value = oda;
+  // Oda ve Masa parametrelerini inputlara yerleştir
+  const fillInputs = (oda, masa) => {
+    if (oda && odaInputCart) {
+      odaInputCart.value = oda;
+      odaInputCart.readOnly = true;
     }
-    odaInput.readOnly = true;
 
-    if (masaInput) {
-      masaInput.style.display = "none";
+    if (masa && masaInputCart) {
+      masaInputCart.value = masa;
+      masaInputCart.readOnly = true;
+    }
+
+    // Görevli çağırma inputları da güncelleniyor
+    if (oda && popupOdaInput) {
+      popupOdaInput.value = oda;
+    }
+
+    if (masa && popupMasaInput) {
+      popupMasaInput.value = masa;
     }
   }
 
-  // Masa varsa:
-  if (masa && masaInput) {
-    masaInput.value = `Masa ${masa}`;
-    masaInput.readOnly = true;
+  // URL parametrelerinden alınan oda ve masa bilgilerini inputlara aktar
+  fillInputs(oda, masa);
 
-    if (odaInput) {
-      odaInput.style.display = "none";
-    }
+  // Görevli çağırma butonuna tıklandığında, sepetin ürün ekleme işlevini etkilemeden inputları güncelle
+  const gorevliCagirBtn = document.getElementById('gorevliCagirBtn');
+  if (gorevliCagirBtn) {
+    gorevliCagirBtn.addEventListener('click', () => {
+      // Oda ve Masa bilgilerini görevl çağırma inputlarına aktar
+      fillInputs(oda, masa);
+      console.log("Görevli çağırma butonuna tıklandı");
+    });
+  } else {
+    console.error("Görevli Çağır Butonu Bulunamadı");
   }
 });
+
 
 
 
