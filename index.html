@@ -553,7 +553,7 @@ footer {
     </select>
     <button onclick="toggleTheme()">🌙/☀️</button>
   </div>
-<button onclick="openZilModal()" title="Görevli Çağır" style="
+<button id="gorevliCagirBtn" onclick="openZilModal()" title="Görevli Çağır" style="
   position: fixed;
   bottom: 20px;
   left: 20px;
@@ -1384,6 +1384,25 @@ function toTitleCase(str) {
   document.getElementById('cartOrderBtn').style.display = 'block';
 
 }
+function guncelleSepet() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const oda = urlParams.get('oda');
+  const masa = urlParams.get('masa');
+  
+  const odaInput = document.getElementById("odaInputCart");
+  const masaInput = document.getElementById("masaInputCart");
+
+  // Oda varsa, sepet inputunu doldur
+  if (oda && odaInput) {
+    odaInput.value = oda;
+  }
+
+  // Masa varsa, sepet inputunu doldur
+  if (masa && masaInput) {
+    masaInput.value = masa;
+  }
+}
+
 function adetArttir(index) {
   sepet[index].adet++;
   guncelleSepet();
@@ -1533,17 +1552,15 @@ function showAlert(msg) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  document.getElementById("cartInputsWrapper").style.display = "none";
-  guncelleSepet();
-  
+  // Sepet ve görevli çağırma inputlarını kontrol et
   const urlParams = new URLSearchParams(window.location.search);
-  const oda = urlParams.get('oda') || "";  // Oda parametresi yoksa boş değer ata
-  const masa = urlParams.get('masa') || "";  // Masa parametresi yoksa boş değer ata
-
+  const oda = urlParams.get('oda');
+  const masa = urlParams.get('masa');
+  
   const odaInput = document.getElementById("odaInputCart");
   const masaInput = document.getElementById("masaInputCart");
 
-  // Oda varsa:
+  // Oda inputunu URL'deki "oda" parametresine göre doldur
   if (oda && odaInput) {
     if (oda === "vip3") {
       odaInput.value = "3. Kat - VIP Playstation";
@@ -1552,23 +1569,40 @@ window.addEventListener('DOMContentLoaded', () => {
     } else {
       odaInput.value = oda;
     }
-    odaInput.readOnly = true;
+    odaInput.readOnly = true;  // Oda inputu sadece okunabilir yap
 
     if (masaInput) {
-      masaInput.style.display = "none";
+      masaInput.style.display = "none"; // Masa inputunu gizle
     }
   }
 
-  // Masa varsa:
+  // Masa inputunu URL'deki "masa" parametresine göre doldur
   if (masa && masaInput) {
     masaInput.value = `Masa ${masa}`;
-    masaInput.readOnly = true;
+    masaInput.readOnly = true;  // Masa inputu sadece okunabilir yap
 
     if (odaInput) {
-      odaInput.style.display = "none";
+      odaInput.style.display = "none"; // Oda inputunu gizle
     }
   }
+
+  // Görevli çağırma butonunun işlevselliği
+  const gorevliCagirBtn = document.getElementById('gorevliCagirBtn');
+  if (gorevliCagirBtn) {
+    gorevliCagirBtn.addEventListener('click', () => {
+      // Görevli çağırma işlemleri: URL'den alınan masa ve oda bilgilerini modalda göster
+      if (masa && oda) {
+        document.getElementById("popupMasa").value = masa;
+        document.getElementById("popupOda").value = oda;
+      }
+      console.log("Görevli çağırma butonuna tıklandı");
+    });
+  } else {
+    console.error("Görevli Çağır Butonu Bulunamadı");
+  }
 });
+
+
 
 
 
