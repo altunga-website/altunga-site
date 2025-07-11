@@ -1586,42 +1586,22 @@ window.addEventListener('DOMContentLoaded', () => {
       popupMasaInput.value = masa;
     }
   }
-  const fillInputs = (oda, masa) => {
-  // Sepet inputlarını doldur
-  if (oda && odaInputCart) {
-    odaInputCart.value = oda;
-    odaInputCart.readOnly = true;
-  }
-  if (masa && masaInputCart) {
-    masaInputCart.value = masa;
-    masaInputCart.readOnly = true;
-  }
-
-  // Görevli çağırma inputları da dolduruluyor
-  if (oda && popupOdaInput) {
-    popupOdaInput.value = oda;
-  }
-
-  if (masa && popupMasaInput) {
-    popupMasaInput.value = masa;
-  }
-}
-
+  
 
   // URL'den alınan oda ve masa bilgilerini inputlara aktar
   fillInputs(oda, masa);
 
+  // Görevli çağırma butonuna tıklandığında sepet inputlarını da güncelle
   const gorevliCagirBtn = document.getElementById('gorevliCagirBtn');
-if (gorevliCagirBtn) {
-  gorevliCagirBtn.addEventListener('click', () => {
-    // Görevli çağırma butonuna tıklandığında sadece görevli çağırma inputlarını güncelle
-    fillInputs(oda, masa);
-    console.log("Görevli çağırma butonuna tıklandı");
-  });
-} else {
-  console.error("Görevli Çağır Butonu Bulunamadı");
-}
-
+  if (gorevliCagirBtn) {
+    gorevliCagirBtn.addEventListener('click', () => {
+      // Oda ve Masa bilgilerini görevl çağırma inputlarına aktar
+      fillInputs(oda, masa);
+      console.log("Görevli çağırma butonuna tıklandı");
+    });
+  } else {
+    console.error("Görevli Çağır Butonu Bulunamadı");
+  }
 });
 
 
