@@ -1498,8 +1498,7 @@ function callStaff() {
 
   const masa = document.getElementById("popupMasa").value.trim();
   const oda = document.getElementById("popupOda").value.trim();
-document.getElementById('zilModal').style.display = 'flex';
-document.getElementById('masaOda').style.display = 'none';
+
   if (!masa && !oda) {
     showAlert("⚠️ Masa veya Oda numarası girmelisiniz!"); // Uyarı mesajı
     return;
@@ -1522,8 +1521,6 @@ document.getElementById('masaOda').style.display = 'none';
       const ding = document.getElementById("dingSound");
       if (ding) ding.play().catch(() => {});
     });
-	 checkURLParams();
-	 showInputsOnSelection();
 }
 
 // Uyarı mesajını göster
@@ -1581,13 +1578,13 @@ function setMasaOda() {
   // Masa inputunu doldur
   if (masa) {
     const masaInput = document.getElementById('masaInputCart');
-    masaInput.value = masa;
+    masaInput.value = masa;  // `masa` parametresini alıp inputa ekliyoruz
   }
   
   // Oda inputunu doldur
   if (oda) {
     const odaInput = document.getElementById('odaInputCart');
-    odaInput.value = oda;
+    odaInput.value = oda;  // `oda` parametresini alıp inputa ekliyoruz
   }
 }
 
@@ -1628,52 +1625,6 @@ document.getElementById('callBtn').addEventListener('click', function() {
   
   // Eğer başka bir işlem yapacaksan, burada yapabilirsin (örneğin, Firebase ile göndermek)
 });
-
-function fillInputsAfterSelection() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const oda = urlParams.get('oda');
-  const masa = urlParams.get('masa');
-
-  // Oda ve masa inputlarına URL parametrelerinden değerleri atıyoruz
-  if (oda) {
-    document.getElementById('odaInput').value = oda;
-  }
-  if (masa) {
-    document.getElementById('masaInput').value = masa;
-  }
-}
-function showInputsOnSelection() {
-  // Butonlar işaretlendiğinde inputları göster
-  document.getElementById('masaOda').style.display = 'block'; // Masa/Oda inputlarını gösterir
-
-  // URL parametrelerine göre inputları doldur
-  fillInputsAfterSelection();
-}
-document.querySelectorAll('.your-button-class').forEach(button => {
-  button.addEventListener('click', function() {
-    // Butonlar seçildikten sonra inputları kontrol et ve göster
-    showInputsOnSelection();
-  });
-});
-// URL parametrelerini almak için fonksiyon
-function getURLParameter(name) {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get(name);
-}
-
-// Sayfa yüklendiğinde inputları doldur
-window.onload = function() {
-  const oda = getURLParameter('oda');  // /?oda=vip7 gibi
-  const masa = getURLParameter('masa');  // /?masa=Hüma5 gibi
-
-  // Oda ve masa parametreleri varsa inputlara atama yap
-  if (oda) {
-    document.getElementById('odaInputCart').value = oda;
-  }
-  if (masa) {
-    document.getElementById('masaInputCart').value = masa;
-  }
-};
 // URL parametrelerini almak için fonksiyon
 function getURLParameter(name) {
   const urlParams = new URLSearchParams(window.location.search);
@@ -1695,6 +1646,9 @@ window.onload = function() {
     document.getElementById('popupMasa').value = masa;      // Görevli çağırma popup inputu
   }
 };
+
+
+
 
 
 </script>
