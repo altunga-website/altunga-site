@@ -1498,7 +1498,7 @@ function callStaff() {
 
   const masa = document.getElementById("popupMasa").value.trim();
   const oda = document.getElementById("popupOda").value.trim();
-
+document.getElementById('zilModal').style.display = 'flex';
   if (!masa && !oda) {
     showAlert("⚠️ Masa veya Oda numarası girmelisiniz!"); // Uyarı mesajı
     return;
@@ -1521,6 +1521,7 @@ function callStaff() {
       const ding = document.getElementById("dingSound");
       if (ding) ding.play().catch(() => {});
     });
+	 checkURLParams();
 }
 
 // Uyarı mesajını göster
@@ -1578,13 +1579,13 @@ function setMasaOda() {
   // Masa inputunu doldur
   if (masa) {
     const masaInput = document.getElementById('masaInputCart');
-    masaInput.value = masa;  // `masa` parametresini alıp inputa ekliyoruz
+    masaInput.value = masa;
   }
   
   // Oda inputunu doldur
   if (oda) {
     const odaInput = document.getElementById('odaInputCart');
-    odaInput.value = oda;  // `oda` parametresini alıp inputa ekliyoruz
+    odaInput.value = oda;
   }
 }
 
@@ -1625,7 +1626,6 @@ document.getElementById('callBtn').addEventListener('click', function() {
   
   // Eğer başka bir işlem yapacaksan, burada yapabilirsin (örneğin, Firebase ile göndermek)
 });
-
 
 
 
