@@ -1,0 +1,843 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Paneli</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f0f0f0; transition: background 0.3s, color 0.3s; }
+    body.dark { background: #121212; color: #eee; }
+    h1 { text-align: center; margin-top: 20px; }
+    table { width: 100%; border-collapse: collapse; background: white; margin-top: 10px; }
+    body.dark table { background: #1e1e1e; color: #eee; }
+    th, td { padding: 10px; border: 1px solid #ccc; text-align: left; vertical-align: top; }
+    th { background: #222; color: white; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    body.dark tr:nth-child(even) { background: #2a2a2a; }
+    .status { font-weight: bold; padding: 4px 8px; border-radius: 5px; }
+    .Beklemede { background: orange; color: white; }
+    .Hazirlaniyor { background: royalblue; color: white; }
+    .Teslim { background: green; color: white; }
+    button { margin: 3px; padding: 6px 10px; border: none; border-radius: 5px; cursor: pointer; }
+    .update-btn { background: #444; color: white; }
+    .delete-btn { background: crimson; color: white; }
+    .alert { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff4444; color: white; padding: 10px 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); z-index: 9999; display: none; animation: fadeInOut 3s ease forwards; }
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+      10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+    }
+    #girisOverlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: #1b1b1b; display: flex; align-items: center; justify-content: center;
+      z-index: 10000; flex-direction: column;
+    }
+    #girisSecim {
+      background: white; padding: 30px; border-radius: 15px; text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-width: 700px; width: 90%;
+    }
+    .giris-btn {
+      display: block; width: 100%; margin: 10px 0; font-size: 16px;
+      padding: 12px; border: none; border-radius: 8px; color: white; font-weight: bold;
+    }
+    .admin-btn { background: #6a11cb; }
+    .kasiyer-btn { background: #2575fc; }
+    #sifreBox { display: none; margin-top: 15px; }
+    #aktifKullanici { margin: 10px; font-weight: bold; text-align: center; }
+    #kontrolButonlar {
+      position: fixed; top: 10px; right: 10px; z-index: 1000;
+    }
+    #kontrolButonlar button { background: #555; color: white; margin-left: 10px; }
+    #darkToggle {
+      position: fixed; top: 10px; left: 10px; z-index: 1000;
+    }
+    #darkToggle button {
+      background: #222; color: white; padding: 6px 12px; border-radius: 5px;
+    }
+	.İptal {
+  background: gray;
+  color: white;
+}
+.custom-confirm {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.confirm-box {
+  background: white;
+  border-radius: 12px;
+  padding: 30px 24px;
+  max-width: 360px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.confirm-icon {
+  font-size: 36px;
+  margin-bottom: 10px;
+  color: #f57c00;
+}
+
+.confirm-text {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 24px;
+  color: #333;
+}
+
+.confirm-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.confirm-buttons button {
+  padding: 8px 18px;
+  font-size: 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirm-yes {
+  background-color: #d32f2f;
+  color: white;
+}
+
+.confirm-no {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.confirm-yes:hover {
+  background-color: #b71c1c;
+}
+
+.confirm-no:hover {
+  background-color: #cfcfcf;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.custom-alert {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #e53935;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  box-shadow: 0 0 10px #00000033;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 9999;
+}
+
+.custom-alert.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.custom-alert-icon {
+  font-size: 20px;
+  margin-right: 8px;
+  color: white;
+}
+
+.custom-alert-message {
+  color: white;
+}
+.alert-box {
+  display: none;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  color: white;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  max-width: 300px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.alert-success {
+  background-color: #28a745;
+}
+
+.alert-error {
+  background-color: #dc3545;
+}
+
+.alert-warning {
+  background-color: #ffc107;
+  color: black;
+}
+#pinPad button {
+  padding: 15px;
+  font-size: 20px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#pinPad button:hover {
+  background: #1e40af;
+}
+.pin-clear {
+  background: #dc2626 !important;
+}
+.pin-clear:hover {
+  background: #991b1b !important;
+}
+
+
+
+  </style>
+</head>
+<body>
+  <div id="darkToggle">
+    <button onclick="toggleDarkMode()">🌙 Gece Modu</button>
+    <button onclick="window.print()">🖨️ Yazdır</button>
+    <button onclick="indirePDF()">📄 PDF</button>
+  </div>
+
+  <div id="girisOverlay">
+    <div style="text-align:center">
+      <img src="logo.png" alt="Altunga Logo" style="max-width: 150px; margin-bottom: 20px;" />
+    </div>
+    <div id="girisSecim">
+      <h2>Yetkili Girişi</h2>
+      <button class="giris-btn admin-btn" onclick="hazirla('admin')">🗝️ Yönetici Girişi</button>
+      <button class="giris-btn kasiyer-btn" onclick="hazirla('kasiyer1')">👤 Kasiyer Cafer</button>
+<button class="giris-btn kasiyer-btn" onclick="hazirla('kasiyer2')">👤 Kasiyer Mustafa</button>
+
+    <div id="sifreBox" style="display: none; margin-top: 20px;">
+  <div style="display: flex; justify-content: center; align-items: flex-start; gap: 40px; flex-wrap: wrap;">
+
+    <!-- Sol taraf: Giriş alanları -->
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 220px;">
+      <input
+        type="password"
+        id="sifreInput"
+        placeholder="PIN Kodu"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        maxlength="6"
+        style="width: 100%; padding: 14px 12px; font-size: 24px; text-align: center; letter-spacing: 6px; border-radius: 8px; border: 1px solid #ccc;"
+      />
+      <button onclick="girisYap()" style="width: 100%; padding: 12px; border-radius: 6px; background: #111; color: white; border: none; font-weight: bold;">
+        Giriş Yap
+      </button>
+    </div>
+
+    <!-- Sağ taraf: Tuş takımı -->
+    <div id="pinPad" style="display: grid; grid-template-columns: repeat(3, 60px); gap: 10px;">
+      <button class="pin-key">1</button>
+      <button class="pin-key">2</button>
+      <button class="pin-key">3</button>
+      <button class="pin-key">4</button>
+      <button class="pin-key">5</button>
+      <button class="pin-key">6</button>
+      <button class="pin-key">7</button>
+      <button class="pin-key">8</button>
+      <button class="pin-key">9</button>
+      <button class="pin-clear">❌</button>
+      <button class="pin-key">0</button>
+    </div>
+
+  </div>
+</div>
+
+
+
+    </div>
+  </div>
+
+  <div id="kontrolButonlar" style="display:none">
+    <button onclick="kullaniciDegistir()">Kullanıcı Değiştir</button>
+    <button onclick="cikisYap()">Çıkış Yap</button>
+	<a href="arsiv.html" target="_blank">
+    <button>📦 Arşiv</button>
+  </a>
+  </div>
+
+  <h1>Altunga Admin Paneli</h1>
+  <div id="aktifKullanici"></div>
+  <div id="filtre" style="text-align:center; margin-bottom:15px;">
+    <label for="durumFiltre">Duruma göre filtrele:</label>
+    <select id="durumFiltre" onchange="filtrele()">
+      <option value="Tümü">Tümü</option>
+      <option value="Beklemede">Beklemede</option>
+      <option value="Hazirlaniyor">Hazırlanıyor</option>
+      <option value="Teslim">Teslim</option>
+    </select>
+  </div>
+  <div class="alert" id="customAlert"></div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th><th>Masa / Oda</th><th>Ürünler</th><th>Toplam</th><th>Tarih</th><th>Durum</th><th>İşlem</th>
+      </tr>
+    </thead>
+    <tbody id="siparisListesi"></tbody>
+  </table>
+  <h2 style="text-align:center; margin-top:40px;">🔔 Gelen Çağrılar</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Zaman</th>
+      <th>Tip</th>
+      <th>Masa / Oda</th>
+	  <th>İşlem</th>
+    </tr>
+  </thead>
+  <tbody id="cagriListesi"></tbody>
+</table>
+
+  <audio id="ding" src="ding.mp3" preload="auto"></audio>
+  <script>
+  document.addEventListener("click", () => {
+  const ding = document.getElementById("ding");
+  if (ding) {
+    ding.play().catch(() => {});
+    ding.pause();
+    ding.currentTime = 0;
+  }
+}, { once: true });
+
+window.addEventListener("DOMContentLoaded", () => {
+  const giris = localStorage.getItem("adminGiris");
+  const rol = localStorage.getItem("adminRol");
+
+  if (giris === "evet" && rol) {
+    aktifRol = rol;
+    document.getElementById("girisOverlay").style.display = "none";
+    document.getElementById("aktifKullanici").innerText = `👤 Giriş yapan: ${aktifRol.toUpperCase()}`;
+    document.getElementById("kontrolButonlar").style.display = "block";
+
+    // Admin kontrolü
+    if (aktifRol === "admin") {
+      document.getElementById("sifreDegistirBtn").style.display = "inline-block";
+      // Admin için her iki butonu da göster
+      document.querySelectorAll('.silBtn').forEach(btn => btn.style.display = "inline-block");
+      document.querySelectorAll('.yanitlandiBtn').forEach(btn => btn.style.display = "inline-block");
+    } else {
+      // Kasiyer için sadece Yanıtlandı butonunu göster, Sil butonunu gizle
+      document.querySelectorAll('.silBtn').forEach(btn => btn.style.display = "none");
+      document.querySelectorAll('.yanitlandiBtn').forEach(btn => btn.style.display = "inline-block");
+    }
+
+    // Admin giriş yaptıysa çağrıları dinle
+    let cagriIlkYukleme = true;
+
+    db.collection("cagrilar").orderBy("zaman", "desc").onSnapshot(snapshot => {
+      if (cagriIlkYukleme) {
+        cagriIlkYukleme = false;
+        return; // ilk yüklemede alert gösterme
+      }
+
+      snapshot.docChanges().forEach(change => {
+        if (change.type === "added") {
+          const data = change.doc.data();
+          const tip = data.tip === "bilişim" ? "🧑‍💻 Bilişim" : "🧾 Sipariş";
+          const masaOda = `${data.masa || "-"} / ${data.oda || "-"}`;
+          const tarih = data.zaman?.toDate().toLocaleString("tr-TR") || "-";
+
+          customAlert(`🔔 Yeni Çağrı (${tip}): ${masaOda} - ${tarih}`);
+          ding.play().catch(() => {});
+        }
+      });
+    });
+
+    listeleSiparisler();
+    listeleCagrilar();
+  }
+});
+
+
+  
+    const firebaseConfig = {
+      apiKey: "AIzaSyC2kYwYuv7drDw0zViXYN4DqpppbtP_coY",
+      authDomain: "altunga-siparis.firebaseapp.com",
+      projectId: "altunga-siparis",
+      storageBucket: "altunga-siparis.appspot.com",
+      messagingSenderId: "152830720353",
+      appId: "1:152830720353:web:cc3d3646e6a859c0ca2d20",
+      measurementId: "G-JKXK55E39H"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const siparisListesi = document.getElementById("siparisListesi");
+    const ding = document.getElementById("ding");
+    const siparisIDs = new Set();
+    let aktifRol = "";
+
+    function hazirla(rol) {
+      aktifRol = rol;
+      document.getElementById("sifreBox").style.display = "block";
+    }
+
+    async function girisYap() {
+  const sifre = document.getElementById("sifreInput").value.trim();
+
+  if (!aktifRol || !sifre) {
+    customAlert("⚠️ Lütfen kullanıcı seçin ve şifreyi girin.");
+    return;
+  }
+
+  try {
+    const doc = await db.collection("kullanicilar").doc(aktifRol).get();
+    if (!doc.exists) {
+      customAlert("🚫 Kullanıcı bulunamadı.");
+      return;
+    }
+
+    const data = doc.data();
+
+    if (sifre === data.sifre) {
+	localStorage.setItem("adminGiris", "evet");
+localStorage.setItem("adminRol", aktifRol);
+      document.getElementById("girisOverlay").style.display = "none";
+      document.getElementById("aktifKullanici").innerText = `👤 Giriş yapan: ${aktifRol.toUpperCase()}`;
+      document.getElementById("kontrolButonlar").style.display = "block";
+	  if (aktifRol === "admin") {
+  document.getElementById("sifreDegistirBtn").style.display = "inline-block";
+}
+      listeleSiparisler();
+    } else {
+      customAlert("🚫 Şifre yanlış!");
+    }
+  } catch (err) {
+    console.error("Giriş hatası:", err);
+    customAlert("🚨 Giriş sırasında hata oluştu.");
+  }
+}
+// Çağrıları listele
+function listeleCagrilar() {
+  const cagriListesi = document.getElementById("cagriListesi");
+  const rol = localStorage.getItem("adminRol"); // Kullanıcının rolünü alıyoruz
+
+  db.collection("cagrilar").orderBy("zaman", "desc").onSnapshot(snapshot => {
+    cagriListesi.innerHTML = ""; // önceki satırları temizle
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const tip = data.tip === "bilişim" ? "🧑‍💻 Bilişim" : "🧾 Sipariş";
+      const masaOda = `${data.masa || "-"} / ${data.oda || "-"}`;
+      const tarih = data.zaman?.toDate().toLocaleString("tr-TR") || "-";
+
+      // Admin rolü ise, hem Bilişim hem de Sipariş çağrıları gösterilsin
+      if (tip === "🧑‍💻 Bilişim" && rol !== "admin") {
+        return; // Eğer kullanıcı admin değilse bilişim çağrısı eklenmesin
+      }
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${tarih}</td>
+        <td>${tip}</td>
+        <td>${masaOda}</td>
+        <td>
+          <button onclick="yanitlandi('${doc.id}')" style="background: green; color: white; border: none; padding: 6px 12px; border-radius: 6px; margin-right: 5px;">Yanıtlandı</button>
+          <!-- Admin için Sil butonu, kasiyer için gizle -->
+          <button onclick="cagriSil('${doc.id}')" class="silBtn" style="background: crimson; color: white; border: none; padding: 6px 12px; border-radius: 6px;">Sil</button>
+        </td>
+      `;
+      
+      cagriListesi.appendChild(tr);
+
+      // Kasiyer rolü için Sil butonunu gizle
+      if (rol !== "admin") {
+        const silBtn = tr.querySelector(".silBtn");
+        silBtn.style.display = "none"; // Kasiyerler için Sil butonunu gizliyoruz
+      }
+    });
+  });
+}
+
+// Çağrı yanıtlandı işlemi
+function yanitlandi(id) {
+  const ref = db.collection("cagrilar").doc(id);
+
+  ref.get().then(doc => {
+    if (!doc.exists) {
+      customAlert("❌ Çağrı bulunamadı.");
+      return;
+    }
+
+    const data = doc.data();
+    data.yanitlandiTarih = new Date(); // Yanıt zamanı da kaydedilsin
+
+    db.collection("arsivCagrilar").doc(id).set(data).then(() => {
+      ref.delete().then(() => {
+        customAlert("✅ Çağrı yanıtlandı ve arşive taşındı.");
+      });
+    });
+  }).catch(err => {
+    console.error("Yanıtlandı hatası:", err);
+    customAlert("❌ Hata oluştu: " + err.message);
+  });
+}
+
+// Çağrı silme işlemi
+function cagriSil(id) {
+  db.collection("cagrilar").doc(id).delete()
+    .then(() => {
+      customAlert("🗑️ Çağrı silindi.");
+    })
+    .catch((err) => {
+      customAlert("❌ Silme hatası: " + err.message);
+    });
+}
+
+    
+	function kullaniciDegistir() {
+  localStorage.removeItem("adminGiris");
+  localStorage.removeItem("adminRol");
+  location.reload();
+}
+
+    function cikisYap() {
+  localStorage.removeItem("adminGiris");
+  localStorage.removeItem("adminRol");
+  location.reload();
+}
+
+function customAlert(msg) {
+  const box = document.getElementById("customAlert");
+
+  // Önce tüm durum sınıflarını kaldır
+  box.classList.remove("alert-success", "alert-error", "alert-warning");
+
+  // İçeriğe göre sınıf ekle
+  if (msg.includes("✅")) {
+    box.classList.add("alert-success");
+  } else if (msg.includes("❌")) {
+    box.classList.add("alert-error");
+  } else if (msg.includes("⚠️")) {
+    box.classList.add("alert-warning");
+  } else {
+    box.classList.add("alert-error");
+  }
+
+  box.innerText = msg;
+  box.style.display = "block";
+  setTimeout(() => {
+    box.style.display = "none";
+  }, 3000);
+}
+
+
+
+  function listeleSiparisler() {
+  db.collection("siparisler").orderBy("tarih", "desc").onSnapshot(snapshot => {
+    const tbody = document.getElementById("siparisListesi");
+
+    snapshot.docChanges().forEach(change => {
+      const doc = change.doc;
+      const id = doc.id;
+      const data = doc.data();
+
+      if (change.type === "added") {
+        renderSiparis(id, data);
+        ding.play().catch(() => {}); // ses engelini sessizce atla
+      }
+
+      if (change.type === "modified") {
+        renderSiparis(id, data);
+      }
+
+      if (change.type === "removed") {
+        const row = document.getElementById("row-" + id);
+        if (row) row.remove();
+      }
+    });
+  });
+}
+
+
+
+
+    function renderSiparis(id, data) {
+      let tr = document.getElementById("row-" + id);
+      if (!tr) {
+        tr = document.createElement("tr");
+        tr.id = "row-" + id;
+        siparisListesi.insertBefore(tr, siparisListesi.firstChild);
+
+      }
+      const urunler = data.urunler.map(u => `• ${u.ad}`).join("<br>");
+      const tarihObj = data.tarih.toDate ? data.tarih.toDate() : new Date(data.tarih);
+const tarih = tarihObj.toLocaleString("tr-TR");
+
+      const silBtn = aktifRol === "admin" ? `<button class='delete-btn' onclick='sil("${id}")'>Sil</button>` : "";
+	  const iptalBtn = aktifRol.startsWith("kasiyer") ? `<button class='delete-btn' onclick='iptalEt("${id}")'>İptal Et</button>` : "";
+
+
+      tr.innerHTML = `
+        <td>${id}</td>
+        <td>${data.masa || ''} ${data.oda || ''}</td>
+        <td>${urunler}</td>
+        <td>₺${data.toplam}</td>
+        <td>${tarih}</td>
+        <td><span class='status ${data.durum}'>${data.durum}</span></td>
+        <td>
+          <button class='update-btn' onclick='durumGuncelle("${id}", "Hazirlaniyor")'>Hazırlanıyor</button>
+          <button class='update-btn' onclick='durumGuncelle("${id}", "Teslim")'>Teslim</button>
+          ${silBtn}
+		  ${iptalBtn}
+        </td>`;
+    }
+
+   function durumGuncelle(id, durum) {
+  const ad = localStorage.getItem("adminAd") || aktifRol || "Bilinmeyen";
+  const ref = db.collection("siparisler").doc(id);
+
+  if (durum === "Teslim") {
+    // Teslim durumunda arşive taşı
+    ref.get().then(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        data.durum = "Teslim";
+        data.kasiyer = ad;
+		data.tarih = data.tarih || new Date();
+        db.collection("arsiv").doc(id).set(data).then(() => {
+          ref.delete(); // orijinalden sil
+          customAlert("✅ Sipariş teslim edildi ve arşive taşındı.");
+          guncelleSayfa();
+        });
+      }
+    });
+  } else {
+    // Diğer durumlar için sadece güncelle
+    ref.update({
+      durum,
+      kasiyer: ad
+    }).then(() => guncelleSayfa());
+  }
+}
+
+
+function iptalEt(id) {
+  const ad = localStorage.getItem("adminAd") || aktifRol || "Bilinmeyen";
+  const ref = db.collection("siparisler").doc(id);
+
+  customConfirm("Bu siparişi iptal etmek istiyor musunuz?", () => {
+    ref.get().then(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        data.durum = "İptal";
+        data.kasiyer = ad;
+data.tarih = data.tarih || new Date();
+        db.collection("arsiv").doc(id).set(data).then(() => {
+          ref.delete(); // orijinalden sil
+          customAlert("❌ Sipariş iptal edildi ve arşive taşındı.");
+          guncelleSayfa();
+        });
+      }
+    });
+  });
+}
+
+
+
+    function sil(id) {
+  customConfirm("🗑️ Bu siparişi silmek istiyor musunuz?", () => {
+    db.collection("siparisler").doc(id).delete()
+      .then(() => {
+        customAlert(" Sipariş silindi.");
+      })
+      .catch((err) => {
+        customAlert("Hata: " + err.message);
+      });
+  });
+}
+
+
+    function filtrele() {
+      const secilen = document.getElementById("durumFiltre").value;
+      const satirlar = document.querySelectorAll("tbody tr");
+      satirlar.forEach(tr => {
+        const durum = tr.querySelector(".status")?.textContent;
+        tr.style.display = (secilen === "Tümü" || durum === secilen) ? "" : "none";
+      });
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
+    }
+
+    async function indirePDF() {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF();
+      const element = document.querySelector("table");
+      await html2canvas(element).then(canvas => {
+        const imgData = canvas.toDataURL("image/png");
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData, "PNG", 0, 10, pdfWidth, pdfHeight);
+        pdf.save("siparis-raporu.pdf");
+      });
+    }
+	 function sifreDegistir() {
+  if (aktifRol !== "admin") return alert("Sadece admin değiştirebilir.");
+  document.getElementById("sifreDegistirOverlay").style.display = "flex";
+}
+
+  function kapatPopup() {
+  document.getElementById("sifreDegistirOverlay").style.display = "none";
+}
+
+ async function kaydetSifre() {
+  const yeni = document.getElementById("yeniSifre").value.trim();
+  if (!yeni) {
+    customAlert("⚠️ Yeni şifre boş olamaz.");
+    return;
+  }
+
+  try {
+    await db.collection("kullanicilar").doc("admin").update({ sifre: yeni });
+    customAlert("✅ Şifre güncellendi.");
+    kapatPopup();
+  } catch (err) {
+    customAlert("❌ Şifre güncellenirken hata oluştu.");
+    console.error(err);
+  }
+}
+
+
+  
+function customConfirm(message, onConfirm) {
+  const modal = document.createElement("div");
+  modal.className = "custom-confirm";
+
+  modal.innerHTML = `
+    <div class="confirm-box">
+      <div class="confirm-icon">⚠️</div>
+      <div class="confirm-text">${message}</div>
+      <div class="confirm-buttons">
+        <button class="confirm-yes">Evet</button>
+        <button class="confirm-no">Vazgeç</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  modal.querySelector(".confirm-yes").onclick = () => {
+    onConfirm();
+    modal.remove();
+  };
+
+  modal.querySelector(".confirm-no").onclick = () => {
+    modal.remove();
+  };
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const sifreInput = document.getElementById("sifreInput");
+
+  // Enter tuşu
+  if (sifreInput) {
+    sifreInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault(); // Otomatik form submit engellenir
+        girisYap();
+      }
+    });
+  }
+
+  // PIN tuşları
+  const pinKeys = document.querySelectorAll(".pin-key");
+  pinKeys.forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (sifreInput && sifreInput.value.length < 6) {
+        sifreInput.value += btn.textContent;
+      }
+    });
+  });
+
+  // Temizle butonu
+  const clearBtn = document.querySelector(".pin-clear");
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      if (sifreInput) {
+        sifreInput.value = "";
+      }
+    });
+  }
+});
+const messaging = firebase.messaging();
+
+Notification.requestPermission().then((permission) => {
+  if (permission === "granted") {
+    messaging.getToken({
+      vapidKey: "BKXhbwqc2HrWRS6J2n5CbIxOsvK1oH9rdaoaCtGGHFCX8AfwEyMXFDdeJ8UTuNNUTVSkXednCT1vwwa_KcZobOk"
+    }).then((token) => {
+      console.log("✅ Bildirim token:", token);
+
+      // Firestore'a token kaydı
+      db.collection("bildirimTokenlari").doc("admin1").set({
+        token,
+        zaman: new Date(),
+        cihaz: navigator.userAgent
+      });
+    });
+  } else {
+    console.warn("❌ Bildirim izni reddedildi.");
+  }
+});
+
+
+  </script>
+  <!-- Şifre Değiştir Butonu -->
+<button id="sifreDegistirBtn" onclick="sifreDegistir()" style="display:none; position:fixed; bottom:20px; right:20px; background:#6b21a8; color:white; padding:10px 15px; border:none; border-radius:8px; font-weight:bold; box-shadow:0 2px 5px rgba(0,0,0,0.2); z-index:1000;">
+  🔐 Şifreyi Değiştir
+</button>
+
+<!-- Popup -->
+<!-- Arka plan + popup kapsayıcı -->
+<div id="sifreDegistirOverlay" style="display:none; justify-content:center; align-items:center; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:9999;">
+
+
+  <!-- Asıl popup -->
+  <div style="background:white; padding:25px 20px; border-radius:12px; max-width:320px; width:90%; box-shadow:0 0 20px rgba(0,0,0,0.3);">
+    <h3 style="margin:0 0 15px 0; font-size:20px; text-align:center; color:#111;">Yeni Şifre Belirle</h3>
+    <input type="password" id="yeniSifre" placeholder="Yeni şifre" style="padding:14px 16px; width:100%; font-size:17px; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; margin-bottom:20px;">
+    <div style="display:flex; justify-content:space-between;">
+      <button onclick="kapatPopup()" style="flex:1; padding:10px 12px; background:#ddd; border:none; border-radius:6px; font-weight:bold;">İptal</button>
+      <div style="width:10px;"></div>
+      <button onclick="kaydetSifre()" style="flex:1; padding:10px 12px; background:#2563eb; color:white; border:none; border-radius:6px; font-weight:bold;">Kaydet</button>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
