@@ -553,7 +553,7 @@ footer {
     </select>
     <button onclick="toggleTheme()">🌙/☀️</button>
   </div>
-<button onclick="openZilModal()" title="Görevli Çağır" style="
+<button id="gorevliCagirBtn" onclick="openZilModal()" title="Görevli Çağır" style="
   position: fixed;
   bottom: 20px;
   left: 20px;
@@ -1151,6 +1151,7 @@ const menuData = {
       items: [
         { name: { tr: "CL Frigola Bar PRM", en: "CL Frigola Bar PRM" }, price: 40, image: "urunimg/frigola.png" },
 		 { name: { tr: "CL Classics Antep Fıstık", en: "Classics Antep Pistachio" }, price: 30, image: "urunimg/clfistik.png" },
+		 { name: { tr: "CL Classics Kakao", en: "CL Classics Cacao" }, price: 30, image: "urunimg/clkakao.png" },
 		
 		
 		
@@ -1383,6 +1384,25 @@ function toTitleCase(str) {
   document.getElementById('cartOrderBtn').style.display = 'block';
 
 }
+function guncelleSepet() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const oda = urlParams.get('oda');
+  const masa = urlParams.get('masa');
+  
+  const odaInput = document.getElementById("odaInputCart");
+  const masaInput = document.getElementById("masaInputCart");
+
+  // Oda varsa, sepet inputunu doldur
+  if (oda && odaInput) {
+    odaInput.value = oda;
+  }
+
+  // Masa varsa, sepet inputunu doldur
+  if (masa && masaInput) {
+    masaInput.value = masa;
+  }
+}
+
 function adetArttir(index) {
   sepet[index].adet++;
   guncelleSepet();
@@ -1531,55 +1551,82 @@ function showAlert(msg) {
   setTimeout(() => alertBox.style.display = 'none', 3000);  // 3 saniye sonra uyarıyı gizle
 }
 
-// Sayfa yüklendiğinde, URL parametrelerinden oda ve masa bilgilerini al
 window.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
   const oda = urlParams.get('oda');
   const masa = urlParams.get('masa');
   
-  const odaInputCart = document.getElementById("odaInputCart");
-  const masaInputCart = document.getElementById("masaInputCart");
-  
+  const odaInput = document.getElementById("odaInputCart");
+  const masaInput = document.getElementById("masaInputCart");
   const popupOdaInput = document.getElementById("popupOda");
   const popupMasaInput = document.getElementById("popupMasa");
 
-  // Oda ve Masa parametrelerini inputlara yerleştir
+  // Sepet ve Görevli Çağırma inputlarını doldur
   const fillInputs = (oda, masa) => {
-    if (oda && odaInputCart) {
-      odaInputCart.value = oda;
-      odaInputCart.readOnly = true;
+    if (oda && odaInput) {
+      if (oda === "vip3") {
+        odaInput.value = "3. Kat - VIP Playstation";
+      } else if (oda === "ps5") {
+        odaInput.value = "PS5 Odası";
+      } else {
+        odaInput.value = oda;
+      }
+      odaInput.readOnly = true;
+    }
+    if (masa && masaInput) {
+      masaInput.value = `Masa ${masa}`;
+      masaInput.readOnly = true;
     }
 
-    if (masa && masaInputCart) {
-      masaInputCart.value = masa;
-      masaInputCart.readOnly = true;
-    }
-
-    // Görevli çağırma inputları da güncelleniyor
+    // Görevli çağırma ekranı inputları da güncelleniyor
     if (oda && popupOdaInput) {
       popupOdaInput.value = oda;
     }
-
     if (masa && popupMasaInput) {
       popupMasaInput.value = masa;
     }
   }
+  const fillInputs = (oda, masa) => {
+  // Sepet inputlarını doldur
+  if (oda && odaInputCart) {
+    odaInputCart.value = oda;
+    odaInputCart.readOnly = true;
+  }
+  if (masa && masaInputCart) {
+    masaInputCart.value = masa;
+    masaInputCart.readOnly = true;
+  }
 
-  // URL parametrelerinden alınan oda ve masa bilgilerini inputlara aktar
+  // Görevli çağırma inputları da dolduruluyor
+  if (oda && popupOdaInput) {
+    popupOdaInput.value = oda;
+  }
+
+  if (masa && popupMasaInput) {
+    popupMasaInput.value = masa;
+  }
+}
+
+
+  // URL'den alınan oda ve masa bilgilerini inputlara aktar
   fillInputs(oda, masa);
 
-  // Görevli çağırma butonuna tıklandığında, sepetin ürün ekleme işlevini etkilemeden inputları güncelle
   const gorevliCagirBtn = document.getElementById('gorevliCagirBtn');
-  if (gorevliCagirBtn) {
-    gorevliCagirBtn.addEventListener('click', () => {
-      // Oda ve Masa bilgilerini görevl çağırma inputlarına aktar
-      fillInputs(oda, masa);
-      console.log("Görevli çağırma butonuna tıklandı");
-    });
-  } else {
-    console.error("Görevli Çağır Butonu Bulunamadı");
-  }
+if (gorevliCagirBtn) {
+  gorevliCagirBtn.addEventListener('click', () => {
+    // Görevli çağırma butonuna tıklandığında sadece görevli çağırma inputlarını güncelle
+    fillInputs(oda, masa);
+    console.log("Görevli çağırma butonuna tıklandı");
+  });
+} else {
+  console.error("Görevli Çağır Butonu Bulunamadı");
+}
+
 });
+
+
+
+
 
 
 
