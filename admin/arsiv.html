@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Arşivlenmiş Siparişler</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      background: #f3f3f3;
+      font-family: sans-serif;
+      margin: 0;
+    }
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    input, button {
+      padding: 8px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    th {
+      background: #222;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <h1>📦 Arşivlenmiş Siparişler</h1>
+
+  <div class="controls">
+    <input type="date" id="dateFilter" />
+    <input type="text" id="searchInput" placeholder="🔍 Ürün, masa, durum ara..." />
+    <button onclick="filterTable()">Listele</button>
+    <button onclick="window.print()">🖨️ Yazdır</button>
+    <button onclick="downloadPDF()">📄 PDF</button>
+  </div>
+
+  <table style="width: 100%; margin-top: 20px;">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Masa / Oda</th>
+      <th>Ürünler</th>
+      <th>Toplam</th>
+      <th>Saat</th>
+      <th>Durum</th>
+      <th>Kasiyer</th>
+    </tr>
+  </thead>
+  <tbody id="arsivBody"></tbody>
+</table>
+<h2 style="text-align:center; margin-top:40px;">🧾 Yanıtlanmış Görevli Çağrıları</h2>
+<table style="width: 100%; margin-top: 10px;">
+  <thead>
+    <tr>
+      <th>Zaman</th>
+      <th>Tip</th>
+      <th>Masa / Oda</th>
+    </tr>
+  </thead>
+  <tbody id="arsivCagriBody"></tbody>
+</table>
+
+
+
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyC2kYwYuv7drDw0zViXYN4DqpppbtP_coY",
+      authDomain: "altunga-siparis.firebaseapp.com",
+      projectId: "altunga-siparis",
+      storageBucket: "altunga-siparis.appspot.com",
+      messagingSenderId: "152830720353",
+      appId: "1:152830720353:web:cc3d3646e6a859c0ca2d20",
+      measurementId: "G-JKXK55E39H"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const tbody = document.getElementById("arsivBody");
+
+async function getArsivCagrilar() {
+  const tbody = document.getElementById("arsivCagriBody");
+  tbody.innerHTML = "";
+
+  const snapshot = await db.collection("arsivCagrilar")
+    .orderBy("yanitlandiTarih", "desc").get();
+
+  const gruplar = {};
+
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    const tarihObj = data.yanitlandiTarih?.toDate?.() || new Date();
+    const tarihKey = tarihObj.toLocaleDateString("tr-TR");
+
+    if (!gruplar[tarihKey]) gruplar[tarihKey] = [];
+    gruplar[tarihKey].push({
+      id: doc.id,
+      data,
+      saat: tarihObj.toLocaleTimeString("tr-TR")
+    });
+  });
+
+  for (const tarih in gruplar) {
+    // Accordion başlık satırı
+    const row = document.createElement("tr");
+    row.className = "accordion-row";
+    row.style.background = "#f1f1f1";
+    row.innerHTML = `
+      <td colspan="3" style="cursor:pointer; font-weight:bold;">
+        📅 ${tarih} (${gruplar[tarih].length} çağrı)
+      </td>
+    `;
+    tbody.appendChild(row);
+
+    // Alt satırlar (çağrı detayları)
+    gruplar[tarih].forEach(({ id, data, saat }) => {
+      const tr = document.createElement("tr");
+      tr.className = "cagri-detail";
+      tr.style.display = "none";
+
+      const tip = data.tip === "bilişim" ? "🧑‍💻 Bilişim" : "🧾 Sipariş";
+      const masaOda = `${data.masa || "-"} / ${data.oda || "-"}`;
+
+      tr.innerHTML = `
+        <td>${tarih} ${saat}</td>
+        <td>${tip}</td>
+        <td>${masaOda}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // Accordion toggle
+    row.addEventListener("click", () => {
+      let next = row.nextSibling;
+      while (next && next.classList.contains("cagri-detail")) {
+        next.style.display = next.style.display === "table-row" ? "none" : "table-row";
+        next = next.nextSibling;
+      }
+    });
+  }
+}
+
+
+    async function getSiparisler() {
+  const snapshot = await db.collection("arsiv").orderBy("tarih", "desc").get();
+  const tbody = document.getElementById("arsivBody");
+  tbody.innerHTML = "";
+
+  const gruplar = {};
+
+  snapshot.forEach(doc => {
+    const d = doc.data();
+    if (d.durum !== "Teslim" && d.durum !== "İptal") return;
+
+    const tarihObj = d.tarih?.toDate?.() || new Date();
+    const tarihKey = tarihObj.toLocaleDateString("tr-TR");
+
+    if (!gruplar[tarihKey]) gruplar[tarihKey] = [];
+    gruplar[tarihKey].push({
+      id: doc.id,
+      data: d,
+      saat: tarihObj.toLocaleTimeString("tr-TR")
+    });
+  });
+
+  for (const tarih in gruplar) {
+    // Accordion başlık satırı
+    const row = document.createElement("tr");
+    row.className = "accordion-row";
+    row.style.background = "#f1f1f1";
+    row.innerHTML = `
+      <td colspan="7" style="cursor:pointer; font-weight:bold;">
+        📅 ${tarih} (${gruplar[tarih].length} sipariş)
+      </td>
+    `;
+    tbody.appendChild(row);
+
+    // Siparişleri saklayan alt satırlar
+    gruplar[tarih].forEach(({ id, data, saat }) => {
+      const siparisRow = document.createElement("tr");
+      siparisRow.className = "siparis-detail";
+      siparisRow.style.display = "none";
+
+      const urunler = data.urunler.map(u => `• ${u.ad}`).join("<br>");
+      siparisRow.innerHTML = `
+        <td>${id}</td>
+        <td>${data.masa || ""} ${data.oda || ""}</td>
+        <td>${urunler}</td>
+        <td>₺${data.toplam}</td>
+        <td>${saat}</td>
+        <td>${data.durum}</td>
+        <td>${data.kasiyer || "-"}</td>
+      `;
+      tbody.appendChild(siparisRow);
+    });
+
+    // Accordion toggle
+    row.addEventListener("click", () => {
+      const siblings = row.nextSibling;
+      let next = siblings;
+      while (next && next.classList.contains("siparis-detail")) {
+        next.style.display = next.style.display === "table-row" ? "none" : "table-row";
+        next = next.nextSibling;
+      }
+    });
+  }
+}
+
+
+  function filterTable() {
+  const keyword = document.getElementById("searchInput").value.toLowerCase();
+  const dateValue = document.getElementById("dateFilter").value; // yyyy-mm-dd
+
+  const rows = document.querySelectorAll("#arsivBody tr");
+  rows.forEach(row => {
+    const text = row.innerText.toLowerCase();
+
+    // Tarih hücresi: Hücre no 4 (0'dan başlıyor)
+    const tarihText = row.cells[4].innerText.split(" ")[0]; // örn: "9.07.2025"
+    let rowDate = "";
+
+    try {
+      const [gun, ay, yil] = tarihText.split(".");
+      if (gun && ay && yil) {
+        rowDate = `${yil}-${ay.padStart(2, "0")}-${gun.padStart(2, "0")}`;
+      }
+    } catch (e) {
+      rowDate = ""; // parçalayamazsa boş kalsın
+    }
+
+    const show =
+      text.includes(keyword) &&
+      (!dateValue || rowDate === dateValue);
+
+    row.style.display = show ? "" : "none";
+  });
+}
+
+
+
+    async function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF();
+      const element = document.querySelector("table");
+
+      await html2canvas(element).then(canvas => {
+        const imgData = canvas.toDataURL("image/png");
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData, "PNG", 0, 10, pdfWidth, pdfHeight);
+        pdf.save("arsiv-siparisler.pdf");
+      });
+    }
+
+    getSiparisler();
+	getArsivCagrilar();
+
+  </script>
+</body>
+</html>
