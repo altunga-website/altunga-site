@@ -1552,55 +1552,57 @@ function showAlert(msg) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  // Sepet ve görevli çağırma inputlarını kontrol et
   const urlParams = new URLSearchParams(window.location.search);
   const oda = urlParams.get('oda');
   const masa = urlParams.get('masa');
   
   const odaInput = document.getElementById("odaInputCart");
   const masaInput = document.getElementById("masaInputCart");
+  const popupOdaInput = document.getElementById("popupOda");
+  const popupMasaInput = document.getElementById("popupMasa");
 
-  // Oda inputunu URL'deki "oda" parametresine göre doldur
-  if (oda && odaInput) {
-    if (oda === "vip3") {
-      odaInput.value = "3. Kat - VIP Playstation";
-    } else if (oda === "ps5") {
-      odaInput.value = "PS5 Odası";
-    } else {
-      odaInput.value = oda;
+  // Sepet ve Görevli Çağırma inputlarını doldur
+  const fillInputs = (oda, masa) => {
+    if (oda && odaInput) {
+      if (oda === "vip3") {
+        odaInput.value = "3. Kat - VIP Playstation";
+      } else if (oda === "ps5") {
+        odaInput.value = "PS5 Odası";
+      } else {
+        odaInput.value = oda;
+      }
+      odaInput.readOnly = true;
     }
-    odaInput.readOnly = true;  // Oda inputu sadece okunabilir yap
+    if (masa && masaInput) {
+      masaInput.value = `Masa ${masa}`;
+      masaInput.readOnly = true;
+    }
 
-    if (masaInput) {
-      masaInput.style.display = "none"; // Masa inputunu gizle
+    // Görevli çağırma ekranı inputları da güncelleniyor
+    if (oda && popupOdaInput) {
+      popupOdaInput.value = oda;
+    }
+    if (masa && popupMasaInput) {
+      popupMasaInput.value = masa;
     }
   }
 
-  // Masa inputunu URL'deki "masa" parametresine göre doldur
-  if (masa && masaInput) {
-    masaInput.value = `Masa ${masa}`;
-    masaInput.readOnly = true;  // Masa inputu sadece okunabilir yap
+  // URL'den alınan oda ve masa bilgilerini inputlara aktar
+  fillInputs(oda, masa);
 
-    if (odaInput) {
-      odaInput.style.display = "none"; // Oda inputunu gizle
-    }
-  }
-
-  // Görevli çağırma butonunun işlevselliği
+  // Görevli çağırma butonuna tıklandığında sepet inputlarını da güncelle
   const gorevliCagirBtn = document.getElementById('gorevliCagirBtn');
   if (gorevliCagirBtn) {
     gorevliCagirBtn.addEventListener('click', () => {
-      // Görevli çağırma işlemleri: URL'den alınan masa ve oda bilgilerini modalda göster
-      if (masa && oda) {
-        document.getElementById("popupMasa").value = masa;
-        document.getElementById("popupOda").value = oda;
-      }
+      // Oda ve Masa bilgilerini görevl çağırma inputlarına aktar
+      fillInputs(oda, masa);
       console.log("Görevli çağırma butonuna tıklandı");
     });
   } else {
     console.error("Görevli Çağır Butonu Bulunamadı");
   }
 });
+
 
 
 
