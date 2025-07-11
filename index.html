@@ -1571,23 +1571,6 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function setMasaOda() {
-  const oda = new URLSearchParams(window.location.search).get('oda');
-  const masaInput = document.getElementById('masaInputCart');
-  const odaInput = document.getElementById('odaInputCart');
-
-  if (oda) {
-    // Oda numarasını al ve inputları güncelle
-    masaInput.value = oda;
-    odaInput.value = oda;
-  }
-}
-
-document.getElementById("callBtn").addEventListener("click", function() {
-  setMasaOda();
-});
-
-
-function setMasaOda() {
   // URL'deki 'masa' ve 'oda' parametrelerini al
   const masa = new URLSearchParams(window.location.search).get('masa');
   const oda = new URLSearchParams(window.location.search).get('oda');
@@ -1607,7 +1590,7 @@ function setMasaOda() {
 
 // Sayfa yüklendiğinde setMasaOda fonksiyonunu çalıştır
 document.addEventListener("DOMContentLoaded", function() {
-  setMasaOda();
+  setMasaOda();  // Sayfa yüklendiğinde otomatik doldurma işlemi
 });
 
 // Görevli çağır butonuna tıklanması durumunda inputları güncelle
@@ -1615,6 +1598,7 @@ document.getElementById("callBtn").addEventListener("click", function(event) {
   event.preventDefault();  // Sayfanın yeniden yüklenmesini engelle
   setMasaOda();           // Sadece masa ve oda inputlarını güncelle
 });
+
 
 
 
