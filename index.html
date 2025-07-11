@@ -1552,6 +1552,7 @@ function showAlert(msg) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  // URL parametrelerini al
   const urlParams = new URLSearchParams(window.location.search);
   const oda = urlParams.get('oda');
   const masa = urlParams.get('masa');
@@ -1561,7 +1562,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const popupOdaInput = document.getElementById("popupOda");
   const popupMasaInput = document.getElementById("popupMasa");
 
-  // Sepet ve Görevli Çağırma inputlarını doldur
+  // Oda ve Masa parametrelerini inputlara yerleştir
   const fillInputs = (oda, masa) => {
     if (oda && odaInput) {
       if (oda === "vip3") {
@@ -1578,7 +1579,7 @@ window.addEventListener('DOMContentLoaded', () => {
       masaInput.readOnly = true;
     }
 
-    // Görevli çağırma ekranı inputları da güncelleniyor
+    // Görevli çağırma inputları da güncelleniyor
     if (oda && popupOdaInput) {
       popupOdaInput.value = oda;
     }
@@ -1587,10 +1588,10 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // URL'den alınan oda ve masa bilgilerini inputlara aktar
+  // URL parametrelerinden alınan oda ve masa bilgilerini inputlara aktar
   fillInputs(oda, masa);
 
-  // Görevli çağırma butonuna tıklandığında sepet inputlarını da güncelle
+  // Görevli çağırma butonuna tıklandığında, sepetin ürün ekleme işlevini etkilemeden inputları güncelle
   const gorevliCagirBtn = document.getElementById('gorevliCagirBtn');
   if (gorevliCagirBtn) {
     gorevliCagirBtn.addEventListener('click', () => {
@@ -1602,6 +1603,7 @@ window.addEventListener('DOMContentLoaded', () => {
     console.error("Görevli Çağır Butonu Bulunamadı");
   }
 });
+
 
 
 
