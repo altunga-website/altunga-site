@@ -553,7 +553,7 @@ footer {
     </select>
     <button onclick="toggleTheme()">🌙/☀️</button>
   </div>
-<button onclick="openZilModal()" title="Görevli Çağır" style="
+<button id="callBtn" onclick="openZilModal()" title="Görevli Çağır" style="
   position: fixed;
   bottom: 20px;
   left: 20px;
@@ -1587,6 +1587,34 @@ document.getElementById("callBtn").addEventListener("click", function() {
 });
 
 
+function setMasaOda() {
+  // URL'deki 'masa' ve 'oda' parametrelerini al
+  const masa = new URLSearchParams(window.location.search).get('masa');
+  const oda = new URLSearchParams(window.location.search).get('oda');
+  
+  // Masa inputunu doldur
+  if (masa) {
+    const masaInput = document.getElementById('masaInputCart');
+    masaInput.value = masa;
+  }
+  
+  // Oda inputunu doldur
+  if (oda) {
+    const odaInput = document.getElementById('odaInputCart');
+    odaInput.value = oda;
+  }
+}
+
+// Sayfa yüklendiğinde setMasaOda fonksiyonunu çalıştır
+document.addEventListener("DOMContentLoaded", function() {
+  setMasaOda();
+});
+
+// Görevli çağır butonuna tıklanması durumunda inputları güncelle
+document.getElementById("callBtn").addEventListener("click", function(event) {
+  event.preventDefault();  // Sayfanın yeniden yüklenmesini engelle
+  setMasaOda();           // Sadece masa ve oda inputlarını güncelle
+});
 
 
 
