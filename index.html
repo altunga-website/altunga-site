@@ -1570,6 +1570,21 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+function setMasaOda() {
+  const oda = new URLSearchParams(window.location.search).get('oda');
+  const masaInput = document.getElementById('masaInputCart');
+  const odaInput = document.getElementById('odaInputCart');
+
+  if (oda) {
+    // Oda numarasını al ve inputları güncelle
+    masaInput.value = oda;
+    odaInput.value = oda;
+  }
+}
+
+document.getElementById("callBtn").addEventListener("click", function() {
+  setMasaOda();
+});
 
 
 
@@ -1606,6 +1621,8 @@ window.addEventListener('DOMContentLoaded', () => {
     </div>
   </div>
 </div>
+
+
 
 
 
