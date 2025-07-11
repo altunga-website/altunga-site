@@ -1674,6 +1674,27 @@ window.onload = function() {
     document.getElementById('masaInputCart').value = masa;
   }
 };
+// URL parametrelerini almak için fonksiyon
+function getURLParameter(name) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(name);
+}
+
+// Sayfa yüklendiğinde inputları doldur
+window.onload = function() {
+  const oda = getURLParameter('oda');  // /?oda=Vip7
+  const masa = getURLParameter('masa');  // /?masa=Hüma5
+
+  // Oda ve masa parametreleri varsa sepet inputlarına atama yap
+  if (oda) {
+    document.getElementById('odaInputCart').value = oda;  // Sepet inputu
+    document.getElementById('popupOda').value = oda;     // Görevli çağırma popup inputu
+  }
+  if (masa) {
+    document.getElementById('masaInputCart').value = masa;  // Sepet inputu
+    document.getElementById('popupMasa').value = masa;      // Görevli çağırma popup inputu
+  }
+};
 
 
 </script>
