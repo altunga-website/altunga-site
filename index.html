@@ -1655,6 +1655,25 @@ document.querySelectorAll('.your-button-class').forEach(button => {
     showInputsOnSelection();
   });
 });
+// URL parametrelerini almak için fonksiyon
+function getURLParameter(name) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(name);
+}
+
+// Sayfa yüklendiğinde inputları doldur
+window.onload = function() {
+  const oda = getURLParameter('oda');  // /?oda=vip7 gibi
+  const masa = getURLParameter('masa');  // /?masa=Hüma5 gibi
+
+  // Oda ve masa parametreleri varsa inputlara atama yap
+  if (oda) {
+    document.getElementById('odaInputCart').value = oda;
+  }
+  if (masa) {
+    document.getElementById('masaInputCart').value = masa;
+  }
+};
 
 
 </script>
