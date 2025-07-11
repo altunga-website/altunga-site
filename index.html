@@ -1578,13 +1578,13 @@ function setMasaOda() {
   // Masa inputunu doldur
   if (masa) {
     const masaInput = document.getElementById('masaInputCart');
-    masaInput.value = masa;
+    masaInput.value = masa;  // `masa` parametresini alıp inputa ekliyoruz
   }
   
   // Oda inputunu doldur
   if (oda) {
     const odaInput = document.getElementById('odaInputCart');
-    odaInput.value = oda;
+    odaInput.value = oda;  // `oda` parametresini alıp inputa ekliyoruz
   }
 }
 
@@ -1598,6 +1598,7 @@ document.getElementById("callBtn").addEventListener("click", function(event) {
   event.preventDefault();  // Sayfanın yeniden yüklenmesini engelle
   setMasaOda();           // Sadece masa ve oda inputlarını güncelle
 });
+
 
 
 
