@@ -553,7 +553,7 @@ footer {
     </select>
     <button onclick="toggleTheme()">🌙/☀️</button>
   </div>
-<button id="gorevliCagirBtn" onclick="openZilModal()" title="Görevli Çağır" style="
+<button onclick="openZilModal()" title="Görevli Çağır" style="
   position: fixed;
   bottom: 20px;
   left: 20px;
@@ -1151,7 +1151,6 @@ const menuData = {
       items: [
         { name: { tr: "CL Frigola Bar PRM", en: "CL Frigola Bar PRM" }, price: 40, image: "urunimg/frigola.png" },
 		 { name: { tr: "CL Classics Antep Fıstık", en: "Classics Antep Pistachio" }, price: 30, image: "urunimg/clfistik.png" },
-		 { name: { tr: "CL Classics Kakao", en: "CL Classics Cacao" }, price: 30, image: "urunimg/clkakao.png" },
 		
 		
 		
@@ -1384,25 +1383,6 @@ function toTitleCase(str) {
   document.getElementById('cartOrderBtn').style.display = 'block';
 
 }
-function guncelleSepet() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const oda = urlParams.get('oda');
-  const masa = urlParams.get('masa');
-  
-  const odaInput = document.getElementById("odaInputCart");
-  const masaInput = document.getElementById("masaInputCart");
-
-  // Oda varsa, sepet inputunu doldur
-  if (oda && odaInput) {
-    odaInput.value = oda;
-  }
-
-  // Masa varsa, sepet inputunu doldur
-  if (masa && masaInput) {
-    masaInput.value = masa;
-  }
-}
-
 function adetArttir(index) {
   sepet[index].adet++;
   guncelleSepet();
@@ -1551,63 +1531,44 @@ function showAlert(msg) {
   setTimeout(() => alertBox.style.display = 'none', 3000);  // 3 saniye sonra uyarıyı gizle
 }
 
+// Sayfa yüklendiğinde, URL parametrelerinden oda ve masa bilgilerini al
 window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById("cartInputsWrapper").style.display = "none";
+  guncelleSepet();
+  
   const urlParams = new URLSearchParams(window.location.search);
   const oda = urlParams.get('oda');
   const masa = urlParams.get('masa');
-  
+
   const odaInput = document.getElementById("odaInputCart");
   const masaInput = document.getElementById("masaInputCart");
-  const popupOdaInput = document.getElementById("popupOda");
-  const popupMasaInput = document.getElementById("popupMasa");
 
-  // Sepet ve Görevli Çağırma inputlarını doldur
-  const fillInputs = (oda, masa) => {
-    if (oda && odaInput) {
-      if (oda === "vip3") {
-        odaInput.value = "3. Kat - VIP Playstation";
-      } else if (oda === "ps5") {
-        odaInput.value = "PS5 Odası";
-      } else {
-        odaInput.value = oda;
-      }
-      odaInput.readOnly = true;
+  // Oda varsa:
+  if (oda && odaInput) {
+    if (oda === "vip3") {
+      odaInput.value = "3. Kat - VIP Playstation";
+    } else if (oda === "ps5") {
+      odaInput.value = "PS5 Odası";
+    } else {
+      odaInput.value = oda;
     }
-    if (masa && masaInput) {
-      masaInput.value = `Masa ${masa}`;
-      masaInput.readOnly = true;
-    }
+    odaInput.readOnly = true;
 
-    // Görevli çağırma ekranı inputları da güncelleniyor
-    if (oda && popupOdaInput) {
-      popupOdaInput.value = oda;
-    }
-    if (masa && popupMasaInput) {
-      popupMasaInput.value = masa;
+    if (masaInput) {
+      masaInput.style.display = "none";
     }
   }
-  
 
-  // URL'den alınan oda ve masa bilgilerini inputlara aktar
-  fillInputs(oda, masa);
+  // Masa varsa:
+  if (masa && masaInput) {
+    masaInput.value = `Masa ${masa}`;
+    masaInput.readOnly = true;
 
-  // Görevli çağırma butonuna tıklandığında sepet inputlarını da güncelle
-  const gorevliCagirBtn = document.getElementById('gorevliCagirBtn');
-  if (gorevliCagirBtn) {
-    gorevliCagirBtn.addEventListener('click', () => {
-      // Oda ve Masa bilgilerini görevl çağırma inputlarına aktar
-      fillInputs(oda, masa);
-      console.log("Görevli çağırma butonuna tıklandı");
-    });
-  } else {
-    console.error("Görevli Çağır Butonu Bulunamadı");
+    if (odaInput) {
+      odaInput.style.display = "none";
+    }
   }
 });
-
-
-
-
-
 
 
 
