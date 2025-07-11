@@ -1598,7 +1598,33 @@ document.getElementById("callBtn").addEventListener("click", function(event) {
   event.preventDefault();  // Sayfanın yeniden yüklenmesini engelle
   setMasaOda();           // Sadece masa ve oda inputlarını güncelle
 });
+// URL parametrelerinden oda ve masa bilgisini al
+function checkURLParams() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const oda = urlParams.get('oda');
+  const masa = urlParams.get('masa');
 
+  if (oda) {
+    document.getElementById('odaInput').value = oda;
+  }
+  if (masa) {
+    document.getElementById('masaInput').value = masa;
+  }
+}
+document.getElementById('callBtn').addEventListener('click', function() {
+  const oda = document.getElementById('odaInput').value;
+  const masa = document.getElementById('masaInput').value;
+  
+  if (!oda || !masa) {
+    alert("Lütfen oda ve masa numarası girin.");
+    return; // Eğer oda veya masa numarası eksikse işlem yapma
+  }
+
+  // Görevli çağırma işlemi
+  alert(`Görevli çağrıldı! Oda: ${oda}, Masa: ${masa}`);
+  
+  // Eğer başka bir işlem yapacaksan, burada yapabilirsin (örneğin, Firebase ile göndermek)
+});
 
 
 
