@@ -580,34 +580,19 @@ footer {
    <div class="menu-item" onclick="showMenu('atistirmalik')">
     <img src="cips.png"><h2 id="menuAtistirmalik">Atıştırmalık</h2>
   </div>
-  
-  <div class="menu-item" onclick="showMenu('yiyecek')">
-    <img src="patso.png"><h2 id="menuYiyecek">Yiyecek</h2>
+  <div class="menu-item" onclick="showMenu('sekerleme')">
+    <img src="jelibon.png"><h2 id="menuSekerleme">Şekerleme</h2>
+  </div>
+  <div class="menu-item" onclick="showMenu('fastfood')">
+    <img src="patso.png"><h2 id="menuFastfood">Fast Food</h2>
   </div>
   <div class="menu-item" onclick="showMenu('dondurma')">
     <img src="dondurma.png"><h2 id="menuDondurma">Dondurma</h2>
   </div>
-  <div class="menu-item" onclick="showMenu('hamburger')">
-    <img src="hamburger.png"><h2 id="menuHamburger">Hamburger</h2>
+   <div class="menu-item" onclick="showMenu('doner')">
+    <img src="doner.png"><h2 id="menuDoner">Döner</h2>
   </div>
-  <div class="menu-item" onclick="showMenu('hamburger')">
-    <img src="hamburger.png"><h2 id="menuHamburger">Hamburger</h2>
-  </div>
-  <div class="menu-item" onclick="showMenu('hamburger')">
-    <img src="hamburger.png"><h2 id="menuHamburger">Hamburger</h2>
-  </div>
-  <div class="menu-item" onclick="showMenu('hamburger')">
-    <img src="hamburger.png"><h2 id="menuHamburger">Hamburger</h2>
-  </div>
-  <div class="menu-item" onclick="showMenu('hamburger')">
-    <img src="hamburger.png"><h2 id="menuHamburger">Hamburger</h2>
-  </div>
-  <div class="menu-item" onclick="showMenu('hamburger')">
-    <img src="hamburger.png"><h2 id="menuHamburger">Hamburger</h2>
-  </div>
-  <div class="menu-item" onclick="showMenu('hamburger')">
-    <img src="hamburger.png"><h2 id="menuHamburger">Hamburger</h2>
-  </div>
+  
 </div>
 
 <div class="custom-alert" id="customAlert"></div>
@@ -660,7 +645,9 @@ const translations = {
     icecekler: "İçecekler",
 	atistirmalik:"Atıştırmalık",
     tost: "Tost",
-    yiyecek: "Yiyecek",
+	doner:"Döner",
+	sekerleme: "Şekerleme",
+    fastfood: "Fast Food",
     dondurma: "Dondurma",
     cart: "Sepet",
     order: "Sipariş Ver",
@@ -683,7 +670,9 @@ const translations = {
     icecekler: "Drinks",
 	atistirmalik:"Snack",
     tost: "Toast",
-    yiyecek: "Food",
+	doner:"Doner",
+	sekerleme: "Candy",
+    fastfood: "Fast Food",
     dondurma: "Ice Cream",
     cart: "Cart",
     order: "Order",
@@ -1110,8 +1099,19 @@ const menuData = {
       {
         title: { tr: "Eti", en: "Eti" },
         items: [
-          { name: { tr: "Dankek Mousse", en: "Dankek Mousse" }, price: 30,image: "urunimg/dankekmousse.png" },
-          
+		{ name: { tr: "Popkek Muzlu", en: "Popkek Banana" }, price: 15,image: "urunimg/popkekmuz.png" },
+		{ name: { tr: "Popkek Çikolatalı", en: "Popkek Chocolate" }, price: 15,image: "urunimg/popkekciko.png" },
+		{ name: { tr: "Popkek Limonlu", en: "Popkek Lemon" }, price: 15,image: "urunimg/popkeklimonlu.png" },
+		{ name: { tr: "Popkek Vişneli", en: "Popkek Cherry" }, price: 15,image: "urunimg/popkekvisneli.png" },
+		{ name: { tr: "Popkek Portakal", en: "Popkek Orange" }, price: 15,image: "urunimg/popkekportakal.png" },
+		{ name: { tr: "Popkek Bitter", en: "Popkek Bitter" }, price: 15,image: "urunimg/popkekbitter.png" },
+		 { name: { tr: "Popkek Hindistan Cevizli", en: "Popkek Coconut" }, price: 15,image: "urunimg/popkekcoconut.png" },
+          { name: { tr: "Browni Gold Çikolatalı", en: "Browni Gold Chocolate" }, price: 15,image: "urunimg/brownigold.png" },
+          { name: { tr: "Browni Gold Vişneli", en: "Browni Gold Cherry" }, price: 15,image: "urunimg/brownigoldvisneli.png" },
+		  { name: { tr: "Browni İntense Gold Karamel", en: "Browni Intense Gold Caramel" }, price: 25,image: "urunimg/browniintense.png" },
+		  { name: { tr: "Browni İntense Gold Çikolatalı", en: "Browni Intense Gold Chocolate" }, price: 25,image: "urunimg/browniintenseciko.png" },
+		  { name: { tr: "Sütburger Sütlü & Çilekli", en: "Sütburger Milk & Cherry" }, price: 20,image: "urunimg/sutburgercilekli.png" },
+		  { name: { tr: "Sütburger Sütlü & Ballı", en: "Sütburger Milk & Honey" }, price: 20,image: "urunimg/sutburgerballi.png" },
 		 
         ]
       },
@@ -1127,33 +1127,97 @@ const menuData = {
 		
         ]
       },
-	  {
-      title: { tr: "Alpella", en: "Alpella" },
-      items: [
-        { name: { tr: "Harby Karamelli", en: "Harby Caramel" }, price: 10, image: "urunimg/harbykaramel.png" },
-		{ name: { tr: "Harby Sütlü", en: "Harby Milk" }, price: 10, image: "urunimg/harbysutlu.png" },
-		{ name: { tr: "3GEN Beyaz", en: "3GEN White" }, price: 20, image: "urunimg/3genbeyaz.png" },
+	
+    ]
+  },
+  {
+    title: { tr: "Kraker", en: "Cracker" },  // ← Ana başlık
+    subgroups: [                               // ← Alt başlıkları açar
+      
+      {
+        title: { tr: "Ülker", en: "Ülker" },
+        items: [
+         { name: { tr: "Susamlı Çubuk Kraker", en: "Sesame Crackers" }, price: 10,image: "urunimg/susamlikraker.png" },
+		 { name: { tr: "Krispi Acılı", en: "Krispi Hot" }, price: 15,image: "urunimg/krispiacili.png" },
+		  { name: { tr: "Krispi Baharatlı", en: "Krispi Spicy" }, price: 15,image: "urunimg/krispibaharatli.png" },
+		  { name: { tr: "Krispi Peynirli", en: "Krispi Cheese" }, price: 15,image: "urunimg/krispipeynirli.png" },
+		 
 		
-		
-      ]
-    },
+        ]
+      },
+	
     ]
   },
 ]
   },
-  
- yiyecek: {
-  title: { tr: "Yiyecek", en: "Food" },
+  sekerleme: {
+  title: { tr: "Ülker", en: "Ülker" },
   groups: [
     {
-      title: { tr: "Patso", en: "Food" },
+      title: { tr: "Yupo Jelibon", en: "Yupo Jelibon" },
+      items: [
+        { name: { tr: "Patso Yeni", en: "Patso New" }, price: 70, image: "urunimg/patso.png" },
+                
+      ]
+    },
+	{
+      title: { tr: "Tost", en: "Toast" },
+      items: [
+        { name: { tr: "Kaşarlı Tost", en: "Cheese Toast" }, price: 75, image: "urunimg/kasarlitost.png" },
+        { name: { tr: "Sucuklu Tost", en: "Sausage Toast" }, price: 80 , image: "urunimg/sucuklutost.png" },
+        { name: { tr: "Karışık Tost", en: "Mixed Toast" }, price: 90, image: "urunimg/karisiktost.png" },
+        
+      ]
+    },
+  ]
+},
+ fastfood: {
+  title: { tr: "Fast Food", en: "Fast Food" },
+  groups: [
+    {
+      title: { tr: "Patso", en: "Patso" },
       items: [
         { name: { tr: "Patso Yeni", en: "Patso New" }, price: 70, image: "urunimg/patso.png" },
         { name: { tr: "Sosisli Patso", en: "Hot Dog Patso" }, price: 90 , image: "urunimg/patsososisli.png" },
         { name: { tr: "Patso Menü (Patso + Ş.Kola)", en: "Patso Menu(Patso + B. Cola" }, price: 80, image: "urunimg/patsomenu.png" },
         
       ]
+    },
+	{
+      title: { tr: "Tost", en: "Toast" },
+      items: [
+        { name: { tr: "Kaşarlı Tost", en: "Cheese Toast" }, price: 75, image: "urunimg/kasarlitost.png" },
+        { name: { tr: "Sucuklu Tost", en: "Sausage Toast" }, price: 80 , image: "urunimg/sucuklutost.png" },
+        { name: { tr: "Karışık Tost", en: "Mixed Toast" }, price: 90, image: "urunimg/karisiktost.png" },
+        
+      ]
     }
+  ]
+},
+
+doner: {
+  title: { tr: "Döner", en: "Fast Doner" },
+  groups: [
+    {
+      title: { tr: "Tavuk Döner", en: "Chicken Doner" },
+      items: [
+        { name: { tr: "Tavuk Döner 70gr.", en: "Chicken Doner 70gr." }, price: 70, image: "urunimg/tavukdoner.png" },
+		{ name: { tr: "Tavuk Döner 90gr.", en: "Chicken Doner 90gr." }, price: 90, image: "urunimg/tavukdoner.png" },
+		{ name: { tr: "Tavuk Döner 120gr.", en: "Chicken Doner 120gr." }, price: 120, image: "urunimg/tavukdoner.png" },
+        
+        
+      ]
+    },
+	{
+      title: { tr: "Et Döner", en: "Meat Doner" },
+      items: [
+        { name: { tr: "Et Döner 70gr.", en: "Meat Doner 70gr." }, price: 90, image: "urunimg/etdoner.png" },
+		{ name: { tr: "Et Döner 90gr.", en: "Meat Doner 90gr." }, price: 110, image: "urunimg/etdoner.png" },
+		{ name: { tr: "Et Döner 120gr.", en: "Meat Doner 120gr." }, price: 150, image: "urunimg/etdoner.png" },
+        
+        
+      ]
+    },
   ]
 },
 
@@ -1236,11 +1300,13 @@ const menuData = {
 			
       ]
     },
+	
     ]
   },
   
 ]
   }
+
 };
 
 
@@ -1263,8 +1329,10 @@ function setLanguage(lang) {
   document.getElementById("headerTitle").innerText = t.header;
   document.getElementById("menuIcecekler").innerText = t.icecekler;
   document.getElementById("menuAtistirmalik").innerText = t.atistirmalik;
-  document.getElementById("menuYiyecek").innerText = t.yiyecek;
+  document.getElementById("menuSekerleme").innerText = t.sekerleme;
+  document.getElementById("menuFastfood").innerText = t.fastfood;
   document.getElementById("menuDondurma").innerText = t.dondurma;
+  document.getElementById("menuDoner").innerText = t.doner;
   document.getElementById("cartTitle").innerText = t.cart;
   document.getElementById("cartOrderBtn").innerText = t.order;
   document.getElementById("callBtn").innerText = lang === 'tr' ? '🤵️ ' : '🤵️ ';
