@@ -671,7 +671,11 @@ const translations = {
     emptyCart: "Sepet boş!",
     table: "Masa No",
     room: "Oda No",
-    clearCart: "Sepeti Temizle"
+    clearCart: "Sepeti Temizle",
+	
+	
+
+	
 	
   },
   en: {
@@ -690,7 +694,8 @@ const translations = {
     emptyCart: "Cart is empty!",
     table: "Table No",
     room: "Room No",
-    clearCart: "Clear Cart"
+    clearCart: "Clear Cart",
+	
   }
 };
 
@@ -1242,27 +1247,49 @@ const menuData = {
 function setLanguage(lang) {
   currentLang = lang;
   const t = translations[lang];
+
+  // Buton metinlerini güncelle
+  const callStaffBtn = document.getElementById("callStaffBtn");
+  const cancelBtn = document.getElementById("cancelBtn");
+
+ if (callStaffBtn && cancelBtn) {
+  callStaffBtn.innerText = lang === 'tr' ? 'Görevliyi Çağır' : 'Call Staff';
+  cancelBtn.innerText = lang === 'tr' ? 'İptal' : 'Cancel';
+} else {
+  console.error("Buttons not found!");
+}
+
+  // Diğer dil metni güncellemeleri (varsa) devam eder...
   document.getElementById("headerTitle").innerText = t.header;
   document.getElementById("menuIcecekler").innerText = t.icecekler;
   document.getElementById("menuAtistirmalik").innerText = t.atistirmalik;
   document.getElementById("menuYiyecek").innerText = t.yiyecek;
   document.getElementById("menuDondurma").innerText = t.dondurma;
   document.getElementById("cartTitle").innerText = t.cart;
-  document.getElementById("orderBtn").innerText = t.order;
   document.getElementById("cartOrderBtn").innerText = t.order;
-  document.getElementById("callBtn").innerText = t.call;
-  document.getElementById('masaInput').placeholder = t.table;
-document.getElementById('odaInput').placeholder = t.room;
-document.querySelector(".toggle-cart").innerHTML = `🛒 ${t.cart}<span id="cartBadge" class="cart-badge">0</span>`;
+  document.getElementById("callBtn").innerText = lang === 'tr' ? '🤵️ ' : '🤵️ ';
+  document.querySelector(".toggle-cart").innerHTML = `🛒 ${t.cart}<span id="cartBadge" class="cart-badge">0</span>`;
+  document.querySelector(".clear-cart").innerText = t.clearCart;
+  
+  document.getElementById('popupMasa').placeholder = t.table;
+  document.getElementById('popupOda').placeholder = t.room;
+document.getElementById('popupMasa').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
+  document.getElementById('popupOda').placeholder = lang === 'tr' ? 'Oda No - ör: Vip Ps 2' : 'Room Number - e.g.: Vip Ps 2';
+  
+ document.getElementById('masaInputCart').placeholder = t.table;
+  document.getElementById('odaInputCart').placeholder = t.room;
+ document.getElementById('masaInputCart').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
+  document.getElementById('odaInputCart').placeholder = lang === 'tr' ? 'Oda No - ör: Vip Ps 2' : 'Room Number - e.g.: Vip Ps 2';
+  
+  const badge = document.getElementById('cartBadge');
+  badge.textContent = sepet.length;
+  badge.style.display = sepet.length > 0 ? 'inline-block' : 'none';
+ 
 
-document.querySelector(".clear-cart").innerText = t.clearCart;
-	const badge = document.getElementById('cartBadge');
-badge.textContent = sepet.length;
-badge.style.display = sepet.length > 0 ? 'inline-block' : 'none';
   guncelleSepet();
-  
-  
 }
+
+
 
 function toggleTheme() {
   document.body.classList.toggle('dark-theme');
@@ -1535,14 +1562,27 @@ function openZilModal() {
   odaInput.value = '';   // Oda bilgilerini temizle
   secilenTip = ""; // Seçilen görevi sıfırla
 
-  // Görevli seçme ekranı
-  taskTitle.innerHTML = "Görevli çağırmak için bir seçenek seçin.";  // Başlangıç mesajı
+  // Dil değişimine göre başlık metnini güncelle
+  taskTitle.innerHTML = currentLang === 'tr'
+    ? "🔔 Görevliyi hangi amaçla çağırmak istiyorsunuz?" // Türkçe
+    : "🔔 What type of staff do you want to call?"; // İngilizce
+  
+  // Bilişim, Sipariş, ve İptal butonlarının metinlerini dil değişimine göre güncelle
+  const bilişimBtn = document.querySelector('button[onclick="secimiYap(\'bilişim\')"]');
+  bilişimBtn.innerText = currentLang === 'tr' ? 'Bilişim' : 'IT Support';
+  
+  const siparişBtn = document.querySelector('button[onclick="secimiYap(\'sipariş\')"]');
+  siparişBtn.innerText = currentLang === 'tr' ? 'Sipariş' : 'Order';
+
+  const iptalBtn = document.querySelector('button[onclick="closeZilModal()"]');
+  iptalBtn.innerText = currentLang === 'tr' ? 'İptal' : 'Cancel';
   
   document.getElementById("zilSecimButonlari").style.display = 'block'; // Seçim butonlarını göster
   document.getElementById("zilForm").style.display = 'none';  // Formu gizle
   
   modal.style.display = 'flex';  // Modal'ı göster
 }
+
 
 // Modalı kapat
 function closeZilModal() {
@@ -1556,8 +1596,12 @@ function secimiYap(tip) {
   document.getElementById("zilSecimButonlari").style.display = 'none'; // Seçim butonlarını gizle
   document.getElementById("zilSoru").innerText =
     tip === "bilişim"
-      ? "🧑‍💻 Bilişim için görevli çağrılacak. Masa/Oda giriniz:"
-      : "🧾 Sipariş için görevli çağrılacak. Masa/Oda giriniz:";
+      ? currentLang === 'tr'
+        ? "🧑‍💻 Bilişim için görevli çağrılacak. Masa/Oda giriniz:" 
+        : "🧑‍💻 IT support staff will be called. Enter Table/Room number:"
+      : currentLang === 'tr'
+        ? "🧾 Sipariş için görevli çağrılacak. Masa/Oda giriniz:" 
+        : "🧾 Order staff will be called. Enter Table/Room number:";  // Dil seçimlerine göre güncelleme
   document.getElementById("zilForm").style.display = 'block';  // Formu göster
 }
 
@@ -1569,14 +1613,18 @@ function callStaff() {
   const oda = document.getElementById("popupOda").value.trim();
 
   if (!masa && !oda) {
-    showAlert("⚠️ Masa veya Oda numarası girmelisiniz!"); // Uyarı mesajı
+    showAlert(currentLang === 'tr' ? "⚠️ Masa veya Oda numarası girmelisiniz!" : "⚠️ You must enter Table or Room number!"); // Uyarı mesajı
     return;
   }
 
   const msg =
     secilenTip === "bilişim"
-      ? "🧑‍💻 Bilişim desteği çağrıldı."
-      : "🧾 Sipariş görevlisi çağrıldı.";
+      ? currentLang === 'tr' 
+        ? "🧑‍💻 Bilişim desteği çağrıldı." 
+        : "🧑‍💻 IT support was called."
+      : currentLang === 'tr' 
+        ? "🧾 Sipariş görevlisi çağrıldı." 
+        : "🧾 Order staff was called.";
   showAlert(msg);
 
   db.collection("cagrilar")
@@ -1615,9 +1663,9 @@ window.addEventListener('DOMContentLoaded', () => {
   // Oda varsa:
   if (oda && odaInput) {
     if (oda === "vip3") {
-      odaInput.value = "3. Kat - VIP Playstation";
+      odaInput.value = currentLang === 'tr' ? "3. Kat - VIP Playstation" : "3rd Floor - VIP Playstation";
     } else if (oda === "ps5") {
-      odaInput.value = "PS5 Odası";
+      odaInput.value = currentLang === 'tr' ? "PS5 Odası" : "PS5 Room";
     } else {
       odaInput.value = oda;
     }
@@ -1630,7 +1678,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // Masa varsa:
   if (masa && masaInput) {
-    masaInput.value = `Masa ${masa}`;
+    masaInput.value = currentLang === 'tr' ? `Masa ${masa}` : `Table ${masa}`;
     masaInput.readOnly = true;
 
     if (odaInput) {
@@ -1673,10 +1721,10 @@ function checkURLParams() {
   const oda = urlParams.get('oda');
   const masa = urlParams.get('masa');
 
-  if (oda) {
+  if (oda && document.getElementById('odaInput')) {
     document.getElementById('odaInput').value = oda;
   }
-  if (masa) {
+  if (masa && document.getElementById('masaInput')) {
     document.getElementById('masaInput').value = masa;
   }
 }
@@ -1715,6 +1763,18 @@ window.onload = function() {
     document.getElementById('popupMasa').value = masa;      // Görevli çağırma popup inputu
   }
 };
+document.addEventListener("DOMContentLoaded", function() {
+  // Sayfa yüklendikten sonra butonlara erişim
+  const callStaffBtn = document.getElementById("callStaffBtn");
+  const cancelBtn = document.getElementById("cancelBtn");
+
+  if (callStaffBtn && cancelBtn) {
+    callStaffBtn.innerText = currentLang === 'tr' ? 'Görevliyi Çağır' : 'Call Staff';
+    cancelBtn.innerText = currentLang === 'tr' ? 'İptal' : 'Cancel';
+  } else {
+    console.error("Butonlar bulunamadı!");
+  }
+});
 
 
 
@@ -1742,13 +1802,18 @@ window.onload = function() {
     </div>
 
     <div id="zilForm" style="margin-top: 15px; display: none;">
-      <input id="popupMasa" placeholder="Masa No" style="padding: 8px; margin: 4px; width: 120px;" />
-      <input id="popupOda" placeholder="Oda No" style="padding: 8px; margin: 4px; width: 120px;" />
-      <div style="margin-top: 15px;">
-        <button onclick="callStaff()" style="background-color: #d32f2f; color: white; border: none; padding: 10px 24px; border-radius: 6px; margin: 5px;">Görevliyi Çağır</button>
-        <button onclick="closeZilModal()" style="background-color: #ccc; color: black; border: none; padding: 10px 24px; border-radius: 6px; margin: 5px;">İptal</button>
-      </div>
-    </div>
+  <input id="popupMasa" placeholder="Masa No" style="padding: 8px; margin: 4px; width: 120px;" />
+  <input id="popupOda" placeholder="Oda No" style="padding: 8px; margin: 4px; width: 120px;" />
+  <div style="margin-top: 15px;">
+    <button id="callStaffBtn" onclick="callStaff()" style="background-color: #d32f2f; color: white; border: none; padding: 10px 24px; border-radius: 6px; margin: 5px;">
+      Görevliyi Çağır
+    </button>
+    <button id="cancelBtn" onclick="closeZilModal()" style="background-color: #ccc; color: black; border: none; padding: 10px 24px; border-radius: 6px; margin: 5px;">
+      İptal
+    </button>
+  </div>
+</div>
+
   </div>
 </div>
 
