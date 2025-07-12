@@ -1099,8 +1099,39 @@ const menuData = {
     },
     ]
   },
+  {
+    title: { tr: "Kek", en: "Cake" },  // ← Ana başlık
+    subgroups: [                               // ← Alt başlıkları açar
+      {
+        title: { tr: "Eti", en: "Eti" },
+        items: [
+          { name: { tr: "Canga", en: "Canga" }, price: 25,image: "urunimg/canga.png" },
+          
+		 
+        ]
+      },
+      {
+        title: { tr: "Ülker", en: "Ülker" },
+        items: [
+         { name: { tr: "Caramio Karamel", en: "Caramio Caramel" }, price: 25, image: "urunimg/caramiokaramel.png" },
+		
+        ]
+      },
+	  {
+      title: { tr: "Alpella", en: "Alpella" },
+      items: [
+        { name: { tr: "Harby Karamelli", en: "Harby Caramel" }, price: 10, image: "urunimg/harbykaramel.png" },
+		{ name: { tr: "Harby Sütlü", en: "Harby Milk" }, price: 10, image: "urunimg/harbysutlu.png" },
+		{ name: { tr: "3GEN Beyaz", en: "3GEN White" }, price: 20, image: "urunimg/3genbeyaz.png" },
+		
+		
+      ]
+    },
+    ]
+  },
 ]
   },
+  
  yiyecek: {
   title: { tr: "Yiyecek", en: "Food" },
   groups: [
@@ -1135,6 +1166,21 @@ const menuData = {
 		   { name: { tr: "Cornetto Disc Max Çikolatalı", en: "Cornetto Disc Max Chocolate" }, price: 75, image: "urunimg/cornettodiscciko.png" },
 		   { name: { tr: "Cornetto Classico Çikolata", en: "Cornetto Classico Chocolate" }, price: 60, image: "urunimg/cornettoclassico.png" },
 		   { name: { tr: "Cornetto Classico Kaymak", en: "Cornetto Classico Cream" }, price: 60, image: "urunimg/cornettoclassicokaymak.png" },
+		    { name: { tr: "Cornetto Keyif", en: "Cornetto Keyif" }, price: 30, image: "urunimg/keyf.png" },
+        ]
+      },
+	  {
+        title: { tr: "Magnum", en: "Magnum" },
+        items: [
+          { name: { tr: "Utopia Ahududu", en: "Utopia Raspberry" }, price: 80, image: "urunimg/utopia.png" },
+		   { name: { tr: "Utopia Karamel", en: "Utopia Caramel" }, price: 80, image: "urunimg/utopiakaramel.png" },
+		   { name: { tr: "Classic", en: "Classic" }, price: 80, image: "urunimg/magnumclassic.png" },
+		   { name: { tr: "Beyaz", en: "White" }, price: 80, image: "urunimg/magnumbeyaz.png" },
+		   { name: { tr: "Badem", en: "Almond" }, price: 80, image: "urunimg/magnumbadem.png" },
+		   { name: { tr: "Double Çikolata", en: "Double Chocolate" }, price: 80, image: "urunimg/magnumdouble.png" },
+		   { name: { tr: "Double Karadut", en: "Double Black Mulberry" }, price: 80, image: "urunimg/magnumdoublekaradut.png" },
+		   { name: { tr: "Cookie", en: "Cookie" }, price: 80, image: "urunimg/cookie.png" },
+          
         ]
       },
       {
@@ -1151,20 +1197,38 @@ const menuData = {
       items: [
         { name: { tr: "CL Frigola Bar PRM", en: "CL Frigola Bar PRM" }, price: 40, image: "urunimg/frigola.png" },
 		 { name: { tr: "CL Classics Antep Fıstık", en: "Classics Antep Pistachio" }, price: 30, image: "urunimg/clfistik.png" },
+		 { name: { tr: "CL Classics Kakao", en: "Classics Antep Cacao" }, price: 30, image: "urunimg/clkakao.png" },
+		 { name: { tr: "Maraş Cup", en: "Maraş Cup" }, price: 40, image: "urunimg/cup.png" },
+		 { name: { tr: "Nogger Sandwich", en: "Nogger Sandwich" }, price: 75, image: "urunimg/nogger.png" },
+		
+		
+      ]
+    },
+	{
+      title: {  tr: "Stick", en: "Stick" },
+      items: [
+        { name: { tr: "Milka Stick", en: "Milka Stick" }, price: 60, image: "urunimg/milkas.png" },
+		 { name: { tr: "Vienetta Stick", en: "Vienetta Stick" }, price: 30, image: "urunimg/vienetta.png" },
+		 { name: { tr: "Volcano Stick", en: "Volcano Stick" }, price: 60, image: "urunimg/volcanostick.png" },
+		  { name: { tr: "Conboo Kakao", en: "Conboo Cacao" }, price: 15, image: "urunimg/conboo.png" },
 		
 		
 		
       ]
     },
+	{
+      title: {  tr: "Max", en: "Max" },
+      items: [
+        { name: { tr: "Twister Forest", en: "Twister Forest" }, price: 20, image: "urunimg/forest.png" },
+		{ name: { tr: "Twister Ocean", en: "Twister Ocean" }, price: 20, image: "urunimg/ocean.png" },
+		{ name: { tr: "Twister Cool", en: "Twister Cool" }, price: 20, image: "urunimg/cool.png" },
+		
+			
+      ]
+    },
     ]
   },
-  {
-    title: { tr: "Boom Boom", en: "Boom Boom" },
-    items: [
-      { name: { tr: "Boom Boom Gold", en: "Boom Boom Gold" }, price: 50, image: "urunimg/boomboomgold.png" },
-      { name: { tr: "Büyük Ayran", en: "Large Ayran" }, price: 20 }
-    ]
-  }
+  
 ]
   }
 };
