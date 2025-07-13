@@ -2043,15 +2043,11 @@ document.addEventListener("DOMContentLoaded", function() {
     document.querySelector(".toggle-cart").innerHTML = `🛒 ${t.cart}<span id="cartBadge" class="cart-badge">0</span>`;
     document.querySelector(".clear-cart").innerText = t.clearCart;
     
-    document.getElementById('popupMasa').placeholder = t.table;
-  document.getElementById('popupOda').placeholder = t.room;
-document.getElementById('popupMasa').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
-  document.getElementById('popupOda').placeholder = lang === 'tr' ? 'Oda No - ör: Vip Ps 2' : 'Room Number - e.g.: Vip Ps 2';
-  
- document.getElementById('masaInputCart').placeholder = t.table;
-  document.getElementById('odaInputCart').placeholder = t.room;
- document.getElementById('masaInputCart').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
-  document.getElementById('odaInputCart').placeholder = lang === 'tr' ? 'Oda No - ör: Vip Ps 2' : 'Room Number - e.g.: Vip Ps 2';
+    // Sepet ve input güncellemeleri
+    document.getElementById('popupMasa').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
+    document.getElementById('popupOda').placeholder = lang === 'tr' ? 'Oda No - ör: Vip Ps 2' : 'Room Number - e.g.: Vip Ps 2';
+    document.getElementById('masaInputCart').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
+    document.getElementById('odaInputCart').placeholder = lang === 'tr' ? 'Oda No - ör: Vip Ps 2' : 'Room Number - e.g.: Vip Ps 2';
     
     // Sepet badge güncellenmesi
     const badge = document.getElementById('cartBadge');
@@ -2138,6 +2134,7 @@ document.getElementById('popupMasa').placeholder = lang === 'tr' ? 'Masa No - ö
   // Dil seçimi ve diğer fonksiyonları da burada çalıştırabilirsiniz
 });
 
+
 const sliderContainer = document.querySelector('.popular-slider-container');
 const slider = document.querySelector('.popular-slider');
 let isDragging = false;
@@ -2189,8 +2186,6 @@ function autoScroll() {
 
 // 50ms aralıklarla kaydırma
 setInterval(autoScroll, 50);
-
-
 
 
 
