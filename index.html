@@ -566,6 +566,23 @@ footer {
     animation-play-state: running; /* Başlangıçta çalışır */
 	 
 }
+/* Masaüstü ve tabletler için varsayılan stil */
+.popular-slider .slider-item {
+  width: 200px;
+  height: 120px;
+}
+
+/* Mobil cihazlar için stil */
+@media only screen and (max-width: 767px) {
+  .popular-slider .slider-item {
+    width: 200px;  /* Mobilde daha küçük genişlik */
+    height: 100px; /* Mobilde daha küçük yükseklik */
+  }
+
+  .popular-slider {
+    width: 100%;  /* Slider'ı tam genişlikte yapıyoruz */
+  }
+}
 
 .popular-slider:hover {
   animation-play-state: paused;
