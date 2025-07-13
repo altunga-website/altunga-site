@@ -654,8 +654,6 @@ footer {
   scroll-behavior: auto; /* drag yaparken smooth olmasın */
 }
 
-
-
   </style>
 </head>
 
@@ -689,8 +687,10 @@ footer {
 
 
 </header>
-
 <h2 class="slider-title" id="sliderTitle">Popüler Ürünler</h2>
+
+
+
 <div class="popular-slider-container">
   
   <div class="popular-slider">
@@ -724,6 +724,8 @@ footer {
     <!-- Diğer slider-item'lar -->
   </div>
 </div>
+
+
 
 <div class="menu-grid">
   <div class="menu-item" onclick="showMenu('icecekler')">
@@ -811,7 +813,7 @@ const translations = {
     table: "Masa No",
     room: "Oda No",
     clearCart: "Sepeti Temizle",
-	sliderTitle: "Popüler Ürünler",
+	  sliderTitle: "Popüler Ürünler",
 	
 
 	
@@ -836,7 +838,7 @@ const translations = {
     table: "Table No",
     room: "Room No",
     clearCart: "Clear Cart",
-	sliderTitle: "Popular Products",
+	 sliderTitle: "Popular Products",
   }
 };
 
@@ -844,11 +846,19 @@ const translations = {
 let currentLang = 'tr';
 const sepet = [];
 
+
+
 const menuData = {
+
   icecekler: {
     title: { tr: "İçecekler", en: "Drinks" },
     groups: [
-  
+  {
+        title: { tr: "Su", en: "Water" },
+        items: [
+          { name: { tr: "Su 500ml", en: "Water 500ml" }, price: 15, image: "urunimg/su.png" }, //
+        ]
+      },
   {
     title: { tr: "Gazlı İçecekler", en: "Fizzy Drinks" },  // ← Ana başlık
     subgroups: [                               // ← Alt başlıkları açar
@@ -1478,7 +1488,7 @@ function setLanguage(lang) {
 }
 
   // Diğer dil metni güncellemeleri (varsa) devam eder...
-	document.getElementById('sliderTitle').innerText = translations[lang].sliderTitle;
+  document.getElementById('sliderTitle').innerText = translations[lang].sliderTitle;
   document.getElementById("headerTitle").innerText = t.header;
   document.getElementById("menuIcecekler").innerText = t.icecekler;
   document.getElementById("menuAtistirmalik").innerText = t.atistirmalik;
@@ -1497,9 +1507,9 @@ function setLanguage(lang) {
 document.getElementById('popupMasa').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
   document.getElementById('popupOda').placeholder = lang === 'tr' ? 'Oda No - ör: Vip Ps 2' : 'Room Number - e.g.: Vip Ps 2';
   
- document.getElementById('cartInputsWrapper').placeholder = t.table;
+ document.getElementById('masaInputCart').placeholder = t.table;
   document.getElementById('odaInputCart').placeholder = t.room;
- document.getElementById('cartInputsWrapper').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
+ document.getElementById('masaInputCart').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
   document.getElementById('odaInputCart').placeholder = lang === 'tr' ? 'Oda No - ör: Vip Ps 2' : 'Room Number - e.g.: Vip Ps 2';
   
   const badge = document.getElementById('cartBadge');
@@ -1767,7 +1777,6 @@ async function siparisVer() {
     customAlert("Sipariş gönderilemedi!");
   }
 }
-
 const sliderItems = document.querySelectorAll('.slider-item');
 
 sliderItems.forEach(item => {
@@ -1887,121 +1896,6 @@ function showAlert(msg) {
   setTimeout(() => alertBox.style.display = 'none', 3000);  // 3 saniye sonra uyarıyı gizle
 }
 
-// Sayfa yüklendiğinde, URL parametrelerinden oda ve masa bilgilerini al
-window.addEventListener('DOMContentLoaded', () => {
-  document.getElementById("cartInputsWrapper").style.display = "none";
-  guncelleSepet();
-  
-  const urlParams = new URLSearchParams(window.location.search);
-  const oda = urlParams.get('oda');
-  const masa = urlParams.get('masa');
-
-  const odaInput = document.getElementById("odaInputCart");
-  const masaInput = document.getElementById("masaInputCart");
-
-  // Oda varsa:
-  if (oda && odaInput) {
-    if (oda === "vip3") {
-      odaInput.value = currentLang === 'tr' ? "3. Kat - VIP Playstation" : "3rd Floor - VIP Playstation";
-    } else if (oda === "ps5") {
-      odaInput.value = currentLang === 'tr' ? "PS5 Odası" : "PS5 Room";
-    } else {
-      odaInput.value = oda;
-    }
-    odaInput.readOnly = true;
-
-    if (masaInput) {
-      masaInput.style.display = "none";
-    }
-  }
-
-  // Masa varsa:
-  if (masa && masaInput) {
-    masaInput.value = currentLang === 'tr' ? `Masa ${masa}` : `Table ${masa}`;
-    masaInput.readOnly = true;
-
-    if (odaInput) {
-      odaInput.style.display = "none";
-    }
-  }
-});
-
-function setMasaOda() {
-  // URL'deki 'masa' ve 'oda' parametrelerini al
-  const masa = new URLSearchParams(window.location.search).get('masa');
-  const oda = new URLSearchParams(window.location.search).get('oda');
-  
-  // Masa inputunu doldur
-  if (masa) {
-    const masaInput = document.getElementById('masaInputCart');
-    masaInput.value = masa;  // `masa` parametresini alıp inputa ekliyoruz
-  }
-  
-  // Oda inputunu doldur
-  if (oda) {
-    const odaInput = document.getElementById('odaInputCart');
-    odaInput.value = oda;  // `oda` parametresini alıp inputa ekliyoruz
-  }
-}
-
-// Sayfa yüklendiğinde setMasaOda fonksiyonunu çalıştır
-document.addEventListener("DOMContentLoaded", function() {
-  setMasaOda();  // Sayfa yüklendiğinde otomatik doldurma işlemi
-});
-
-// Görevli çağır butonuna tıklanması durumunda inputları güncelle
-document.getElementById("callBtn").addEventListener("click", function(event) {
-  event.preventDefault();  // Sayfanın yeniden yüklenmesini engelle
-  setMasaOda();           // Sadece masa ve oda inputlarını güncelle
-});
-// URL parametrelerinden oda ve masa bilgisini al
-function checkURLParams() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const oda = urlParams.get('oda');
-  const masa = urlParams.get('masa');
-
-  if (oda && document.getElementById('odaInput')) {
-    document.getElementById('odaInput').value = oda;
-  }
-  if (masa && document.getElementById('masaInput')) {
-    document.getElementById('masaInput').value = masa;
-  }
-}
-document.getElementById('callBtn').addEventListener('click', function() {
-  const oda = document.getElementById('odaInput').value;
-  const masa = document.getElementById('masaInput').value;
-  
-  if (!oda || !masa) {
-    alert("Lütfen oda ve masa numarası girin.");
-    return; // Eğer oda veya masa numarası eksikse işlem yapma
-  }
-
-  // Görevli çağırma işlemi
-  alert(`Görevli çağrıldı! Oda: ${oda}, Masa: ${masa}`);
-  
-  // Eğer başka bir işlem yapacaksan, burada yapabilirsin (örneğin, Firebase ile göndermek)
-});
-// URL parametrelerini almak için fonksiyon
-function getURLParameter(name) {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get(name);
-}
-
-// Sayfa yüklendiğinde inputları doldur
-window.onload = function() {
-  const oda = getURLParameter('oda');  // /?oda=Vip7
-  const masa = getURLParameter('masa');  // /?masa=Hüma5
-
-  // Oda ve masa parametreleri varsa sepet inputlarına atama yap
-  if (oda) {
-    document.getElementById('odaInputCart').value = oda;  // Sepet inputu
-    document.getElementById('popupOda').value = oda;     // Görevli çağırma popup inputu
-  }
-  if (masa) {
-    document.getElementById('masaInputCart').value = masa;  // Sepet inputu
-    document.getElementById('popupMasa').value = masa;      // Görevli çağırma popup inputu
-  }
-};
 document.addEventListener("DOMContentLoaded", function() {
   // Sayfa yüklendikten sonra çalışacak işlemler
   
@@ -2207,6 +2101,8 @@ function autoScroll() {
 
 // 50ms aralıklarla kaydırma
 setInterval(autoScroll, 50);
+
+
 
 
 
