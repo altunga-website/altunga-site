@@ -541,7 +541,7 @@ footer {
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
   position: relative;
-  margin-top: 20px; /* İhtiyaca göre düzenleyin */
+  margin-top: 3px; /* İhtiyaca göre düzenleyin */
   cursor: grab; /* Fareyi tutma şekline çevir */
   scroll-behavior: smooth;
 }
@@ -559,6 +559,9 @@ footer {
 .popular-slider {
   display: flex;
   gap: 15px;
+  width: 80%;
+   max-width: 100%;
+   margin: 0 auto;
   animation: scrollSlider 50s linear infinite;
     animation-play-state: running; /* Başlangıçta çalışır */
 	 
@@ -667,9 +670,9 @@ footer {
 
 
 </header>
-
+<h2 class="slider-title">Popüler Ürünler</h2>
 <div class="popular-slider-container">
-  <h2 class="slider-title">Popüler Ürünler</h2>
+  
   <div class="popular-slider">
     <div class="slider-item" data-name="Magnum Classic" data-price="50">
       <img src="populer/magnumclassicpopuler.png" alt="Ürün 1">
