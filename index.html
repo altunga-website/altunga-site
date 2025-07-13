@@ -534,7 +534,6 @@ footer {
 
 .dark-theme .admin-btn {
   background-color: #45a049; /* Dark mode button color */
-}
 .popular-slider-container {
   width: 100%;
    overflow-x: auto;
@@ -653,59 +652,6 @@ footer {
   cursor: grabbing;
   scroll-behavior: auto; /* drag yaparken smooth olmasın */
 }
-const sliderContainer = document.querySelector('.popular-slider-container');
-const slider = document.querySelector('.popular-slider');
-let isDragging = false;
-let startX;
-let scrollLeft;
-
-// Fareyle sürüklemeyi başlat
-sliderContainer.addEventListener('mousedown', (e) => {
-  isDragging = true;
-  startX = e.pageX - sliderContainer.offsetLeft;
-  scrollLeft = sliderContainer.scrollLeft;
-  sliderContainer.classList.add('dragging');
-});
-
-// Fareyi bırakınca sürüklemeyi sonlandır
-sliderContainer.addEventListener('mouseup', () => {
-  isDragging = false;
-  sliderContainer.classList.remove('dragging');
-});
-
-// Fareyi slider üzerinde hareket ettirirken kaydırmayı sağla
-sliderContainer.addEventListener('mousemove', (e) => {
-  if (!isDragging) return;
-  e.preventDefault(); // Sayfa kaymasını engelle
-  const x = e.pageX - sliderContainer.offsetLeft;
-  const walk = (x - startX) * 3; // Kaydırma hızı
-  sliderContainer.scrollLeft = scrollLeft - walk;
-});
-
-// Fare slider'a geldiğinde otomatik kaydırmayı durdur
-sliderContainer.addEventListener('mouseenter', () => {
-  slider.style.animationPlayState = 'paused';
-});
-
-// Fare slider'dan ayrıldığında otomatik kaydırmayı başlat
-sliderContainer.addEventListener('mouseleave', () => {
-  slider.style.animationPlayState = 'running';
-});
-
-// Otomatik kaydırma işlemi (Fare ile kaydırılmadığı sürece devam eder)
-function autoScroll() {
-  if (!isDragging) {
-    sliderContainer.scrollLeft += 1;  // Kaydırma pozisyonunu artır
-    if (sliderContainer.scrollLeft >= slider.scrollWidth - sliderContainer.clientWidth) {
-      sliderContainer.scrollLeft = 0;  // Sonuna gelince başa sar
-    }
-  }
-}
-
-// 50ms aralıklarla kaydırma
-setInterval(autoScroll, 50);
-
-
 
 
   </style>
@@ -2191,7 +2137,6 @@ document.getElementById('popupMasa').placeholder = lang === 'tr' ? 'Masa No - ö
 
   // Dil seçimi ve diğer fonksiyonları da burada çalıştırabilirsiniz
 });
-
 
 const sliderContainer = document.querySelector('.popular-slider-container');
 const slider = document.querySelector('.popular-slider');
