@@ -535,7 +535,104 @@ footer {
 .dark-theme .admin-btn {
   background-color: #45a049; /* Dark mode button color */
 }
+.popular-slider-container {
+  width: 100%;
+   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  position: relative;
+  margin-top: 20px; /* İhtiyaca göre düzenleyin */
+  cursor: grab; /* Fareyi tutma şekline çevir */
+  scroll-behavior: smooth;
+}
+.popular-slider-container::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari */
+}
 
+.popular-slider-container {
+  scrollbar-width: none; /* Firefox */
+}
+.slider-title {
+  text-align: center; /* Yatayda ortalar */
+  margin: 2 auto;     /* Varsayılan margin ile centering */
+}
+.popular-slider {
+  display: flex;
+  gap: 15px;
+  animation: scrollSlider 50s linear infinite;
+    animation-play-state: running; /* Başlangıçta çalışır */
+	 
+}
+
+.popular-slider:hover {
+  animation-play-state: paused;
+}
+
+.slider-item {
+  flex: 0 0 auto;
+  width: calc(15% - 10px); /* Ürün kutusunun genişliğini %25 olarak ayarladık */
+  background: var(--card-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  text-align: center;
+  aspect-ratio: 16 / 9; /* 16:9 oranını korur */
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .slider-item {
+    width: calc(50% - 10px); /* Daha küçük ekranlar için 2 sütun */
+  }
+}
+
+@media (max-width: 480px) {
+  .slider-item {
+    width: 100%; /* Çok küçük ekranlar için tam genişlik */
+  }
+}
+
+.slider-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.slider-item h3 {
+  margin-top: 10px;
+  font-size: 18px;
+  color: var(--text-color);
+}
+
+@keyframes scrollSlider {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@media (max-width: 768px) {
+  .slider-item {
+    width: calc(50% - 10px); /* Küçük ekranlarda 2'li sütun düzeni */
+  }
+}
+
+@media (max-width: 480px) {
+  .slider-item {
+    width: 100%; /* Çok küçük ekranlarda tam genişlik */
+  }
+}
+/* Slider ürünlerine fare tıklanabilir özelliği ekleyelim */
+.popular-slider .slider-item {
+  cursor: pointer; /* Fare işaretçisini tıklanabilir yapar */
+}
+
+.popular-slider-container.dragging {
+  cursor: grabbing;
+  scroll-behavior: auto; /* drag yaparken smooth olmasın */
+}
 
   </style>
 </head>
@@ -570,6 +667,40 @@ footer {
 
 
 </header>
+
+<div class="popular-slider-container">
+  <h2 class="slider-title">Popüler Ürünler</h2>
+  <div class="popular-slider">
+    <div class="slider-item" data-name="Magnum Classic" data-price="50">
+      <img src="populer/magnumclassicpopuler.png" alt="Ürün 1">
+    </div>
+    <div class="slider-item" data-name="Gong Pops Taco" data-price="50">
+      <img src="populer/tacopopuler.png" alt="Ürün 2">
+        </div>
+    <div class="slider-item" data-name="Red Bull Pink E. 250ml." data-price="75">
+      <img src="populer/rebullpink.png" alt="Ürün 3">
+         </div>
+		  <div class="slider-item" data-name="Magnum Classic" data-price="50">
+      <img src="populer/magnumclassicpopuler.png" alt="Ürün 1">
+    </div>
+    <div class="slider-item" data-name="Gong Pops Taco" data-price="50">
+      <img src="populer/tacopopuler.png" alt="Ürün 2">
+        </div>
+    <div class="slider-item" data-name="Red Bull Pink E. 250ml." data-price="75">
+      <img src="populer/rebullpink.png" alt="Ürün 3">
+         </div>
+		  <div class="slider-item" data-name="Magnum Classic" data-price="50">
+      <img src="populer/magnumclassicpopuler.png" alt="Ürün 1">
+    </div>
+    <div class="slider-item" data-name="Gong Pops Taco" data-price="50">
+      <img src="populer/tacopopuler.png" alt="Ürün 2">
+        </div>
+    <div class="slider-item" data-name="Red Bull Pink E. 250ml." data-price="75">
+      <img src="populer/rebullpink.png" alt="Ürün 3">
+         </div>
+    <!-- Diğer slider-item'lar -->
+  </div>
+</div>
 
 
 
@@ -692,7 +823,10 @@ const translations = {
 let currentLang = 'tr';
 const sepet = [];
 
+
+
 const menuData = {
+
   icecekler: {
     title: { tr: "İçecekler", en: "Drinks" },
     groups: [
@@ -1614,7 +1748,24 @@ async function siparisVer() {
     customAlert("Sipariş gönderilemedi!");
   }
 }
+const sliderItems = document.querySelectorAll('.slider-item');
 
+sliderItems.forEach(item => {
+  item.addEventListener('click', function() {
+    const productName = item.getAttribute('data-name');
+    const productPrice = parseFloat(item.getAttribute('data-price'));
+    sepeteEkle(productName, productPrice); // Sepete ekle
+  });
+});
+
+// To Title Case fonksiyonu (Baş harfleri büyütme)
+function toTitleCase(str) {
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
 
 let secilenTip = "";  // Seçilen görevin türü
 
@@ -1716,133 +1867,212 @@ function showAlert(msg) {
   setTimeout(() => alertBox.style.display = 'none', 3000);  // 3 saniye sonra uyarıyı gizle
 }
 
-// Sayfa yüklendiğinde, URL parametrelerinden oda ve masa bilgilerini al
-window.addEventListener('DOMContentLoaded', () => {
-  document.getElementById("cartInputsWrapper").style.display = "none";
-  guncelleSepet();
+document.addEventListener("DOMContentLoaded", function() {
+  // Sayfa yüklendikten sonra çalışacak işlemler
   
-  const urlParams = new URLSearchParams(window.location.search);
-  const oda = urlParams.get('oda');
-  const masa = urlParams.get('masa');
+  // Slider için kaydırma işlemi
+  const slider = document.querySelector('.popular-slider'); // ID ya da class'ın doğru olduğuna emin olun
+  console.log(slider);
 
-  const odaInput = document.getElementById("odaInputCart");
-  const masaInput = document.getElementById("masaInputCart");
+  let scrollAmount = 0;
+  let autoScrollInterval;
 
-  // Oda varsa:
-  if (oda && odaInput) {
-    if (oda === "vip3") {
-      odaInput.value = currentLang === 'tr' ? "3. Kat - VIP Playstation" : "3rd Floor - VIP Playstation";
-    } else if (oda === "ps5") {
-      odaInput.value = currentLang === 'tr' ? "PS5 Odası" : "PS5 Room";
+  function nextSlide() {
+    scrollAmount += slider.offsetWidth / 3; // Kaydırma hızı
+    if (scrollAmount >= slider.scrollWidth - slider.clientWidth) {
+      scrollAmount = 0; // Bittiğinde başa sar
+    }
+    slider.scrollLeft = scrollAmount;
+  }
+
+  function startAutoScroll() {
+    autoScrollInterval = setInterval(nextSlide, 3000);  // 3 saniyede bir kaydırma
+  }
+
+  function stopAutoScroll() {
+    clearInterval(autoScrollInterval);  // Kaydırmayı durdur
+  }
+
+  slider.addEventListener('mouseenter', stopAutoScroll);  // Fare slider'a geldiğinde durdur
+  slider.addEventListener('mouseleave', startAutoScroll);  // Fare slider'dan ayrıldığında başlat
+
+  // Sayfa yüklendiğinde kaydırmayı başlat
+  startAutoScroll();
+
+  // Dil değiştirme fonksiyonu
+  function setLanguage(lang) {
+    currentLang = lang;
+    const t = translations[lang];
+
+    // Buton metinlerini güncelle
+    const callStaffBtn = document.getElementById("callStaffBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+
+    if (callStaffBtn && cancelBtn) {
+      callStaffBtn.innerText = lang === 'tr' ? 'Görevliyi Çağır' : 'Call Staff';
+      cancelBtn.innerText = lang === 'tr' ? 'İptal' : 'Cancel';
     } else {
-      odaInput.value = oda;
+      console.error("Butonlar bulunamadı!");
     }
-    odaInput.readOnly = true;
 
-    if (masaInput) {
-      masaInput.style.display = "none";
-    }
+    // Diğer metin güncellemeleri
+    document.getElementById("headerTitle").innerText = t.header;
+    document.getElementById("menuIcecekler").innerText = t.icecekler;
+    document.getElementById("menuAtistirmalik").innerText = t.atistirmalik;
+    document.getElementById("menuSekerleme").innerText = t.sekerleme;
+    document.getElementById("menuFastfood").innerText = t.fastfood;
+    document.getElementById("menuDondurma").innerText = t.dondurma;
+    document.getElementById("menuDoner").innerText = t.doner;
+    document.getElementById("cartTitle").innerText = t.cart;
+    document.getElementById("cartOrderBtn").innerText = t.order;
+    document.getElementById("callBtn").innerText = lang === 'tr' ? '🤵️ ' : '🤵️ ';
+    document.querySelector(".toggle-cart").innerHTML = `🛒 ${t.cart}<span id="cartBadge" class="cart-badge">0</span>`;
+    document.querySelector(".clear-cart").innerText = t.clearCart;
+    
+    // Sepet ve input güncellemeleri
+    document.getElementById('popupMasa').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
+    document.getElementById('popupOda').placeholder = lang === 'tr' ? 'Oda No - ör: Vip Ps 2' : 'Room Number - e.g.: Vip Ps 2';
+    document.getElementById('masaInputCart').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
+    document.getElementById('odaInputCart').placeholder = lang === 'tr' ? 'Oda No - ör: Vip Ps 2' : 'Room Number - e.g.: Vip Ps 2';
+    
+    // Sepet badge güncellenmesi
+    const badge = document.getElementById('cartBadge');
+    badge.textContent = sepet.length;
+    badge.style.display = sepet.length > 0 ? 'inline-block' : 'none';
+
+    guncelleSepet();
   }
 
-  // Masa varsa:
-  if (masa && masaInput) {
-    masaInput.value = currentLang === 'tr' ? `Masa ${masa}` : `Table ${masa}`;
-    masaInput.readOnly = true;
-
-    if (odaInput) {
-      odaInput.style.display = "none";
-    }
+  // Tema değişimi fonksiyonu
+  function toggleTheme() {
+    document.body.classList.toggle('dark-theme');
   }
+
+  // Sepet işlemleri
+  function guncelleSepet() {
+    const t = translations[currentLang];
+    const list = document.getElementById('cart-list');
+    const totalEl = document.getElementById('cart-total');
+    const badge = document.getElementById('cartBadge');
+    const btn = document.getElementById("cartOrderBtn");
+
+    btn.innerText = translations[currentLang].order;
+    btn.style.display = sepet.length > 0 ? "block" : "none";
+
+    list.innerHTML = '';
+    
+    if (sepet.length === 0) {
+      list.innerHTML = `<li class="empty">${t.empty}</li>`;
+      totalEl.textContent = `${t.total}: ₺0`;
+      badge.textContent = '0';
+      badge.style.display = 'none';
+      document.getElementById('cartOrderBtn').style.display = 'none';
+      document.getElementById("cartInputsWrapper").style.display = "none";
+      return;
+    } else {
+      document.getElementById("cartInputsWrapper").style.display = "block";
+    }
+
+    let toplam = sepet.reduce((acc, item) => acc + item.fiyat * item.adet, 0);
+
+    sepet.forEach((item, index) => {
+      const li = document.createElement("li");
+      li.style.display = "flex";
+      li.style.alignItems = "center";
+      li.style.justifyContent = "space-between"; // En sola ve sağa sabitler
+
+      li.innerHTML = `
+        <div style="flex: 1;">
+          <div style="font-weight: 500;">${toTitleCase(item.ad)}</div>
+          <div style="font-size: 13px; color: #666;">₺${item.fiyat}</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span onclick="adetAzalt(${index})" style="font-size: 12px; cursor: pointer; user-select: none;">➖</span>
+          <span>${item.adet}</span>
+          <span onclick="adetArttir(${index})" style="font-size: 12px; cursor: pointer; user-select: none;">➕</span>
+        </div>
+      `;
+
+      list.appendChild(li);
+    });
+
+    totalEl.textContent = `${t.total}: ₺${toplam}`;
+    badge.textContent = sepet.length;
+    badge.style.display = 'inline-block';
+    document.getElementById('cartOrderBtn').style.display = 'block';
+  }
+
+  // Sepet işlemleri için fonksiyonlar
+  function adetArttir(index) {
+    sepet[index].adet++;
+    guncelleSepet();
+  }
+
+  function adetAzalt(index) {
+    if (sepet[index].adet > 1) {
+      sepet[index].adet--;
+    } else {
+      sepet.splice(index, 1);
+    }
+    guncelleSepet();
+  }
+
+  // Dil seçimi ve diğer fonksiyonları da burada çalıştırabilirsiniz
 });
 
-function setMasaOda() {
-  // URL'deki 'masa' ve 'oda' parametrelerini al
-  const masa = new URLSearchParams(window.location.search).get('masa');
-  const oda = new URLSearchParams(window.location.search).get('oda');
-  
-  // Masa inputunu doldur
-  if (masa) {
-    const masaInput = document.getElementById('masaInputCart');
-    masaInput.value = masa;  // `masa` parametresini alıp inputa ekliyoruz
-  }
-  
-  // Oda inputunu doldur
-  if (oda) {
-    const odaInput = document.getElementById('odaInputCart');
-    odaInput.value = oda;  // `oda` parametresini alıp inputa ekliyoruz
+
+const sliderContainer = document.querySelector('.popular-slider-container');
+const slider = document.querySelector('.popular-slider');
+let isDragging = false;
+let startX;
+let scrollLeft;
+
+// Fareyle sürüklemeyi başlat
+sliderContainer.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  startX = e.pageX - sliderContainer.offsetLeft;
+  scrollLeft = sliderContainer.scrollLeft;
+  sliderContainer.classList.add('dragging');
+});
+
+// Fareyi bırakınca sürüklemeyi sonlandır
+sliderContainer.addEventListener('mouseup', () => {
+  isDragging = false;
+  sliderContainer.classList.remove('dragging');
+});
+
+// Fareyi slider üzerinde hareket ettirirken kaydırmayı sağla
+sliderContainer.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  e.preventDefault(); // Sayfa kaymasını engelle
+  const x = e.pageX - sliderContainer.offsetLeft;
+  const walk = (x - startX) * 3; // Kaydırma hızı
+  sliderContainer.scrollLeft = scrollLeft - walk;
+});
+
+// Fare slider'a geldiğinde otomatik kaydırmayı durdur
+sliderContainer.addEventListener('mouseenter', () => {
+  slider.style.animationPlayState = 'paused';
+});
+
+// Fare slider'dan ayrıldığında otomatik kaydırmayı başlat
+sliderContainer.addEventListener('mouseleave', () => {
+  slider.style.animationPlayState = 'running';
+});
+
+// Otomatik kaydırma işlemi (Fare ile kaydırılmadığı sürece devam eder)
+function autoScroll() {
+  if (!isDragging) {
+    sliderContainer.scrollLeft += 1;  // Kaydırma pozisyonunu artır
+    if (sliderContainer.scrollLeft >= slider.scrollWidth - sliderContainer.clientWidth) {
+      sliderContainer.scrollLeft = 0;  // Sonuna gelince başa sar
+    }
   }
 }
 
-// Sayfa yüklendiğinde setMasaOda fonksiyonunu çalıştır
-document.addEventListener("DOMContentLoaded", function() {
-  setMasaOda();  // Sayfa yüklendiğinde otomatik doldurma işlemi
-});
+// 50ms aralıklarla kaydırma
+setInterval(autoScroll, 50);
 
-// Görevli çağır butonuna tıklanması durumunda inputları güncelle
-document.getElementById("callBtn").addEventListener("click", function(event) {
-  event.preventDefault();  // Sayfanın yeniden yüklenmesini engelle
-  setMasaOda();           // Sadece masa ve oda inputlarını güncelle
-});
-// URL parametrelerinden oda ve masa bilgisini al
-function checkURLParams() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const oda = urlParams.get('oda');
-  const masa = urlParams.get('masa');
-
-  if (oda && document.getElementById('odaInput')) {
-    document.getElementById('odaInput').value = oda;
-  }
-  if (masa && document.getElementById('masaInput')) {
-    document.getElementById('masaInput').value = masa;
-  }
-}
-document.getElementById('callBtn').addEventListener('click', function() {
-  const oda = document.getElementById('odaInput').value;
-  const masa = document.getElementById('masaInput').value;
-  
-  if (!oda || !masa) {
-    alert("Lütfen oda ve masa numarası girin.");
-    return; // Eğer oda veya masa numarası eksikse işlem yapma
-  }
-
-  // Görevli çağırma işlemi
-  alert(`Görevli çağrıldı! Oda: ${oda}, Masa: ${masa}`);
-  
-  // Eğer başka bir işlem yapacaksan, burada yapabilirsin (örneğin, Firebase ile göndermek)
-});
-// URL parametrelerini almak için fonksiyon
-function getURLParameter(name) {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get(name);
-}
-
-// Sayfa yüklendiğinde inputları doldur
-window.onload = function() {
-  const oda = getURLParameter('oda');  // /?oda=Vip7
-  const masa = getURLParameter('masa');  // /?masa=Hüma5
-
-  // Oda ve masa parametreleri varsa sepet inputlarına atama yap
-  if (oda) {
-    document.getElementById('odaInputCart').value = oda;  // Sepet inputu
-    document.getElementById('popupOda').value = oda;     // Görevli çağırma popup inputu
-  }
-  if (masa) {
-    document.getElementById('masaInputCart').value = masa;  // Sepet inputu
-    document.getElementById('popupMasa').value = masa;      // Görevli çağırma popup inputu
-  }
-};
-document.addEventListener("DOMContentLoaded", function() {
-  // Sayfa yüklendikten sonra butonlara erişim
-  const callStaffBtn = document.getElementById("callStaffBtn");
-  const cancelBtn = document.getElementById("cancelBtn");
-
-  if (callStaffBtn && cancelBtn) {
-    callStaffBtn.innerText = currentLang === 'tr' ? 'Görevliyi Çağır' : 'Call Staff';
-    cancelBtn.innerText = currentLang === 'tr' ? 'İptal' : 'Cancel';
-  } else {
-    console.error("Butonlar bulunamadı!");
-  }
-});
 
 
 
