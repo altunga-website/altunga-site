@@ -690,7 +690,7 @@ footer {
 
 </header>
 
-<h2 class="slider-title">Popüler Ürünler</h2>
+<h2 class="slider-title" id="sliderTitle">Popüler Ürünler</h2>
 <div class="popular-slider-container">
   
   <div class="popular-slider">
@@ -811,7 +811,7 @@ const translations = {
     table: "Masa No",
     room: "Oda No",
     clearCart: "Sepeti Temizle",
-	
+	sliderTitle: "Popüler Ürünler",
 	
 
 	
@@ -836,7 +836,7 @@ const translations = {
     table: "Table No",
     room: "Room No",
     clearCart: "Clear Cart",
-	
+	sliderTitle: "Popular Products",
   }
 };
 
@@ -1478,6 +1478,7 @@ function setLanguage(lang) {
 }
 
   // Diğer dil metni güncellemeleri (varsa) devam eder...
+	document.getElementById('sliderTitle').innerText = translations[lang].sliderTitle;
   document.getElementById("headerTitle").innerText = t.header;
   document.getElementById("menuIcecekler").innerText = t.icecekler;
   document.getElementById("menuAtistirmalik").innerText = t.atistirmalik;
