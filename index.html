@@ -1896,12 +1896,127 @@ function showAlert(msg) {
   setTimeout(() => alertBox.style.display = 'none', 3000);  // 3 saniye sonra uyarıyı gizle
 }
 
+// Sayfa yüklendiğinde, URL parametrelerinden oda ve masa bilgilerini al
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById("cartInputsWrapper").style.display = "none";
+  guncelleSepet();
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const oda = urlParams.get('oda');
+  const masa = urlParams.get('masa');
+
+  const odaInput = document.getElementById("odaInputCart");
+  const masaInput = document.getElementById("masaInputCart");
+
+  // Oda varsa:
+  if (oda && odaInput) {
+    if (oda === "vip3") {
+      odaInput.value = currentLang === 'tr' ? "3. Kat - VIP Playstation" : "3rd Floor - VIP Playstation";
+    } else if (oda === "ps5") {
+      odaInput.value = currentLang === 'tr' ? "PS5 Odası" : "PS5 Room";
+    } else {
+      odaInput.value = oda;
+    }
+    odaInput.readOnly = true;
+
+    if (masaInput) {
+      masaInput.style.display = "none";
+    }
+  }
+
+  // Masa varsa:
+  if (masa && masaInput) {
+    masaInput.value = currentLang === 'tr' ? `Masa ${masa}` : `Table ${masa}`;
+    masaInput.readOnly = true;
+
+    if (odaInput) {
+      odaInput.style.display = "none";
+    }
+  }
+});
+
+function setMasaOda() {
+  // URL'deki 'masa' ve 'oda' parametrelerini al
+  const masa = new URLSearchParams(window.location.search).get('masa');
+  const oda = new URLSearchParams(window.location.search).get('oda');
+  
+  // Masa inputunu doldur
+  if (masa) {
+    const masaInput = document.getElementById('masaInputCart');
+    masaInput.value = masa;  // `masa` parametresini alıp inputa ekliyoruz
+  }
+  
+  // Oda inputunu doldur
+  if (oda) {
+    const odaInput = document.getElementById('odaInputCart');
+    odaInput.value = oda;  // `oda` parametresini alıp inputa ekliyoruz
+  }
+}
+
+// Sayfa yüklendiğinde setMasaOda fonksiyonunu çalıştır
+document.addEventListener("DOMContentLoaded", function() {
+  setMasaOda();  // Sayfa yüklendiğinde otomatik doldurma işlemi
+});
+
+// Görevli çağır butonuna tıklanması durumunda inputları güncelle
+document.getElementById("callBtn").addEventListener("click", function(event) {
+  event.preventDefault();  // Sayfanın yeniden yüklenmesini engelle
+  setMasaOda();           // Sadece masa ve oda inputlarını güncelle
+});
+// URL parametrelerinden oda ve masa bilgisini al
+function checkURLParams() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const oda = urlParams.get('oda');
+  const masa = urlParams.get('masa');
+
+  if (oda && document.getElementById('odaInput')) {
+    document.getElementById('odaInput').value = oda;
+  }
+  if (masa && document.getElementById('masaInput')) {
+    document.getElementById('masaInput').value = masa;
+  }
+}
+document.getElementById('callBtn').addEventListener('click', function() {
+  const oda = document.getElementById('odaInput').value;
+  const masa = document.getElementById('masaInput').value;
+  
+  if (!oda || !masa) {
+    alert("Lütfen oda ve masa numarası girin.");
+    return; // Eğer oda veya masa numarası eksikse işlem yapma
+  }
+
+  // Görevli çağırma işlemi
+  alert(`Görevli çağrıldı! Oda: ${oda}, Masa: ${masa}`);
+  
+  // Eğer başka bir işlem yapacaksan, burada yapabilirsin (örneğin, Firebase ile göndermek)
+});
+// URL parametrelerini almak için fonksiyon
+function getURLParameter(name) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(name);
+}
+
+// Sayfa yüklendiğinde inputları doldur
+window.onload = function() {
+  const oda = getURLParameter('oda');  // /?oda=Vip7
+  const masa = getURLParameter('masa');  // /?masa=Hüma5
+
+  // Oda ve masa parametreleri varsa sepet inputlarına atama yap
+  if (oda) {
+    document.getElementById('odaInputCart').value = oda;  // Sepet inputu
+    document.getElementById('popupOda').value = oda;     // Görevli çağırma popup inputu
+  }
+  if (masa) {
+    document.getElementById('masaInputCart').value = masa;  // Sepet inputu
+    document.getElementById('popupMasa').value = masa;      // Görevli çağırma popup inputu
+  }
+};
 document.addEventListener("DOMContentLoaded", function() {
   // Sayfa yüklendikten sonra çalışacak işlemler
   
   // Slider için kaydırma işlemi
   const slider = document.querySelector('.popular-slider'); // ID ya da class'ın doğru olduğuna emin olun
-  
+  console.log(slider);
 
   let scrollAmount = 0;
   let autoScrollInterval;
@@ -1961,7 +2076,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Sepet ve input güncellemeleri
     document.getElementById('popupMasa').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
     document.getElementById('popupOda').placeholder = lang === 'tr' ? 'Oda No - ör: Vip Ps 2' : 'Room Number - e.g.: Vip Ps 2';
-    document.getElementById('cartInputsWrapper').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
+    document.getElementById('masaInputCart').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
     document.getElementById('odaInputCart').placeholder = lang === 'tr' ? 'Oda No - ör: Vip Ps 2' : 'Room Number - e.g.: Vip Ps 2';
     
     // Sepet badge güncellenmesi
