@@ -2036,17 +2036,211 @@ window.onload = function() {
   }
 };
 document.addEventListener("DOMContentLoaded", function() {
-  // Sayfa yüklendikten sonra butonlara erişim
-  const callStaffBtn = document.getElementById("callStaffBtn");
-  const cancelBtn = document.getElementById("cancelBtn");
+  // Sayfa yüklendikten sonra çalışacak işlemler
+  
+  // Slider için kaydırma işlemi
+  const slider = document.querySelector('.popular-slider'); // ID ya da class'ın doğru olduğuna emin olun
+  console.log(slider);
 
-  if (callStaffBtn && cancelBtn) {
-    callStaffBtn.innerText = currentLang === 'tr' ? 'Görevliyi Çağır' : 'Call Staff';
-    cancelBtn.innerText = currentLang === 'tr' ? 'İptal' : 'Cancel';
-  } else {
-    console.error("Butonlar bulunamadı!");
+  let scrollAmount = 0;
+  let autoScrollInterval;
+
+  function nextSlide() {
+    scrollAmount += slider.offsetWidth / 3; // Kaydırma hızı
+    if (scrollAmount >= slider.scrollWidth - slider.clientWidth) {
+      scrollAmount = 0; // Bittiğinde başa sar
+    }
+    slider.scrollLeft = scrollAmount;
   }
+
+  function startAutoScroll() {
+    autoScrollInterval = setInterval(nextSlide, 3000);  // 3 saniyede bir kaydırma
+  }
+
+  function stopAutoScroll() {
+    clearInterval(autoScrollInterval);  // Kaydırmayı durdur
+  }
+
+  slider.addEventListener('mouseenter', stopAutoScroll);  // Fare slider'a geldiğinde durdur
+  slider.addEventListener('mouseleave', startAutoScroll);  // Fare slider'dan ayrıldığında başlat
+
+  // Sayfa yüklendiğinde kaydırmayı başlat
+  startAutoScroll();
+
+  // Dil değiştirme fonksiyonu
+  function setLanguage(lang) {
+    currentLang = lang;
+    const t = translations[lang];
+
+    // Buton metinlerini güncelle
+    const callStaffBtn = document.getElementById("callStaffBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+
+    if (callStaffBtn && cancelBtn) {
+      callStaffBtn.innerText = lang === 'tr' ? 'Görevliyi Çağır' : 'Call Staff';
+      cancelBtn.innerText = lang === 'tr' ? 'İptal' : 'Cancel';
+    } else {
+      console.error("Butonlar bulunamadı!");
+    }
+
+    // Diğer metin güncellemeleri
+    document.getElementById("headerTitle").innerText = t.header;
+    document.getElementById("menuIcecekler").innerText = t.icecekler;
+    document.getElementById("menuAtistirmalik").innerText = t.atistirmalik;
+    document.getElementById("menuSekerleme").innerText = t.sekerleme;
+    document.getElementById("menuFastfood").innerText = t.fastfood;
+    document.getElementById("menuDondurma").innerText = t.dondurma;
+    document.getElementById("menuDoner").innerText = t.doner;
+    document.getElementById("cartTitle").innerText = t.cart;
+    document.getElementById("cartOrderBtn").innerText = t.order;
+    document.getElementById("callBtn").innerText = lang === 'tr' ? '🤵️ ' : '🤵️ ';
+    document.querySelector(".toggle-cart").innerHTML = `🛒 ${t.cart}<span id="cartBadge" class="cart-badge">0</span>`;
+    document.querySelector(".clear-cart").innerText = t.clearCart;
+    
+    // Sepet ve input güncellemeleri
+    document.getElementById('popupMasa').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
+    document.getElementById('popupOda').placeholder = lang === 'tr' ? 'Oda No - ör: Vip Ps 2' : 'Room Number - e.g.: Vip Ps 2';
+    document.getElementById('masaInputCart').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
+    document.getElementById('odaInputCart').placeholder = lang === 'tr' ? 'Oda No - ör: Vip Ps 2' : 'Room Number - e.g.: Vip Ps 2';
+    
+    // Sepet badge güncellenmesi
+    const badge = document.getElementById('cartBadge');
+    badge.textContent = sepet.length;
+    badge.style.display = sepet.length > 0 ? 'inline-block' : 'none';
+
+    guncelleSepet();
+  }
+
+  // Tema değişimi fonksiyonu
+  function toggleTheme() {
+    document.body.classList.toggle('dark-theme');
+  }
+
+  // Sepet işlemleri
+  function guncelleSepet() {
+    const t = translations[currentLang];
+    const list = document.getElementById('cart-list');
+    const totalEl = document.getElementById('cart-total');
+    const badge = document.getElementById('cartBadge');
+    const btn = document.getElementById("cartOrderBtn");
+
+    btn.innerText = translations[currentLang].order;
+    btn.style.display = sepet.length > 0 ? "block" : "none";
+
+    list.innerHTML = '';
+    
+    if (sepet.length === 0) {
+      list.innerHTML = `<li class="empty">${t.empty}</li>`;
+      totalEl.textContent = `${t.total}: ₺0`;
+      badge.textContent = '0';
+      badge.style.display = 'none';
+      document.getElementById('cartOrderBtn').style.display = 'none';
+      document.getElementById("cartInputsWrapper").style.display = "none";
+      return;
+    } else {
+      document.getElementById("cartInputsWrapper").style.display = "block";
+    }
+
+    let toplam = sepet.reduce((acc, item) => acc + item.fiyat * item.adet, 0);
+
+    sepet.forEach((item, index) => {
+      const li = document.createElement("li");
+      li.style.display = "flex";
+      li.style.alignItems = "center";
+      li.style.justifyContent = "space-between"; // En sola ve sağa sabitler
+
+      li.innerHTML = `
+        <div style="flex: 1;">
+          <div style="font-weight: 500;">${toTitleCase(item.ad)}</div>
+          <div style="font-size: 13px; color: #666;">₺${item.fiyat}</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span onclick="adetAzalt(${index})" style="font-size: 12px; cursor: pointer; user-select: none;">➖</span>
+          <span>${item.adet}</span>
+          <span onclick="adetArttir(${index})" style="font-size: 12px; cursor: pointer; user-select: none;">➕</span>
+        </div>
+      `;
+
+      list.appendChild(li);
+    });
+
+    totalEl.textContent = `${t.total}: ₺${toplam}`;
+    badge.textContent = sepet.length;
+    badge.style.display = 'inline-block';
+    document.getElementById('cartOrderBtn').style.display = 'block';
+  }
+
+  // Sepet işlemleri için fonksiyonlar
+  function adetArttir(index) {
+    sepet[index].adet++;
+    guncelleSepet();
+  }
+
+  function adetAzalt(index) {
+    if (sepet[index].adet > 1) {
+      sepet[index].adet--;
+    } else {
+      sepet.splice(index, 1);
+    }
+    guncelleSepet();
+  }
+
+  // Dil seçimi ve diğer fonksiyonları da burada çalıştırabilirsiniz
 });
+
+
+const sliderContainer = document.querySelector('.popular-slider-container');
+const slider = document.querySelector('.popular-slider');
+let isDragging = false;
+let startX;
+let scrollLeft;
+
+// Fareyle sürüklemeyi başlat
+sliderContainer.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  startX = e.pageX - sliderContainer.offsetLeft;
+  scrollLeft = sliderContainer.scrollLeft;
+  sliderContainer.classList.add('dragging');
+});
+
+// Fareyi bırakınca sürüklemeyi sonlandır
+sliderContainer.addEventListener('mouseup', () => {
+  isDragging = false;
+  sliderContainer.classList.remove('dragging');
+});
+
+// Fareyi slider üzerinde hareket ettirirken kaydırmayı sağla
+sliderContainer.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  e.preventDefault(); // Sayfa kaymasını engelle
+  const x = e.pageX - sliderContainer.offsetLeft;
+  const walk = (x - startX) * 3; // Kaydırma hızı
+  sliderContainer.scrollLeft = scrollLeft - walk;
+});
+
+// Fare slider'a geldiğinde otomatik kaydırmayı durdur
+sliderContainer.addEventListener('mouseenter', () => {
+  slider.style.animationPlayState = 'paused';
+});
+
+// Fare slider'dan ayrıldığında otomatik kaydırmayı başlat
+sliderContainer.addEventListener('mouseleave', () => {
+  slider.style.animationPlayState = 'running';
+});
+
+// Otomatik kaydırma işlemi (Fare ile kaydırılmadığı sürece devam eder)
+function autoScroll() {
+  if (!isDragging) {
+    sliderContainer.scrollLeft += 1;  // Kaydırma pozisyonunu artır
+    if (sliderContainer.scrollLeft >= slider.scrollWidth - sliderContainer.clientWidth) {
+      sliderContainer.scrollLeft = 0;  // Sonuna gelince başa sar
+    }
+  }
+}
+
+// 50ms aralıklarla kaydırma
+setInterval(autoScroll, 50);
+
 
 
 
