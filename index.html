@@ -624,18 +624,11 @@ footer {
   color: var(--text-color);
 }
 
-@keyframes scrollSlider {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
-}
+
 
 @media (max-width: 768px) {
-  .slider-item {
-    width: calc(50% - 10px); /* Küçük ekranlarda 2'li sütun düzeni */
+  .popular-slider {
+    animation: none !important;
   }
 }
 
@@ -2190,56 +2183,48 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 const sliderContainer = document.querySelector('.popular-slider-container');
-const slider = document.querySelector('.popular-slider');
 let isDragging = false;
 let startX;
 let scrollLeft;
 
-// Fareyle sürüklemeyi başlat
+// FARE SÜRÜKLEME
 sliderContainer.addEventListener('mousedown', (e) => {
   isDragging = true;
+  sliderContainer.classList.add('dragging');
   startX = e.pageX - sliderContainer.offsetLeft;
   scrollLeft = sliderContainer.scrollLeft;
-  sliderContainer.classList.add('dragging');
 });
-
-// Fareyi bırakınca sürüklemeyi sonlandır
+sliderContainer.addEventListener('mouseleave', () => {
+  isDragging = false;
+  sliderContainer.classList.remove('dragging');
+});
 sliderContainer.addEventListener('mouseup', () => {
   isDragging = false;
   sliderContainer.classList.remove('dragging');
 });
-
-// Fareyi slider üzerinde hareket ettirirken kaydırmayı sağla
 sliderContainer.addEventListener('mousemove', (e) => {
   if (!isDragging) return;
-  e.preventDefault(); // Sayfa kaymasını engelle
+  e.preventDefault();
   const x = e.pageX - sliderContainer.offsetLeft;
-  const walk = (x - startX) * 3; // Kaydırma hızı
+  const walk = (x - startX) * 1.5;
   sliderContainer.scrollLeft = scrollLeft - walk;
 });
 
-// Fare slider'a geldiğinde otomatik kaydırmayı durdur
-sliderContainer.addEventListener('mouseenter', () => {
-  slider.style.animationPlayState = 'paused';
+// MOBİL DOKUNMA
+sliderContainer.addEventListener('touchstart', (e) => {
+  isDragging = true;
+  startX = e.touches[0].pageX - sliderContainer.offsetLeft;
+  scrollLeft = sliderContainer.scrollLeft;
 });
-
-// Fare slider'dan ayrıldığında otomatik kaydırmayı başlat
-sliderContainer.addEventListener('mouseleave', () => {
-  slider.style.animationPlayState = 'running';
+sliderContainer.addEventListener('touchend', () => {
+  isDragging = false;
 });
-
-// Otomatik kaydırma işlemi (Fare ile kaydırılmadığı sürece devam eder)
-function autoScroll() {
-  if (!isDragging) {
-    sliderContainer.scrollLeft += 1;  // Kaydırma pozisyonunu artır
-    if (sliderContainer.scrollLeft >= slider.scrollWidth - sliderContainer.clientWidth) {
-      sliderContainer.scrollLeft = 0;  // Sonuna gelince başa sar
-    }
-  }
-}
-
-// 50ms aralıklarla kaydırma
-setInterval(autoScroll, 50);
+sliderContainer.addEventListener('touchmove', (e) => {
+  if (!isDragging) return;
+  const x = e.touches[0].pageX - sliderContainer.offsetLeft;
+  const walk = (x - startX) * 1.5;
+  sliderContainer.scrollLeft = scrollLeft - walk;
+});
 
 function getUrlParam(name) {
     const urlParams = new URLSearchParams(window.location.search);
