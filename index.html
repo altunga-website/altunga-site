@@ -2307,6 +2307,20 @@ function getUrlParam(name) {
     });
   });
 
+let timeout;
+function resetTimer() {
+  clearTimeout(timeout);
+  timeout = setTimeout(() => {
+    localStorage.removeItem("masaNo");
+    localStorage.removeItem("odaNo");
+    location.reload(); // sayfayı tazeleyebilirsin
+  }, 10 * 60 * 1000); // 10 dakika
+}
+
+window.onload = resetTimer;
+document.onmousemove = resetTimer;
+document.onkeydown = resetTimer;
+document.ontouchstart = resetTimer;
 
 
 
