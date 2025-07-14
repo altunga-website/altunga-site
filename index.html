@@ -2220,51 +2220,6 @@ function autoScroll() {
 // 50ms aralıklarla kaydırma
 setInterval(autoScroll, 50);
 
-function getUrlParam(name) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(name);
-  }
-
-  // Sayfa yüklendiğinde çalışır
-  window.addEventListener('DOMContentLoaded', () => {
-    // URL'den parametreleri al
-    const masa = getUrlParam("masa");
-    const oda = getUrlParam("oda");
-
-    // Eğer varsa localStorage'a yaz
-    if (masa) {
-      localStorage.setItem("masaNo", masa);
-    }
-    if (oda) {
-      localStorage.setItem("odaNo", oda);
-    }
-
-    // localStorage'dan oku
-    const storedMasa = localStorage.getItem("masaNo");
-    const storedOda = localStorage.getItem("odaNo");
-
-    // Tüm inputlara yaz
-    const masaInputs = [
-      document.getElementById("masaInputCart"),
-      document.getElementById("popupMasa")
-    ];
-    const odaInputs = [
-      document.getElementById("odaInputCart"),
-      document.getElementById("popupOda")
-    ];
-
-    masaInputs.forEach(input => {
-      if (input && storedMasa) {
-        input.value = storedMasa;
-      }
-    });
-
-    odaInputs.forEach(input => {
-      if (input && storedOda) {
-        input.value = storedOda;
-      }
-    });
-  });
 
 </script>
 <footer>
