@@ -2220,53 +2220,6 @@ function autoScroll() {
 // 50ms aralıklarla kaydırma
 setInterval(autoScroll, 50);
 
-function saveCartData() {
-  const masaInputCart = document.getElementById('cartInputsWrapper').value;  // cartInputsWrapper içindeki masa input değeri
-  const odaInputCart = document.getElementById('masaInputCart').value;    // cartInputsWrapper içindeki oda input değeri
-  
-  const masaInputPopup = document.getElementById('popupMasa') ? document.getElementById('popupMasa').value : '';  // popupMasa input değeri
-  const odaInputPopup = document.getElementById('popupOda') ? document.getElementById('popupOda').value : '';    // popupOda input değeri
-  
-  // Sepet öğelerini bir dizi olarak saklıyoruz
-  const cartItems = getCartItems();  // Sepetteki ürünleri almak için getCartItems fonksiyonu
-
-  // Verileri localStorage'a kaydediyoruz
-  localStorage.setItem('masaInputCart', masaInputCart);  // cartInputsWrapper için masa
-  localStorage.setItem('odaInputCart', odaInputCart);    // cartInputsWrapper için oda
-  localStorage.setItem('masaInputPopup', masaInputPopup);  // popupMasa için masa
-  localStorage.setItem('odaInputPopup', odaInputPopup);    // popupOda için oda
-  localStorage.setItem('cartItems', JSON.stringify(cartItems));  // Sepet öğelerini JSON formatında kaydediyoruz
-}
-function loadCartData() {
-  // localStorage'dan veri alıyoruz
-  const masaInputCart = localStorage.getItem('masaInputCart');
-  const odaInputCart = localStorage.getItem('odaInputCart');
-  
-  const masaInputPopup = localStorage.getItem('masaInputPopup');
-  const odaInputPopup = localStorage.getItem('odaInputPopup');
-  
-  const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-
-  // cartInputsWrapper içindeki inputları dolduruyoruz
-  if (masaInputCart) document.getElementById('cartInputsWrapper').value = masaInputCart;
-  if (odaInputCart) document.getElementById('masaInputCart').value = odaInputCart;
-
-  // popup inputları dolduruyoruz
-  if (masaInputPopup && document.getElementById('popupMasa')) {
-    document.getElementById('popupMasa').value = masaInputPopup;
-  }
-  if (odaInputPopup && document.getElementById('popupOda')) {
-    document.getElementById('popupOda').value = odaInputPopup;
-  }
-
-  // Sepet öğelerini geri yüklüyoruz
-  if (cartItems.length > 0) {
-    // Sepet öğelerini eklemek için bir fonksiyon kullanın (örneğin, sepetteki her öğeyi ekleyin)
-    cartItems.forEach(item => {
-      addItemToCart(item);  // Bu fonksiyon, sepetteki öğeyi ekler
-    });
-  }
-}
 function getUrlParam(name) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(name);
@@ -2312,9 +2265,6 @@ function getUrlParam(name) {
       }
     });
   });
-
-
-
 
 </script>
 <footer>
