@@ -2001,7 +2001,6 @@ function getURLParameter(name) {
 
 // Sayfa yüklendiğinde inputları doldur
 window.onload = function() {
- loadCartData();
   const oda = getURLParameter('oda');  // /?oda=Vip7
   const masa = getURLParameter('masa');  // /?masa=Hüma5
 
@@ -2222,31 +2221,49 @@ function autoScroll() {
 setInterval(autoScroll, 50);
 
 function saveCartData() {
-  const masaInput = document.getElementById('masaInputCart').value;
-  const odaInput = document.getElementById('odaInputCart').value;
+  const masaInputCart = document.getElementById('cartInputsWrapper').value;  // cartInputsWrapper içindeki masa input değeri
+  const odaInputCart = document.getElementById('masaInputCart').value;    // cartInputsWrapper içindeki oda input değeri
   
-  // Sepet verilerini localStorage'a kaydediyoruz
-  localStorage.setItem('masaInput', masaInput);
-  localStorage.setItem('odaInput', odaInput);
+  const masaInputPopup = document.getElementById('popupMasa') ? document.getElementById('popupMasa').value : '';  // popupMasa input değeri
+  const odaInputPopup = document.getElementById('popupOda') ? document.getElementById('popupOda').value : '';    // popupOda input değeri
+  
+  // Sepet öğelerini bir dizi olarak saklıyoruz
+  const cartItems = getCartItems();  // Sepetteki ürünleri almak için getCartItems fonksiyonu
 
-  // Sepet öğelerini de saklıyoruz (örneğin sepetiniz bir dizi olarak saklanıyor)
-  localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  // Verileri localStorage'a kaydediyoruz
+  localStorage.setItem('masaInputCart', masaInputCart);  // cartInputsWrapper için masa
+  localStorage.setItem('odaInputCart', odaInputCart);    // cartInputsWrapper için oda
+  localStorage.setItem('masaInputPopup', masaInputPopup);  // popupMasa için masa
+  localStorage.setItem('odaInputPopup', odaInputPopup);    // popupOda için oda
+  localStorage.setItem('cartItems', JSON.stringify(cartItems));  // Sepet öğelerini JSON formatında kaydediyoruz
 }
 function loadCartData() {
-  // localStorage'dan verileri alıyoruz
-  const masaInput = localStorage.getItem('masaInput');
-  const odaInput = localStorage.getItem('odaInput');
+  // localStorage'dan veri alıyoruz
+  const masaInputCart = localStorage.getItem('masaInputCart');
+  const odaInputCart = localStorage.getItem('odaInputCart');
+  
+  const masaInputPopup = localStorage.getItem('masaInputPopup');
+  const odaInputPopup = localStorage.getItem('odaInputPopup');
+  
   const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
 
-  // Input alanlarını kaydedilen verilerle dolduruyoruz
-  if (masaInput) document.getElementById('masaInputCart').value = masaInput;
-  if (odaInput) document.getElementById('odaInputCart').value = odaInput;
+  // cartInputsWrapper içindeki inputları dolduruyoruz
+  if (masaInputCart) document.getElementById('cartInputsWrapper').value = masaInputCart;
+  if (odaInputCart) document.getElementById('masaInputCart').value = odaInputCart;
 
-  // Sepeti kaydedilen öğelerle dolduruyoruz
+  // popup inputları dolduruyoruz
+  if (masaInputPopup && document.getElementById('popupMasa')) {
+    document.getElementById('popupMasa').value = masaInputPopup;
+  }
+  if (odaInputPopup && document.getElementById('popupOda')) {
+    document.getElementById('popupOda').value = odaInputPopup;
+  }
+
+  // Sepet öğelerini geri yüklüyoruz
   if (cartItems.length > 0) {
-    // Sepet öğelerini eklemek için kod
+    // Sepet öğelerini eklemek için bir fonksiyon kullanın (örneğin, sepetteki her öğeyi ekleyin)
     cartItems.forEach(item => {
-      // Sepetteki öğeleri ekle
+      addItemToCart(item);  // Bu fonksiyon, sepetteki öğeyi ekler
     });
   }
 }
