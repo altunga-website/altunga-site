@@ -1752,7 +1752,7 @@ async function siparisVer() {
   const oda = document.getElementById('odaInputCart')?.value.trim();
 
   if (!masa && !oda) {
-    customAlert(t.masaWarn); // Örn: "Lütfen masa veya oda numarası giriniz."
+    customAlert(t.masaWarn);
     return;
   }
 
@@ -1764,7 +1764,7 @@ async function siparisVer() {
       masa: masa || null,
       oda: oda || null,
       toplam,
-      tarih: firebase.firestore.Timestamp.now(),  // ✅ Zaman kaydı doğru
+      tarih: firebase.firestore.Timestamp.now(),
       durum: "Beklemede"
     });
 
@@ -1772,14 +1772,23 @@ async function siparisVer() {
     sepetiTemizle();
     closeModal();
 
-    // Sepet inputlarını da temizle
-    document.getElementById('masaInputCart').value = "";
-    document.getElementById('odaInputCart').value = "";
+    // 🔁 Inputları yeniden doldur
+    const storedMasa = localStorage.getItem("masaNo");
+    const storedOda = localStorage.getItem("odaNo");
+
+    if (storedMasa) {
+      document.getElementById('masaInputCart').value = storedMasa;
+    }
+    if (storedOda) {
+      document.getElementById('odaInputCart').value = storedOda;
+    }
+
   } catch (error) {
     console.error("❌ Sipariş kaydı başarısız:", error);
     customAlert("Sipariş gönderilemedi!");
   }
 }
+
 const sliderItems = document.querySelectorAll('.slider-item');
 
 sliderItems.forEach(item => {
@@ -1808,9 +1817,7 @@ function openZilModal() {
   const masaInput = document.getElementById('masaInputCart');
   const odaInput = document.getElementById('odaInputCart');
   
-  // Modal her açıldığında, tüm seçimler sıfırlanmalı
-  masaInput.value = '';  // Masa bilgilerini temizle
-  odaInput.value = '';   // Oda bilgilerini temizle
+  
   secilenTip = ""; // Seçilen görevi sıfırla
 
   // Dil değişimine göre başlık metnini güncelle
@@ -1899,26 +1906,33 @@ function showAlert(msg) {
   setTimeout(() => alertBox.style.display = 'none', 3000);  // 3 saniye sonra uyarıyı gizle
 }
 
-// Sayfa yüklendiğinde, URL parametrelerinden oda ve masa bilgilerini al
 window.addEventListener('DOMContentLoaded', () => {
   document.getElementById("cartInputsWrapper").style.display = "none";
   guncelleSepet();
-  
+
   const urlParams = new URLSearchParams(window.location.search);
-  const oda = urlParams.get('oda');
-  const masa = urlParams.get('masa');
+  const odaParam = urlParams.get('oda');
+  const masaParam = urlParams.get('masa');
 
   const odaInput = document.getElementById("odaInputCart");
   const masaInput = document.getElementById("masaInputCart");
 
-  // Oda varsa:
-  if (oda && odaInput) {
-    if (oda === "vip3") {
+  // 1. URL parametresi varsa localStorage'a yaz
+  if (odaParam) localStorage.setItem("odaNo", odaParam);
+  if (masaParam) localStorage.setItem("masaNo", masaParam);
+
+  // 2. localStorage’dan oku
+  const storedOda = localStorage.getItem("odaNo");
+  const storedMasa = localStorage.getItem("masaNo");
+
+  // 3. Uygula
+  if (storedOda && odaInput) {
+    if (storedOda === "vip3") {
       odaInput.value = currentLang === 'tr' ? "3. Kat - VIP Playstation" : "3rd Floor - VIP Playstation";
-    } else if (oda === "ps5") {
+    } else if (storedOda === "ps5") {
       odaInput.value = currentLang === 'tr' ? "PS5 Odası" : "PS5 Room";
     } else {
-      odaInput.value = oda;
+      odaInput.value = storedOda;
     }
     odaInput.readOnly = true;
 
@@ -1927,16 +1941,23 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Masa varsa:
-  if (masa && masaInput) {
-    masaInput.value = currentLang === 'tr' ? `Masa ${masa}` : `Table ${masa}`;
+  if (storedMasa && masaInput) {
+    masaInput.value = currentLang === 'tr' ? `Masa ${storedMasa}` : `Table ${storedMasa}`;
     masaInput.readOnly = true;
 
     if (odaInput) {
       odaInput.style.display = "none";
     }
   }
+
+  // 4. Ek olarak popup inputlarını da doldur
+  const popupMasa = document.getElementById("popupMasa");
+  const popupOda = document.getElementById("popupOda");
+
+  if (storedMasa && popupMasa) popupMasa.value = storedMasa;
+  if (storedOda && popupOda) popupOda.value = storedOda;
 });
+
 
 function setMasaOda() {
   // URL'deki 'masa' ve 'oda' parametrelerini al
