@@ -1748,10 +1748,7 @@ async function siparisVer() {
     return;
   }
 
-  const masa = document.getElementById('masaInputCart')?.value.trim();
-  const oda = document.getElementById('odaInputCart')?.value.trim();
-
-  if (!masa && !oda) {
+    if (!masa && !oda) {
     customAlert(t.masaWarn); // Örn: "Lütfen masa veya oda numarası giriniz."
     return;
   }
@@ -1809,8 +1806,7 @@ function openZilModal() {
   const odaInput = document.getElementById('odaInputCart');
   
   // Modal her açıldığında, tüm seçimler sıfırlanmalı
-  masaInput.value = '';  // Masa bilgilerini temizle
-  odaInput.value = '';   // Oda bilgilerini temizle
+ 
   secilenTip = ""; // Seçilen görevi sıfırla
 
   // Dil değişimine göre başlık metnini güncelle
