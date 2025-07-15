@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Erişim Engellendi</title>
+  <style>
+    body {
+      background-color: #f8f8f8;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+    .warning-box {
+      background-color: #fff;
+      border: 2px solid #f44336;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+      max-width: 90%;
+    }
+    .warning-box img {
+      max-width: 150px;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    }
+    .warning-box h1 {
+      color: #f44336;
+      font-size: 2em;
+      margin-bottom: 15px;
+    }
+    .warning-box p {
+      color: #444;
+      font-size: 1.1em;
+    }
+    .warning-box small {
+      color: #999;
+      font-size: 0.9em;
+      display: block;
+      margin-top: 20px;
+    }
+    .warning-box a.button {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 12px 20px;
+      background-color: #28a745;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background-color 0.2s ease;
+    }
+    .warning-box a.button:hover {
+      background-color: ##89ce98;
+    }
+  </style>
+</head>
+<body>
+  <div class="warning-box">
+    <img src="logo.png" alt="Mekan Logosu">
+    <h1>❌ Erişim Engellendi</h1>
+    <p>Bu menüye yalnızca mekandaki QR kodu okutarak erişebilirsiniz.</p>
+    <small>Yanlışlıkla buraya geldiyseniz sayfayı kapatabilir ya da aşağıdaki buton yardımıyla rezervasyon oluşturabilirsiniz.</small>
+
+    <!-- 🔗 Online rezervasyon butonu -->
+    <a href="rezervasyon.html" class="button">Online rezervasyon için tıklayın</a>
+  </div>
+</body>
+</html>
