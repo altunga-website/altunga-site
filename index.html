@@ -9,14 +9,14 @@
 <script>
 
  // 🚫 URL'de masa veya oda yoksa yönlendir
-    const urlParams = new URLSearchParams(window.location.search);
-    const masa = urlParams.get('masa');
-    const oda = urlParams.get('oda');
+ const urlParams = new URLSearchParams(window.location.search);
+  const masa = urlParams.get('masa');
+  const oda = urlParams.get('oda');
 
-    if (!masa && !oda) {
-      alert("Bu menüye yalnızca QR kodla erişebilirsiniz.");
-      window.location.href = "https://altunga-website.github.io/altunga-site/uyari.html";
-    }
+  if (!masa && !oda) {
+    // Sadece yönlendir, alert gösterme
+    window.location.href = "/uyari.html";
+  }
 	
   // Firebase yapılandırman (senin projenin ayarları)
   const firebaseConfig = {
