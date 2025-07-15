@@ -6,18 +6,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-<script>
-
- // 🚫 URL'de masa veya oda yoksa yönlendir
- const urlParams = new URLSearchParams(window.location.search);
-  const masa = urlParams.get('masa');
-  const oda = urlParams.get('oda');
-
-  if (!masa && !oda) {
-    // Sadece yönlendir, alert gösterme
-    window.location.href = "https://altunga-website.github.io/altunga-site/uyari.html";
-  }
-	
+<script>	
   // Firebase yapılandırman (senin projenin ayarları)
   const firebaseConfig = {
     apiKey: "AIzaSyC2kYwYuv7drDw0zViXYN4DqpppbtP_coY",
