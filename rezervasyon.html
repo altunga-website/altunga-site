@@ -182,6 +182,12 @@
 
       <label for="tarih">Tarih</label>
       <input type="date" id="tarih" required>
+<label for="sure">Süre (saat)</label>
+<select id="sure" required>
+  <option value="1">1 Saat</option>
+  <option value="2">2 Saat</option>
+  <option value="3">3 Saat</option>
+</select>
 
       <label for="saat">Saat</label>
       <select id="saat" required></select>
@@ -237,83 +243,100 @@
   let isLoadingSaatler = false;
 
   async function saatSecenekleriniYukle(alanId, tarihStr) {
-    if (isLoadingSaatler) return;
-    isLoadingSaatler = true;
-    console.log("YENİDEN YÜKLENDİ:", tarihStr, alanId);
+  if (isLoadingSaatler) return;
+  isLoadingSaatler = true;
 
-    const saatSecimi = document.getElementById("saat");
-    saatSecimi.innerHTML = "";
+  const sure = parseInt(document.getElementById("sure")?.value || "1");
 
-    const saatler = [
-      "12:00", "13:00", "14:00", "15:00", "16:00",
-      "17:00", "18:00", "19:00", "20:00", "21:00",
-      "22:00", "23:00"
-    ];
+  const saatSecimi = document.getElementById("saat");
+  saatSecimi.innerHTML = "";
 
-    for (const saat of saatler) {
-      const option = document.createElement("option");
-      option.value = saat;
+  const saatler = [
+    "12:00", "13:00", "14:00", "15:00", "16:00",
+    "17:00", "18:00", "19:00", "20:00", "21:00",
+    "22:00", "23:00"
+  ];
 
-      try {
-        const ref = doc(db, "alanlar", alanId, "rezervasyonlar", tarihStr, saat, "veri");
-        const docSnap = await getDoc(ref);
+  for (let i = 0; i <= saatler.length - sure; i++) {
+    let doluVar = false;
+    const saatBloğu = saatler.slice(i, i + sure);
 
-       if (docSnap.exists() && docSnap.data().durum?.toLowerCase() === "dolu") {
-	   console.log(`Saat: ${saat}, Durum: ${docSnap.data().durum}`);
-  option.textContent = `${saat} (Dolu)`;
-  option.disabled = true;
-  option.style.color = "#999";
-  option.style.fontStyle = "italic";
-} else {
-console.log(`Saat: ${saat}, BELGE YOK`);
-  option.textContent = saat;
-  
-}
-
-
-        saatSecimi.appendChild(option);
-      } catch (error) {
-        console.error("Saat kontrolünde hata:", saat, error);
+    for (const saat of saatBloğu) {
+      const ref = doc(db, "alanlar", alanId, "rezervasyonlar", tarihStr, saat, "veri");
+      const docSnap = await getDoc(ref);
+      if (docSnap.exists() && docSnap.data().durum?.toLowerCase() === "dolu") {
+        doluVar = true;
+        break;
       }
     }
 
-    isLoadingSaatler = false;
+    const option = document.createElement("option");
+    option.value = saatler[i];
+    option.textContent = doluVar ? `${saatler[i]} (Dolu)` : saatler[i];
+    option.disabled = doluVar;
+    if (doluVar) {
+      option.style.color = "#999";
+      option.style.fontStyle = "italic";
+    }
+    saatSecimi.appendChild(option);
   }
+
+  isLoadingSaatler = false;
+}
 
   function isValidDateFormat(tarihStr) {
     return /^\d{4}-\d{2}-\d{2}$/.test(tarihStr);
   }
 
   document.getElementById('rezervasyonForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const isim = document.getElementById('isim').value;
-    const tc = document.getElementById('tc').value;
-    const alan = document.getElementById('seciliAlan').value;
-    const tarih = document.getElementById('tarih').value;
-    const saat = document.getElementById('saat').value;
+  e.preventDefault();
+  const isim = document.getElementById('isim').value;
+  const tc = document.getElementById('tc').value;
+  const alan = document.getElementById('seciliAlan').value;
+  const tarih = document.getElementById('tarih').value;
+  const saat = document.getElementById('saat').value;
+  const sure = parseInt(document.getElementById('sure').value);
 
-    if (!isValidDateFormat(tarih)) {
-      return showMessage("Tarih formatı geçersiz!", "error");
+  if (!alan || !tarih || !saat || !sure) {
+    return showMessage("Lütfen tüm alanları doldurunuz", "error");
+  }
+
+  const saatler = [
+    "12:00", "13:00", "14:00", "15:00", "16:00",
+    "17:00", "18:00", "19:00", "20:00", "21:00",
+    "22:00", "23:00"
+  ];
+  const saatIndex = saatler.indexOf(saat);
+  const secilenSaatler = saatler.slice(saatIndex, saatIndex + sure);
+
+  for (const s of secilenSaatler) {
+    const ref = doc(db, "alanlar", alan, "rezervasyonlar", tarih, s, "veri");
+    const snap = await getDoc(ref);
+    if (snap.exists() && snap.data().durum?.toLowerCase() === "dolu") {
+      return showMessage(`Seçtiğiniz saat aralığında (${s}) dolu bir rezervasyon var`, "error");
     }
+  }
 
-    const veriRef = doc(db, "alanlar", alan, "rezervasyonlar", tarih, saat, "veri");
-    const docSnap = await getDoc(veriRef);
-
-    if (docSnap.exists() && docSnap.data().durum?.toLowerCase() === "dolu") {
-      return showMessage("Bu alan ve saatte rezervasyon zaten yapılmış", "error");
-    }
-
-    await setDoc(veriRef, {
-      alan: alan,
-      isim: isim,
-      tc: tc,
+  for (const s of secilenSaatler) {
+    const ref = doc(db, "alanlar", alan, "rezervasyonlar", tarih, s, "veri");
+    await setDoc(ref, {
+      alan,
+      isim,
+      tc,
       durum: "dolu"
     });
+  }
 
-    showMessage("Rezervasyon başarıyla yapıldı", "success");
-    document.getElementById("rezervasyonForm").reset();
-    document.getElementById("saat").innerHTML = "";
-  });
+  showMessage("Rezervasyon başarıyla yapıldı", "success");
+  const seciliAlan = document.getElementById("seciliAlan").value;
+  document.getElementById("rezervasyonForm").reset();
+  document.getElementById("seciliAlan").value = seciliAlan;
+
+  if (tarih && seciliAlan) {
+    await saatSecenekleriniYukle(seciliAlan, tarih);
+  }
+});
+
 
   function showMessage(msg, type) {
     const div = document.getElementById("message");
@@ -322,6 +345,7 @@ console.log(`Saat: ${saat}, BELGE YOK`);
     div.style.backgroundColor = type === "success" ? "#28a745" : "#dc3545";
     div.style.color = "white";
   }
+  
 </script>
 </body>
 </html>
