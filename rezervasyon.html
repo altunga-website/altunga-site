@@ -34,6 +34,7 @@
       margin-bottom: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
+	  box-sizing: border-box;
     }
     .accordion {
       background-color: #f4f4f4;
@@ -48,6 +49,7 @@
       transition: 0.4s;
       border-radius: 8px;
       margin-bottom: 10px;
+	  box-sizing: border-box;
     }
     .accordion:hover {
       background-color: #28a745;
@@ -79,6 +81,7 @@
       border-radius: 8px;
       cursor: pointer;
       text-align: center;
+	  font-size: 14px;
     }
     .kart:hover,
     .kart.selected {
@@ -130,7 +133,14 @@
     margin: 10px;
   }
 }
+input[type="text"],
+input[type="date"],
+select {
+max-width: 300;
+margin-left: auto;
+margin-right: auto;
 
+}
 
   </style>
 </head>
