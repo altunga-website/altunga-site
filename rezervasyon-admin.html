@@ -59,7 +59,7 @@
     .vip-simulasyon { background-color: #6f42c1; }
     .vip-playstation { background-color: #fd7e14; }
 
-    .saat, .isim, .tc {
+    .saat, .isim, .telefon {
       margin: 6px 0;
       font-size: 15px;
     }
@@ -153,7 +153,7 @@
                 <div class="etiket ${etiketClass}">${alan.replaceAll("_", " ").toUpperCase()}</div>
                 <div class="saat">🕔 Saat: <strong>${saat}</strong></div>
                 <div class="isim">👤 İsim: <strong>${data.isim}</strong></div>
-                <div class="tc">🆔 TC: <strong>${data.tc}</strong></div>
+                <div class="telefon">🆔 Telefon: <strong>${data.telefon}</strong></div>
                 <button class="sil" data-alan="${alan}" data-tarih="${tarih}" data-saat="${saat}">Sil</button>
               `;
               rezervasyonListesi.appendChild(kutu);
