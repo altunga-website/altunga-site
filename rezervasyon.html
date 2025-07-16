@@ -155,8 +155,8 @@ margin-right: auto;
       <label for="isim">Ad Soyad</label>
       <input type="text" id="isim" required>
 
-      <label for="tc">T.C. Kimlik No</label>
-      <input type="text" id="tc" maxlength="11" required>
+      <label for="telefon">Telefon Numarası</label>
+<input type="tel" id="telefon" maxlength="15" required placeholder="05XXXXXXXXX">
 
       <button type="button" class="accordion">Karaoke Odaları</button>
       <div class="panel">
@@ -327,7 +327,7 @@ margin-right: auto;
   document.getElementById('rezervasyonForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const isim = document.getElementById('isim').value;
-  const tc = document.getElementById('tc').value;
+  const telefon = document.getElementById('telefon').value;
   const alan = document.getElementById('seciliAlan').value;
   const tarih = document.getElementById('tarih').value;
   const saat = document.getElementById('saat').value;
@@ -358,7 +358,7 @@ margin-right: auto;
     await setDoc(ref, {
       alan,
       isim,
-      tc,
+      telefon,
       durum: "dolu"
     });
   }
