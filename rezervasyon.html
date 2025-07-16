@@ -336,6 +336,18 @@ margin-right: auto;
   if (!alan || !tarih || !saat || !sure) {
     return showMessage("Lütfen tüm alanları doldurunuz", "error");
   }
+// Telefon numarası alanını al
+const telefonInput = document.getElementById('telefon');
+
+// Telefon numarası alanı boş değilse başına sıfır ekle
+telefonInput.addEventListener('blur', function() {
+  let telefonDegeri = telefonInput.value;
+
+  // Eğer telefon numarasının başında sıfır yoksa, sıfır ekle
+  if (telefonDegeri && !telefonDegeri.startsWith('0')) {
+    telefonInput.value = '0' + telefonDegeri;
+  }
+});
 
   const saatler = [
     "12:00", "13:00", "14:00", "15:00", "16:00",
@@ -381,7 +393,14 @@ margin-right: auto;
     div.style.backgroundColor = type === "success" ? "#28a745" : "#dc3545";
     div.style.color = "white";
   }
-  
+  // Bugün Türkiye saatiyle alınan tarih
+const today = new Date();
+today.setDate(today.getDate() + 1); // Bugünden bir gün sonrasını ayarla
+const tomorrow = today.toLocaleDateString('en-CA'); // 'YYYY-MM-DD' formatı
+
+// Tarih input'unun min değerini bir gün sonrası olarak ayarla
+document.getElementById('tarih').setAttribute('min', tomorrow);
+
 </script>
 </body>
 </html>
