@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Rezervasyon Yönetimi</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f0f2f5;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input[type="date"] {
+      display: block;
+      margin: 0 auto 30px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .rezervasyon-kutu {
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+      background-color: #ffffff;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .etiket {
+      font-weight: bold;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .karaoke { background-color: #28a745; }
+    .simulasyon { background-color: #007bff; }
+    .vip-simulasyon { background-color: #6f42c1; }
+    .vip-playstation { background-color: #fd7e14; }
+
+    .saat, .isim, .tc {
+      margin: 6px 0;
+      font-size: 15px;
+    }
+
+    .sil {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #dc3545;
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .sil:hover {
+      background-color: #c82333;
+    }
+
+    #rezervasyonListesi:empty::after {
+      content: "Seçilen tarihte herhangi bir rezervasyon bulunamadı.";
+      display: block;
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Rezervasyon Yönetimi</h1>
+    <input type="date" id="tarih" />
+	
+    <div id="rezervasyonListesi"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC2kYwYuv7drDw0zViXYN4DqpppbtP_coY",
+      authDomain: "altunga-siparis.firebaseapp.com",
+      projectId: "altunga-siparis"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const tarihInput = document.getElementById("tarih");
+    const rezervasyonListesi = document.getElementById("rezervasyonListesi");
+
+    const saatler = [
+      "12:00", "13:00", "14:00", "15:00", "16:00",
+      "17:00", "18:00", "19:00", "20:00", "21:00",
+      "22:00", "23:00"
+    ];
+
+    const alanlar = [
+      "karaoke_1", "karaoke_2", "karaoke_3", "karaoke_4",
+      ...Array.from({ length: 11 }, (_, i) => `simulasyon_${i + 1}`),
+      ...Array.from({ length: 9 }, (_, i) => `vip_simulasyon_${i + 12}`),
+      ...Array.from({ length: 8 }, (_, i) => `vip_playstation_${i + 1}`)
+    ];
+
+    const alanEtiketleri = (alan) => {
+      if (alan.startsWith("karaoke")) return "karaoke";
+      if (alan.startsWith("vip_simulasyon")) return "vip-simulasyon";
+      if (alan.startsWith("vip_playstation")) return "vip-playstation";
+      return "simulasyon";
+    };
+
+    async function fetchRezervasyonlar(tarih) {
+      rezervasyonListesi.innerHTML = "";
+
+      for (const alan of alanlar) {
+        for (const saat of saatler) {
+          const ref = doc(db, "alanlar", alan, "rezervasyonlar", tarih, saat, "veri");
+
+          try {
+            const docSnap = await getDoc(ref);
+            if (docSnap.exists() && docSnap.data()?.durum?.toLowerCase() === "dolu") {
+              const data = docSnap.data();
+              const kutu = document.createElement("div");
+              kutu.className = "rezervasyon-kutu";
+
+              const etiketClass = alanEtiketleri(alan);
+              kutu.innerHTML = `
+                <div class="etiket ${etiketClass}">${alan.replaceAll("_", " ").toUpperCase()}</div>
+                <div class="saat">🕔 Saat: <strong>${saat}</strong></div>
+                <div class="isim">👤 İsim: <strong>${data.isim}</strong></div>
+                <div class="tc">🆔 TC: <strong>${data.tc}</strong></div>
+                <button class="sil" data-alan="${alan}" data-tarih="${tarih}" data-saat="${saat}">Sil</button>
+              `;
+              rezervasyonListesi.appendChild(kutu);
+            }
+          } catch (err) {
+            console.error("Veri alınamadı:", err);
+          }
+        }
+      }
+    }
+
+    tarihInput.addEventListener("change", () => {
+      const tarih = tarihInput.value;
+      if (tarih) fetchRezervasyonlar(tarih);
+    });
+
+    document.addEventListener("click", async (e) => {
+      if (e.target.classList.contains("sil")) {
+        const { alan, tarih, saat } = e.target.dataset;
+        const ref = doc(db, "alanlar", alan, "rezervasyonlar", tarih, saat, "veri");
+        await deleteDoc(ref);
+        await fetchRezervasyonlar(tarih);
+      }
+    });
+
+    // Sayfa açıldığında bugünün tarihini seç
+    const today = new Date().toISOString().split("T")[0];
+    tarihInput.value = today;
+    fetchRezervasyonlar(today);
+  </script>
+</body>
+</html>
