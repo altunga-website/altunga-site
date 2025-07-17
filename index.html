@@ -656,7 +656,7 @@ footer {
 
   <img src="logo.png" alt="Logo">
   <h1 id="headerTitle">Altunga E Spor Merkezi</h1>
-   <div class="controls">
+ <div class="controls">
   <select id="languageSelect" onchange="setLanguage(this.value)">
     <option value="tr">TR</option>
     <option value="en">EN</option>
@@ -664,6 +664,8 @@ footer {
   <button onclick="toggleTheme()" title="Tema">🌙/☀️</button>
   <button onclick="window.location.href='rezervasyon.html'" title="Rezervasyon">🌐🛎️</button>
 </div>
+
+
 <button id="callBtn" onclick="openZilModal()" title="Görevli Çağır" style="
   position: fixed;
   bottom: 20px;
@@ -737,6 +739,12 @@ footer {
   <div class="menu-item" onclick="showMenu('dondurma')">
     <img src="dondurma.png"><h2 id="menuDondurma">Dondurma</h2>
   </div>
+   <div class="menu-item" onclick="showMenu('hamburger')">
+    <img src="hamburger.png"><h2 id="menuHamburger">Hamburger</h2>
+  </div>
+  <div class="menu-item" onclick="showMenu('kofte')">
+    <img src="sivaskoftesi.png"><h2 id="menuKofte">Köfte</h2>
+  </div>
    <div class="menu-item" onclick="showMenu('doner')">
     <img src="doner.png"><h2 id="menuDoner">Döner</h2>
   </div>
@@ -794,6 +802,8 @@ const translations = {
 	atistirmalik:"Atıştırmalık",
     tost: "Tost",
 	doner:"Döner",
+	kofte:"Köfte",
+	hamburger: "Hamburger",
 	sekerleme: "Şekerleme",
     fastfood: "Fast Food",
     dondurma: "Dondurma",
@@ -819,6 +829,8 @@ const translations = {
 	atistirmalik:"Snack",
     tost: "Toast",
 	doner:"Doner",
+	kofte:"Meatball",
+	Hamburger: "Hamburger",
 	sekerleme: "Candy",
     fastfood: "Fast Food",
     dondurma: "Ice Cream",
@@ -1395,6 +1407,57 @@ const menuData = {
   ]
 },
 
+hamburger: {
+  title: { tr: "Mc Hamburger", en: "Mc Hamburger" },
+  groups: [
+    {
+      title: { tr: "Hamburger Menü", en: "Hamburger Menu" },
+      items: [
+        { name: { tr: "Hamburger", en: "Hamburger" }, price: 285, image: "urunimg/burger1.png" },
+		{ name: { tr: "Tavukburger", en: "Chicken Burger" }, price: 270, image: "urunimg/tavukburger.png" },
+		{ name: { tr: "Köfteburger", en: "Meatball Burger" }, price: 120, image: "urunimg/kofteburger.png" },
+        
+        
+      ]
+    },
+	
+	{
+      title: { tr: "Double Hamburger Menü", en: "Double Hamburger Menu" },
+      items: [
+        { name: { tr: "Double Köfteburger", en: "Double Meatball Burger" }, price: 335, image: "urunimg/doublekofteburger.png" },
+		{ name: { tr: "Double McChicken®", en: "Double McChicken®" }, price: 360, image: "urunimg/McChicken.png" },
+		{ name: { tr: "Quarter Pounder® with Cheese", en: "Quarter Pounder® with Cheese" }, price: 380, image: "urunimg/QuarterPounder.png" },
+        
+        
+      ]
+    },
+  ]
+},
+
+kofte: {
+  title: { tr: "Köfte", en: "Meatball" },
+  groups: [
+    {
+      title: { tr: "Sivas Köftesi", en: "Sivas Meatballs" },
+      items: [
+        { name: { tr: "Dürüm", en: "Situation" }, price: 170, image: "urunimg/durumkofte.png" },
+		{ name: { tr: "Porsiyon", en: "Portion" }, price: 270, image: "urunimg/porsiyon.png" }, 
+        
+      ]
+    },
+	
+	{
+      title: { tr: "Double Hamburger Menü", en: "Double Hamburger Menu" },
+      items: [
+        { name: { tr: "Double Köfteburger", en: "Double Meatball Burger" }, price: 335, image: "urunimg/doublekofteburger.png" },
+		{ name: { tr: "Double McChicken®", en: "Double McChicken®" }, price: 360, image: "urunimg/McChicken.png" },
+		{ name: { tr: "Quarter Pounder® with Cheese", en: "Quarter Pounder® with Cheese" }, price: 380, image: "urunimg/QuarterPounder.png" },
+        
+        
+      ]
+    },
+  ]
+},
 doner: {
   title: { tr: "Döner", en: "Fast Doner" },
   groups: [
@@ -1533,7 +1596,9 @@ function setLanguage(lang) {
   document.getElementById("menuSekerleme").innerText = t.sekerleme;
   document.getElementById("menuFastfood").innerText = t.fastfood;
   document.getElementById("menuDondurma").innerText = t.dondurma;
+  document.getElementById("menuHamburger").innerText = t.hamburger;
   document.getElementById("menuDoner").innerText = t.doner;
+  document.getElementById("menuKofte").innerText = t.kofte;
   document.getElementById("cartTitle").innerText = t.cart;
   document.getElementById("cartOrderBtn").innerText = t.order;
   document.getElementById("callBtn").innerText = lang === 'tr' ? '🤵️ ' : '🤵️ ';
@@ -2126,6 +2191,8 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("menuFastfood").innerText = t.fastfood;
     document.getElementById("menuDondurma").innerText = t.dondurma;
     document.getElementById("menuDoner").innerText = t.doner;
+	document.getElementById("menuKofte").innerText = t.kofte;
+	document.getElementById("menuHamburger").innerText = t.hamburger;
     document.getElementById("cartTitle").innerText = t.cart;
     document.getElementById("cartOrderBtn").innerText = t.order;
     document.getElementById("callBtn").innerText = lang === 'tr' ? '🤵️ ' : '🤵️ ';
