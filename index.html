@@ -647,6 +647,25 @@ footer {
   cursor: grabbing;
   scroll-behavior: auto; /* drag yaparken smooth olmasın */
 }
+.rezervasyon-floating {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: none;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  z-index: 9999;
+  cursor: pointer;
+}
+
+.rezervasyon-floating img {
+  width: 68px;
+  height: auto;
+  vertical-align: middle;
+  display: block;
+}
+
 
   </style>
 </head>
@@ -662,9 +681,11 @@ footer {
     <option value="en">EN</option>
   </select>
   <button onclick="toggleTheme()" title="Tema">🌙/☀️</button>
-  <button onclick="window.location.href='rezervasyon.html'" title="Rezervasyon">🌐🛎️</button>
 </div>
 
+<button class="rezervasyon-floating" onclick="window.location.href='rezervasyon.html'" title="Rezervasyon">
+  <img src="rezervasyon.svg" alt="Rezervasyon" />
+</button>
 
 <button id="callBtn" onclick="openZilModal()" title="Görevli Çağır" style="
   position: fixed;
@@ -873,8 +894,8 @@ const menuData = {
         items: [
           { name: { tr: "Coca Cola C.Şişe 200ml.", en: "Coca Cola G.Bottle 200ml." }, price: 40,image: "urunimg/cola200.png" },
 		  { name: { tr: "Coca Cola C.Şişe 300ml.", en: "Coca Cola G.Bottle 300ml." }, price: 60 ,image: "urunimg/sise300.png"},
-          { name: { tr: "Coca Cola 300ml.", en: "Coca Cola 300ml." }, price: 60,image: "urunimg/kutukola.png" },
-		  { name: { tr: "Coca Cola Zero 300ml.", en: "Coca Cola Zero 300ml." }, price: 60,image: "urunimg/zeroc.png" },
+          { name: { tr: "Coca Cola 330ml.", en: "Coca Cola 330ml." }, price: 60,image: "urunimg/kutukola.png" },
+		  { name: { tr: "Coca Cola Zero 330ml.", en: "Coca Cola Zero 330ml." }, price: 60,image: "urunimg/zeroc.png" },
 		  { name: { tr: "Coca Cola 1lt.", en: "Coca Cola 1lt." }, price: 70,image: "urunimg/1ltcola.png" },
 		  { name: { tr: "Coca Cola 1lt. Light", en: "Coca Cola 1lt. Light" }, price: 70 ,image: "urunimg/1ltcolalight.png" },
 		  { name: { tr: "Coca Cola 2,5lt.", en: "Coca Cola 2,5lt." }, price: 100 ,image: "urunimg/2,5litre.png" },
@@ -942,6 +963,22 @@ const menuData = {
 		   { name: { tr: "Damla Minera 330ml.", en: "Damla Minera 330ml." }, price: 40,image: "urunimg/damla330.png" },
         ]
       },
+	  {
+        title: { tr: "Freşa", en: "Freşa" },
+        items: [
+          { name: { tr: "Karpuz & Çilek", en: "Watermelon & Strawberry" }, price: 20,image: "urunimg/fresacilek.png" },
+		  { name: { tr: "Limon", en: "Lemon" }, price: 20,image: "urunimg/fresalimon.png" },
+			{ name: { tr: "Çilek", en: "Strawberry" }, price: 20,image: "urunimg/fresakarpuz.png" },
+			
+        ]
+      },
+	  {
+        title: { tr: "Beypazarı", en: "Beypazarı" },
+        items: [
+          { name: { tr: "Sade", en: "Plain" }, price: 15,image: "urunimg/beypazari.png" },
+        
+        ]
+      },
 	  
     ]
   },
@@ -951,14 +988,14 @@ const menuData = {
       {
         title: { tr: "Red Bull", en: "Red Bull" },
         items: [
-		{ name: { tr: "Red Bull 250ml.", en: "Red Bull 250ml." }, price: 75,image: "urunimg/redbull250.png" },
-		{ name: { tr: "Red Bull Peach E. 250ml.", en: "Red Bull Peach E. 250ml." }, price: 75,image: "urunimg/redbullpeach.png" },
-		{ name: { tr: "Red Bull Yellow E. 250ml.", en: "Red Bull Yellow E. 250ml." }, price: 75,image: "urunimg/redbullyellow.png" },
-		{ name: { tr: "Red Bull White E. 250ml.", en: "Red Bull White E. 250ml." }, price: 75,image: "urunimg/redbullwhite.png" },
-		{ name: { tr: "Red Bull Pink E. 250ml.", en: "Red Bull Pink E. 250ml." }, price: 75,image: "urunimg/redbullpink.png" },
-		{ name: { tr: "Red Bull Red E. 250ml.", en: "Red Bull Red E. 250ml." }, price: 75,image: "urunimg/redbullred.png" },
-		{ name: { tr: "Red Bull Sugar E. 250ml.", en: "Red Bull Sugar E. 250ml." }, price: 75,image: "urunimg/redbullsugar.png" },
-		{ name: { tr: "Red Bull Blue E. 250ml.", en: "Red Bull Blue E. 250ml." }, price: 75,image: "urunimg/redbullblue.png" },
+		{ name: { tr: "Red Bull 250ml.", en: "Red Bull 250ml." }, price: 80,image: "urunimg/redbull250.png" },
+		{ name: { tr: "Red Bull Peach E. 250ml.", en: "Red Bull Peach E. 250ml." }, price: 80,image: "urunimg/redbullpeach.png" },
+		{ name: { tr: "Red Bull Yellow E. 250ml.", en: "Red Bull Yellow E. 250ml." }, price: 80,image: "urunimg/redbullyellow.png" },
+		{ name: { tr: "Red Bull White E. 250ml.", en: "Red Bull White E. 250ml." }, price: 80,image: "urunimg/redbullwhite.png" },
+		{ name: { tr: "Red Bull Pink E. 250ml.", en: "Red Bull Pink E. 250ml." }, price: 80,image: "urunimg/redbullpink.png" },
+		{ name: { tr: "Red Bull Red E. 250ml.", en: "Red Bull Red E. 250ml." }, price: 80,image: "urunimg/redbullred.png" },
+		{ name: { tr: "Red Bull Sugar E. 250ml.", en: "Red Bull Sugar E. 250ml." }, price: 80,image: "urunimg/redbullsugar.png" },
+		{ name: { tr: "Red Bull Blue E. 250ml.", en: "Red Bull Blue E. 250ml." }, price: 80,image: "urunimg/redbullblue.png" },
           { name: { tr: "Red Bull Klasik 355ml.", en: "Red Bull Classic 355ml." }, price: 100,image: "urunimg/redbull355.png" },
           
 		  
@@ -987,7 +1024,7 @@ const menuData = {
         items: [
 		{ name: { tr: "Burn Original 250ml.", en: "Burn Original 250ml." }, price: 60,image: "urunimg/burn250.png" },
 		{ name: { tr: "Burn Gold Spark 250ml.", en: "Burn Gold Spark 250ml." }, price: 60,image: "urunimg/burngold.png" },
-		{ name: { tr: "Burn Zero Sugar 250ml.", en: "Burn Zero Sugar 250ml." }, price: 70,image: "urunimg/burnzero.png" },
+		{ name: { tr: "Burn Zero Sugar 250ml.", en: "Burn Zero Sugar 250ml." }, price: 60,image: "urunimg/burnzero.png" },
 		{ name: { tr: "Burn 500ml.", en: "Burn 500ml." }, price: 100,image: "urunimg/burn500.png" },
 		
           
@@ -1017,6 +1054,7 @@ const menuData = {
         items: [
           { name: { tr: "Fusetea Şeftali 330ml.", en: "Fusetea Peach 330ml." }, price: 60,image: "urunimg/fuseteaseftali.png" },
           { name: { tr: "Fusetea Limon 330ml.", en: "Fusetea Lemon 330ml." }, price: 60,image: "urunimg/fusetealimon.png" },
+		  { name: { tr: "Fusetea Frambuaz & Böğürtlen 330ml.", en: "Fusetea Raspberry & Blackberry 330ml." }, price: 60,image: "urunimg/fuseteabogurtlen.png" },
 		  { name: { tr: "Fusetea Mango & Ananas 330ml.", en: "Fusetea Mango & Pineapple 330ml." }, price: 60,image: "urunimg/fuseteamango.png" },
 		  { name: { tr: "Fusetea Karpuz 330ml.", en: "Fusetea Watermelon 330ml." }, price: 60,image: "urunimg/fuseteakarpuz.png" },
 		  { name: { tr: "Fusetea Kavun & Çilek 330ml.", en: "Fusetea Melon & Strawberry 330ml." }, price: 60,image: "urunimg/fuseteakavun.png" },
@@ -1025,14 +1063,15 @@ const menuData = {
 		  { name: { tr: "Fusetea Limon 1lt.", en: "Fusetea Lemon 1lt." }, price: 70,image: "urunimg/fusetealimon1lt.png" },
 		  { name: { tr: "Fusetea Mango & Ananas 1lt.", en: "Fusetea Mango & Pineapple 1lt." }, price: 70,image: "urunimg/fuseteamango1lt.png" },
 		  { name: { tr: "Fusetea Kavun & Çilek 1lt.", en: "Fusetea Melon & Strawberry 1lt." }, price: 70,image: "urunimg/fuseteakavun1lt.png" },
+		  { name: { tr: "Fusetea Ejder Meyveli 1lt.", en: "Fusetea Dragon Fruit 1lt." }, price: 70,image: "urunimg/fuseteaejder.png" },
         ]
       },
       {
         title: { tr: "Didi", en: "Didi" },
         items: [
-          { name: { tr: "Didi Şeftali 330ml.", en: "Didi Peach 330ml." }, price: 40,image: "urunimg/didiseftali.png" },
-          { name: { tr: "Didi Limon 330ml.", en: "Didi Lemon 330ml." }, price: 40,image: "urunimg/didilimon.png" },
-		   { name: { tr: "Didi Bergamot 330ml.", en: "Didi Bergamot 330ml." }, price: 40,image: "urunimg/didibergamot.png" },
+          { name: { tr: "Didi Şeftali 330ml.", en: "Didi Peach 330ml." }, price: 50,image: "urunimg/didiseftali.png" },
+          { name: { tr: "Didi Limon 330ml.", en: "Didi Lemon 330ml." }, price: 50,image: "urunimg/didilimon.png" },
+		   { name: { tr: "Didi Bergamot 330ml.", en: "Didi Bergamot 330ml." }, price: 50,image: "urunimg/didibergamot.png" },
         ]
       }
     ]
@@ -1051,8 +1090,8 @@ const menuData = {
       {
         title: { tr: "Nescafe", en: "Nescafe" },
         items: [
-          { name: { tr: "Nescafe Xpress L. Original 250ml.", en: "Nescafe Xpress L. Original 250ml." }, price: 70,image: "urunimg/nescafeorijinal.png" },
-          { name: { tr: "Nescafe Black Roast 250ml.", en: "Nescafe Black Roast 250ml." }, price: 70,image: "urunimg/nescafeblack.png" },
+          { name: { tr: "Nescafe Xpress L. Original 250ml.", en: "Nescafe Xpress L. Original 250ml." }, price: 80,image: "urunimg/nescafeorijinal.png" },
+          { name: { tr: "Nescafe Black Roast 250ml.", en: "Nescafe Black Roast 250ml." }, price: 80,image: "urunimg/nescafeblack.png" },
 		  
         ]
       }
@@ -1064,24 +1103,24 @@ const menuData = {
       {
         title: { tr: "Cappy", en: "Cappy" },
         items: [
-          { name: { tr: "Cappy Vişne 330ml.", en: "Cappy Cherry 330ml." }, price: 50,image: "urunimg/cappyvisne.png" },
-          { name: { tr: "Cappy Portakal 330ml.", en: "Fusetea Orange 330ml." }, price: 50,image: "urunimg/cappyportakal.png" },
-		  { name: { tr: "Cappy Atom - Ballı K. 330ml.", en: "Cappy Atomic Honey & Mix. 330ml." }, price: 50,image: "urunimg/cappyatom.png" },
+          { name: { tr: "Cappy Vişne 330ml.", en: "Cappy Cherry 330ml." }, price: 60,image: "urunimg/cappyvisne.png" },
+          { name: { tr: "Cappy Portakal 330ml.", en: "Fusetea Orange 330ml." }, price: 60,image: "urunimg/cappyportakal.png" },
+		  { name: { tr: "Cappy Atom - Ballı K. 330ml.", en: "Cappy Atomic Honey & Mix. 330ml." }, price: 60,image: "urunimg/cappyatom.png" },
 		  
         ]
       },
       {
         title: { tr: "Caprisun", en: "Caprisun" },
         items: [
-          { name: { tr: "Caprisun Multivitamin 200ml.", en: "Caprisun Multivitamin 200ml." }, price: 20,image: "urunimg/caprisunmulti.png" },
-          { name: { tr: "Caprisun Safari 200ml.", en: "Caprisun Safari 200ml." }, price: 20,image: "urunimg/caprisunsafari.png" },
-		   { name: { tr: "Caprisun Mystic Dragon 200ml.", en: "Caprisun Mystic Dragon 200ml." }, price: 20,image: "urunimg/caprisundragon.png" },
+          { name: { tr: "Caprisun Multivitamin 200ml.", en: "Caprisun Multivitamin 200ml." }, price: 25,image: "urunimg/caprisunmulti.png" },
+          { name: { tr: "Caprisun Safari 200ml.", en: "Caprisun Safari 200ml." }, price: 25,image: "urunimg/caprisunsafari.png" },
+		   { name: { tr: "Caprisun Mystic Dragon 200ml.", en: "Caprisun Mystic Dragon 200ml." }, price: 25,image: "urunimg/caprisundragon.png" },
         ]
       },
 	  {
         title: { tr: "Link", en: "Link" },
         items: [
-          { name: { tr: "Link Çilekli 200ml.", en: "Link Strawberry 200ml." }, price: 15,image: "urunimg/linkcilekli.png" },
+          { name: { tr: "Link Çilekli 200ml.", en: "Link Strawberry 200ml." }, price: 20,image: "urunimg/linkcilekli.png" },
           
         ]
       },
@@ -1099,13 +1138,13 @@ const menuData = {
       {
         title: { tr: "Ruffles", en: "Ruffles" },
         items: [
-		{ name: { tr: "Original 20gr.", en: "Original 20gr." }, price: 20,image: "urunimg/rufflesoriginal.png" },
-		{ name: { tr: "Original 50gr.", en: "Original 50gr." }, price: 30,image: "urunimg/rufflesoriginal.png" },
-          { name: { tr: "Original Orta Boy 88gr.", en: "Original Medium Size 88gr." }, price: 50,image: "urunimg/rufflesoriginal.png" },
+		{ name: { tr: "Original 20gr.", en: "Original 20gr." }, price: 35,image: "urunimg/rufflesoriginal.png" },
+		{ name: { tr: "Original 50gr.", en: "Original 50gr." }, price: 35,image: "urunimg/rufflesoriginal.png" },
+          { name: { tr: "Original Orta Boy 88gr.", en: "Original Medium Size 88gr." }, price: 60,image: "urunimg/rufflesoriginal.png" },
 		  { name: { tr: "Original Orta Boy 105gr.", en: "Original Medium Size 105gr." }, price: 60,image: "urunimg/rufflesoriginal.png" },
           { name: { tr: "Original Büyük Boy 160gr.", en: "Original Large Size 160gr." }, price: 80,image: "urunimg/rufflesoriginal.png" },
 		  { name: { tr: "Original Mega Boy 193gr.", en: "Original Mega Size 193gr." }, price: 100,image: "urunimg/rufflesoriginalmega.png" },
-		  { name: { tr: "Ketçaplı 50gr.", en: "Ketçaplı 50gr." }, price: 30,image: "urunimg/rufflesketcap.png" },
+		  { name: { tr: "Ketçaplı 50gr.", en: "Ketçaplı 50gr." }, price: 35,image: "urunimg/rufflesketcap.png" },
 		  { name: { tr: "Ketçaplı Orta Boy 105gr.", en: "Ketchup Medium Size 105gr." }, price: 60,image: "urunimg/rufflesketcap.png" },
 		  { name: { tr: "Ketçaplı Büyük Boy 160gr.", en: "Ketchup Large Size 160gr." }, price: 80,image: "urunimg/rufflesketcap.png" },
 		  { name: { tr: "Peynir & Soğan Orta Boy 105gr.", en: "Cheese & Onion Medium Size 105gr." }, price: 60,image: "urunimg/rufflespeynir.png" },
@@ -1117,10 +1156,14 @@ const menuData = {
       {
         title: { tr: "Lays", en: "Lays" },
         items: [
+		{ name: { tr: "Lays Yoğurt ve Mevsim Yeşil. Küçük Boy 50gr.", en: "Lays Yog. & S. Greens Small Size 50gr." }, price: 35,image: "urunimg/laysyogurttan.png" },
+		{ name: { tr: "Lays Klasik Küçük Boy 50gr.", en: "Lays Classic Small Size 50gr." }, price: 35,image: "urunimg/laysklasik50.png" },
+		{ name: { tr: "Lays Klasik Orta Boy 107gr.", en: "Lays Classic Medium Size 50gr." }, price: 60,image: "urunimg/laysklasik107.png" },
 		{ name: { tr: "Lays Fırından Orta Boy 92gr.", en: "Lays Oven Medium Size 92gr." }, price: 60,image: "urunimg/laysfirindan.png" },
 		{ name: { tr: "Lays Fırından Büyük Boy 134gr.", en: "Lays Oven Baked Large Size 134gr." }, price: 80,image: "urunimg/laysfirindan.png" },
 		{ name: { tr: "Lays Baharatlı Orta Boy 105gr.", en: "Lays Spicy Large Size 105gr." }, price: 60,image: "urunimg/laysbaharatli.png" },
-		{ name: { tr: "Lays Yoğurt ve Mevsim Yeşil. Orta Boy 105gr.", en: "Lays Yog. & S. Greens Large Size 105gr." }, price: 60,image: "urunimg/laysyogurttan.png" },
+		{ name: { tr: "Lays Yoğurt ve Mevsim Yeşil. Orta Boy 105gr.", en: "Lays Yog. & S. Greens Medium Size 105gr." }, price: 60,image: "urunimg/laysyogurttan.png" },
+		{ name: { tr: "Lays Yoğurt ve Mevsim Yeşil. Büyük Boy 160gr.", en: "Lays Yog. & S. Greens Large Size 160gr." }, price: 80,image: "urunimg/laysyogurttan.png" },
 		{ name: { tr: "Lays Baharatlı Büyük Boy 160gr.", en: "Lays Spicy Large Size 160gr." }, price: 80,image: "urunimg/laysbaharatli.png" },
           { name: { tr: "Lays Klasik Büyük Boy 160gr.", en: "Lays Classic Large Size 160gr." }, price: 80,image: "urunimg/laysklasik.png" },
 		  		  
@@ -1129,8 +1172,10 @@ const menuData = {
 	  {
         title: { tr: "Doritos", en: "Doritos" },
         items: [
-		{ name: { tr: "Doritos Tako Küçük Boy 53gr.", en: "Doritos Taco Small Size 53gr." }, price: 30,image: "urunimg/doritostaco.png" },
-		{ name: { tr: "Doritos Hot Corn Acı B. Küçük Boy 53gr.", en: "Doritos Hot Corn Pepper Small Size 53gr." }, price: 30,image: "urunimg/doritoshotcorn.png" },
+		{ name: { tr: "Doritos Shoots Mexicano - Acı (30gr.", en: "Doritos Shoots Mexicano - Acı 30gr." }, price: 25,image: "urunimg/doritosshootsmexicano.png" },
+		{ name: { tr: "Doritos Shoots 30gr.", en: "Doritos Shoots 30gr." }, price: 25,image: "urunimg/doritosshoots.png" },
+		{ name: { tr: "Doritos Tako Küçük Boy 53gr.", en: "Doritos Taco Small Size 53gr." }, price: 35,image: "urunimg/doritostaco.png" },
+		{ name: { tr: "Doritos Hot Corn Acı B. Küçük Boy 53gr.", en: "Doritos Hot Corn Pepper Small Size 53gr." }, price: 35,image: "urunimg/doritoshotcorn.png" },
 		{ name: { tr: "Doritos Hot Corn Büyük Boy 180gr.", en: "Doritos Hot Corn Large Size 180gr." }, price: 80,image: "urunimg/doritoshotcorn.png" },
 		{ name: { tr: "Doritos Tako Orta Boy 114gr.", en: "Doritos Taco Medium Size 114gr." }, price: 60,image: "urunimg/doritostaco.png" },
 		{ name: { tr: "Doritos Tako Büyük Boy 185gr.", en: "Doritos Taco Large Size 185gr." }, price: 80,image: "urunimg/doritostaco.png" },
@@ -1139,19 +1184,30 @@ const menuData = {
 		{ name: { tr: "Doritos Tako Mega Boy 193gr.", en: "Doritos Taco Mega Size 193gr." }, price: 100,image: "urunimg/doritostaco.png" },
 		{ name: { tr: "Doritos Extreme Mex. Orta Boy 109gr.", en: "Doritos Extreme Mex. Medium Size 109gr." }, price: 60,image: "urunimg/doritosextreme.png" },
 		{ name: { tr: "Doritos Flamin Hot Orta Boy 102gr.", en: "Doritos Flamin Hot Medium Size 102gr." }, price: 60,image: "urunimg/doritosflamin.png" },
+		{ name: { tr: "Doritos Turca Süper Boy 109gr.", en: "Doritos Turca Super Size 109gr." }, price: 60,image: "urunimg/doritosturca.png" },
+		{ name: { tr: "Doritos Değiş Tokuş 115gr.", en: "Doritos Swap 109gr." }, price: 60,image: "urunimg/doritosswap.png" },
 		  		  
         ]
       },
 	  {
         title: { tr: "Çerezza", en: "Çerezza" },
         items: [
-		{ name: { tr: "Çerezza Kokteyl Baharatlı Orta Boy 117 gr.", en: "Çerezza Cocktail S. Medium Size 117 gr." }, price: 50,image: "urunimg/cerezzakokteyl.png" },
-		{ name: { tr: "Çerezza Sinema Pey.Soğ. Orta Boy 121 gr.", en: "Çerezza Cinema Che. Oni. Medium Size 121 gr." }, price: 50,image: "urunimg/cerezzasinema.png" },
-		{ name: { tr: "Çerezza Süt Mısırı Orta Boy 121 gr.", en: "Çerezza Milk Corn Medium Size 121 gr." }, price: 50,image: "urunimg/cerezzamisir.png" },
-		{ name: { tr: "Çerezza Popcorn Orta Boy 80 gr.", en: "Çerezza Popcorn Medium Size 80 gr." }, price: 50,image: "urunimg/cerezzapopcorn.png" },
-		{ name: { tr: "Çerezza Acılı Süper Boy 117 gr.", en: "Çerezza Hot Super Boy 117 gr." }, price: 50,image: "urunimg/cerezzaacili.png" },
+		{ name: { tr: "Çerezza Kokteyl Baharatlı Orta Boy 117 gr.", en: "Çerezza Cocktail S. Medium Size 117 gr." }, price: 60,image: "urunimg/cerezzakokteyl.png" },
+		{ name: { tr: "Çerezza Sinema Pey.Soğ. Orta Boy 121 gr.", en: "Çerezza Cinema Che. Oni. Medium Size 121 gr." }, price: 60,image: "urunimg/cerezzasinema.png" },
+		{ name: { tr: "Çerezza Süt Mısırı Orta Boy 121 gr.", en: "Çerezza Milk Corn Medium Size 121 gr." }, price: 60,image: "urunimg/cerezzamisir.png" },
+		{ name: { tr: "Çerezza Popcorn Orta Boy 80 gr.", en: "Çerezza Popcorn Medium Size 80 gr." }, price: 60,image: "urunimg/cerezzapopcorn.png" },
+		{ name: { tr: "Çerezza Acılı Süper Boy 117 gr.", en: "Çerezza Hot Super Boy 117 gr." }, price: 60,image: "urunimg/cerezzaacili.png" },
 		{ name: { tr: "Çerezza Dev Bah. Dom. Soslu 150 gr.", en: "Çerezza Giant Spicy Tomato Sauce 150 gr." }, price: 80,image: "urunimg/cerezzadev.png" },
 		{ name: { tr: "Çerezza Dev Yer. Fıs. Büyük Boy 145 gr.", en: "Çerezza Giant Peanut Large Size 145gr." }, price: 80,image: "urunimg/cerezzadevyer.png" },
+		
+		  		  
+        ]
+      },{
+	     title: { tr: "Cheetos", en: "Cheetos" },
+        items: [
+		{ name: { tr: "Cheetos Biftek & Soğan 43gr.", en: "Cheetos Steak & Onion 43gr." }, price: 35,image: "urunimg/cheetos.png" },
+		{ name: { tr: "Cheetos Biftek & Soğan 23gr.", en: "Cheetos Steak & Onion 23gr." }, price: 20,image: "urunimg/cheetosshoots.png" },
+		
 		
 		  		  
         ]
@@ -1162,8 +1218,8 @@ const menuData = {
 		{ name: { tr: "Gong Peynir ve Acılı M. Patlağı", en: "Gong Cheese and Spicy Popcorn" }, price: 20, image: "urunimg/gongaci.png" },
 		{ name: { tr: "Gong Bal ve Hardallı M. Patlağı", en: "Gong Honey and Mustard Popcorn" }, price: 20, image: "urunimg/gongbal.png" },
 		{ name: { tr: "Gong Orijinal Lezzet", en: "Gong Original Taste" }, price: 20, image: "urunimg/gongoriginal.png" },
-		{ name: { tr: "Gong Pops Bal ve Hardallı M. Patlağı", en: "Gong Pops Honey and Mustard Popcorn" }, price: 50, image: "urunimg/gongpopsbal.png" },
-		{ name: { tr: "Gong Pops Taco", en: "Gong Pops Taco" }, price: 50, image: "urunimg/gongpopstaco.png" },  
+		{ name: { tr: "Gong Pops Bal ve Hardallı M. Patlağı", en: "Gong Pops Honey and Mustard Popcorn" }, price: 60, image: "urunimg/gongpopsbal.png" },
+		{ name: { tr: "Gong Pops Taco", en: "Gong Pops Taco" }, price: 60, image: "urunimg/gongpopstaco.png" },  
         ]
       },
     ]
@@ -1175,10 +1231,10 @@ const menuData = {
       title: { tr: "Ülker", en: "Ülker" },
       items: [
         { name: { tr: "Haylayf", en: "Haylayf" }, price: 15, image: "urunimg/haylayf.png" },
-		{ name: { tr: "Çizi Peynirli", en: "Çizi Cheese" }, price: 20, image: "urunimg/cizipeynirli.png" },
+		{ name: { tr: "Çizi Peynirli", en: "Çizi Cheese" }, price: 25, image: "urunimg/cizipeynirli.png" },
 		{ name: { tr: "Çiziviç Peynirli", en: "Çiziviç Cheese" }, price: 25, image: "urunimg/cizipeynir.png" },
 		{ name: { tr: "İkram Çikolatalı", en: "İkram Chocolate" }, price: 30, image: "urunimg/ikramcikolatali.png" },
-		{ name: { tr: "İkram Fındıklı", en: "İkram Hazelnut" }, price: 25, image: "urunimg/ikramfindik.png" },
+		{ name: { tr: "İkram Fındıklı", en: "İkram Hazelnut" }, price: 30, image: "urunimg/ikramfindik.png" },
 		{ name: { tr: "Hanımeller Fındıklı", en: "Hanımeller Hazelnut" }, price: 25, image: "urunimg/hanimellerfindikli.png" },
 		{ name: { tr: "Hanımeller Çoko Damla", en: "Hanımeller Choco Drops" }, price: 30, image: "urunimg/hanimellercokodam.png" },
 		{ name: { tr: "Biskrem", en: "Biskrem" }, price: 30, image: "urunimg/biskrem.png" },
@@ -1195,8 +1251,8 @@ const menuData = {
       title: { tr: "Eti", en: "Eti" },
       items: [
         { name: { tr: "Tutku", en: "Tutku" }, price: 30, image: "urunimg/tutku.png" },
-		{ name: { tr: "Benim'o Bitter", en: "Benim'o Bitter" }, price: 35, image: "urunimg/benimobitter.png" },
-		{ name: { tr: "Benim'o Çikolatalı", en: "Benim'o Chocolate" }, price: 35, image: "urunimg/benimociko.png" },
+		{ name: { tr: "Benim'o Bitter", en: "Benim'o Bitter" }, price: 40, image: "urunimg/benimobitter.png" },
+		{ name: { tr: "Benim'o Çikolatalı", en: "Benim'o Chocolate" }, price: 40, image: "urunimg/benimociko.png" },
 		{ name: { tr: "Nero", en: "Nero" }, price: 30, image: "urunimg/nero.png" },
 		{ name: { tr: "Cin", en: "Cin" }, price: 30, image: "urunimg/cin.png" },
 		
@@ -1211,16 +1267,16 @@ const menuData = {
       {
         title: { tr: "Eti", en: "Eti" },
         items: [
-          { name: { tr: "Canga", en: "Canga" }, price: 25,image: "urunimg/canga.png" },
-          { name: { tr: "Petito Gofret", en: "Petito Wafer" }, price: 15,image: "urunimg/petitogofret.png" },
-		  { name: { tr: "Maximus Loading XL", en: "Maximus Loading XL" }, price: 25,image: "urunimg/maximusloadingxl.png" },
-		  { name: { tr: "Hoşbeş Kakaolu", en: "Hoşbeş Cocoa" }, price: 15,image: "urunimg/hosbeskakao.png" },
+          { name: { tr: "Canga", en: "Canga" }, price: 30,image: "urunimg/canga.png" },
+          { name: { tr: "Petito Gofret", en: "Petito Wafer" }, price: 20,image: "urunimg/petitogofret.png" },
+		  { name: { tr: "Maximus Loading XL", en: "Maximus Loading XL" }, price: 30,image: "urunimg/maximusloadingxl.png" },
+		  { name: { tr: "Hoşbeş Kakaolu", en: "Hoşbeş Cocoa" }, price: 20,image: "urunimg/hosbeskakao.png" },
 		  { name: { tr: "Maximus", en: "Maximus" }, price: 20,image: "urunimg/maximus36.png" },
 		  { name: { tr: "Karam", en: "Karam" }, price: 30,image: "urunimg/karamgurme.png" },
 		  { name: { tr: "Petito Patim", en: "Petito Patim" }, price: 20,image: "urunimg/petitopatim.png" },
 		  { name: { tr: "Petito Mini", en: "Petito Mini" }, price: 50,image: "urunimg/petitomini.png" },
 		  { name: { tr: "Maximus Çilekli", en: "Maximus Strawberry" }, price: 20,image: "urunimg/maximuscilekli.png" },
-		  { name: { tr: "Canga Antep Fıstıklı", en: "Canga Antep Pistachio" }, price: 50,image: "urunimg/cangaantep.png" },
+		  { name: { tr: "Canga Antep Fıstıklı", en: "Canga Antep Pistachio" }, price: 60,image: "urunimg/cangaantep.png" },
 		  { name: { tr: "Maximus Muzlu", en: "Maximus Banana" }, price: 20,image: "urunimg/maximusmuzlu.png" },
 		  { name: { tr: "Hoşbeş Fındıklı", en: "Hoşbeş Hazelnut" }, price: 20,image: "urunimg/hosbesfindikli.png" },
 		 
@@ -1229,31 +1285,32 @@ const menuData = {
       {
         title: { tr: "Ülker", en: "Ülker" },
         items: [
-         { name: { tr: "Caramio Karamel", en: "Caramio Caramel" }, price: 25, image: "urunimg/caramiokaramel.png" },
+         { name: { tr: "Caramio Karamel", en: "Caramio Caramel" }, price: 30, image: "urunimg/caramiokaramel.png" },
 		{ name: { tr: "Çokonat Antep Fıstıklı", en: "Çokonat Antep Pistachio" }, price: 30, image: "urunimg/cokonatfindikli.png" },
 		{ name: { tr: "Olala Tiramisu", en: "Olala Tiramisu" }, price: 30, image: "urunimg/olalatramisu.png" },
-		{ name: { tr: "Olala Bold", en: "Olala Bold" }, price: 25, image: "urunimg/olalabold.png" },
-				{ name: { tr: "9 Kat Tat Muzlu", en: "9 Kat Tat Banana" }, price: 15, image: "urunimg/9katmuzlu.png" },
-		{ name: { tr: "9 Kat Tat Fındıklı", en: "9 Kat Tat Hazelnut" }, price: 15, image: "urunimg/9katfindikli.png" }, 
-		{ name: { tr: "9 Kat Tat Portakalli", en: "9 Kat Tat Orange" }, price: 15, image: "urunimg/9katportakal.png" },		
+		{ name: { tr: "Olala Bold", en: "Olala Bold" }, price: 30, image: "urunimg/olalabold.png" },
+		{ name: { tr: "9 Kat Tat Muzlu", en: "9 Kat Tat Banana" }, price: 20, image: "urunimg/9katmuzlu.png" },
+		{ name: { tr: "9 Kat Tat Fındıklı", en: "9 Kat Tat Hazelnut" }, price: 20, image: "urunimg/9katfindikli.png" }, 
+		{ name: { tr: "9 Kat Tat Portakallı", en: "9 Kat Tat Orange" }, price: 20, image: "urunimg/9katportakal.png" },		
 		{ name: { tr: "Çokonat", en: "Çokonat" }, price: 30, image: "urunimg/cokonat.png" },  
 		{ name: { tr: "Dido Sütlü Çikolatalı", en: "Dido Milk Chocolate" }, price: 30, image: "urunimg/didosutluciko.png" }, 
 		{ name: { tr: "Coco Star", en: "Coco Star" }, price: 15, image: "urunimg/cocostar1.png" },
-		{ name: { tr: "Laviva", en: "Laviva" }, price: 25, image: "urunimg/laviva.png" },
-		{ name: { tr: "Rulokat", en: "Rulokat" }, price: 20, image: "urunimg/rulokat.png" },
-		{ name: { tr: "Piko", en: "Piko" }, price: 10, image: "urunimg/piko.png" },
+		{ name: { tr: "Laviva", en: "Laviva" }, price: 30, image: "urunimg/laviva.png" },
+		{ name: { tr: "Rulokat", en: "Rulokat" }, price: 30, image: "urunimg/rulokat.png" },
+		{ name: { tr: "Piko", en: "Piko" }, price: 15, image: "urunimg/piko.png" },
 		{ name: { tr: "Dido Frambuazlı", en: "Dido Raspberry" }, price: 30, image: "urunimg/didoframbuaz.png" },
 		{ name: { tr: "Dido Trio", en: "Dido Trio" }, price: 35, image: "urunimg/didotrioo.png" },
 		{ name: { tr: "Dido Trio Colors Çilekli", en: "Dido Trio Colors Strawberry" }, price: 30, image: "urunimg/didotrio.png" },
 		{ name: { tr: "Dido Gold", en: "Dido Gold" }, price: 35, image: "urunimg/didogold.png" },
 		{ name: { tr: "Fındık Rüyası", en: "Fındık Rüyası" }, price: 35, image: "urunimg/findikruyasi.png" },
+		{ name: { tr: "Çokomel", en: "Çokomel" }, price: 10, image: "urunimg/cokomel.png" },
         ]
       },
 	  {
       title: { tr: "Alpella", en: "Alpella" },
       items: [
-        { name: { tr: "Harby Karamelli", en: "Harby Caramel" }, price: 10, image: "urunimg/harbykaramel.png" },
-		{ name: { tr: "Harby Sütlü", en: "Harby Milk" }, price: 10, image: "urunimg/harbysutlu.png" },
+        { name: { tr: "Harby Karamelli", en: "Harby Caramel" }, price: 15, image: "urunimg/harbykaramel.png" },
+		{ name: { tr: "Harby Sütlü", en: "Harby Milk" }, price: 15, image: "urunimg/harbysutlu.png" },
 		{ name: { tr: "3GEN Beyaz", en: "3GEN White" }, price: 20, image: "urunimg/3genbeyaz.png" },
 		
 		
@@ -1267,17 +1324,17 @@ const menuData = {
       {
         title: { tr: "Eti", en: "Eti" },
         items: [
-		{ name: { tr: "Popkek Muzlu", en: "Popkek Banana" }, price: 15,image: "urunimg/popkekmuz.png" },
-		{ name: { tr: "Popkek Çikolatalı", en: "Popkek Chocolate" }, price: 15,image: "urunimg/popkekciko.png" },
-		{ name: { tr: "Popkek Limonlu", en: "Popkek Lemon" }, price: 15,image: "urunimg/popkeklimonlu.png" },
-		{ name: { tr: "Popkek Vişneli", en: "Popkek Cherry" }, price: 15,image: "urunimg/popkekvisneli.png" },
-		{ name: { tr: "Popkek Portakal", en: "Popkek Orange" }, price: 15,image: "urunimg/popkekportakal.png" },
-		{ name: { tr: "Popkek Bitter", en: "Popkek Bitter" }, price: 15,image: "urunimg/popkekbitter.png" },
-		 { name: { tr: "Popkek Hindistan Cevizli", en: "Popkek Coconut" }, price: 15,image: "urunimg/popkekcoconut.png" },
-          { name: { tr: "Browni Gold Çikolatalı", en: "Browni Gold Chocolate" }, price: 15,image: "urunimg/brownigold.png" },
-          { name: { tr: "Browni Gold Vişneli", en: "Browni Gold Cherry" }, price: 15,image: "urunimg/brownigoldvisneli.png" },
-		  { name: { tr: "Browni İntense Gold Karamel", en: "Browni Intense Gold Caramel" }, price: 25,image: "urunimg/browniintense.png" },
-		  { name: { tr: "Browni İntense Gold Çikolatalı", en: "Browni Intense Gold Chocolate" }, price: 25,image: "urunimg/browniintenseciko.png" },
+		{ name: { tr: "Popkek Muzlu", en: "Popkek Banana" }, price: 20,image: "urunimg/popkekmuz.png" },
+		{ name: { tr: "Popkek Çikolatalı", en: "Popkek Chocolate" }, price: 20,image: "urunimg/popkekciko.png" },
+		{ name: { tr: "Popkek Limonlu", en: "Popkek Lemon" }, price: 20,image: "urunimg/popkeklimonlu.png" },
+		{ name: { tr: "Popkek Vişneli", en: "Popkek Cherry" }, price: 20,image: "urunimg/popkekvisneli.png" },
+		{ name: { tr: "Popkek Portakal", en: "Popkek Orange" }, price: 20,image: "urunimg/popkekportakal.png" },
+		{ name: { tr: "Popkek Bitter", en: "Popkek Bitter" }, price: 20,image: "urunimg/popkekbitter.png" },
+		 { name: { tr: "Popkek Hindistan Cevizli", en: "Popkek Coconut" }, price: 20,image: "urunimg/popkekcoconut.png" },
+          { name: { tr: "Browni Gold Çikolatalı", en: "Browni Gold Chocolate" }, price: 20,image: "urunimg/brownigold.png" },
+          { name: { tr: "Browni Gold Vişneli", en: "Browni Gold Cherry" }, price: 20,image: "urunimg/brownigoldvisneli.png" },
+		  { name: { tr: "Browni İntense Gold Karamel", en: "Browni Intense Gold Caramel" }, price: 30,image: "urunimg/browniintense.png" },
+		  { name: { tr: "Browni İntense Gold Çikolatalı", en: "Browni Intense Gold Chocolate" }, price: 30,image: "urunimg/browniintenseciko.png" },
 		  { name: { tr: "Sütburger Sütlü & Çilekli", en: "Sütburger Milk & Cherry" }, price: 20,image: "urunimg/sutburgercilekli.png" },
 		  { name: { tr: "Sütburger Sütlü & Ballı", en: "Sütburger Milk & Honey" }, price: 20,image: "urunimg/sutburgerballi.png" },
 		 
@@ -1305,10 +1362,11 @@ const menuData = {
       {
         title: { tr: "Ülker", en: "Ülker" },
         items: [
-         { name: { tr: "Susamlı Çubuk Kraker", en: "Sesame Crackers" }, price: 10,image: "urunimg/susamlikraker.png" },
-		 { name: { tr: "Krispi Acılı", en: "Krispi Hot" }, price: 15,image: "urunimg/krispiacili.png" },
-		  { name: { tr: "Krispi Baharatlı", en: "Krispi Spicy" }, price: 15,image: "urunimg/krispibaharatli.png" },
-		  { name: { tr: "Krispi Peynirli", en: "Krispi Cheese" }, price: 15,image: "urunimg/krispipeynirli.png" },
+		{ name: { tr: "Çubuk Kraker", en: "Crackers" }, price: 10,image: "urunimg/kraker.png" },
+         { name: { tr: "Susamlı Çubuk Kraker", en: "Sesame Crackers" }, price: 20,image: "urunimg/susamlikraker.png" },
+		 { name: { tr: "Krispi Acılı", en: "Krispi Hot" }, price: 20,image: "urunimg/krispiacili.png" },
+		  { name: { tr: "Krispi Baharatlı", en: "Krispi Spicy" }, price: 20,image: "urunimg/krispibaharatli.png" },
+		  { name: { tr: "Krispi Peynirli", en: "Krispi Cheese" }, price: 20,image: "urunimg/krispipeynirli.png" },
 		 
 		
         ]
@@ -1324,11 +1382,11 @@ const menuData = {
     {
       title: { tr: "Ülker Yupo Jelibon", en: "Ülker Yupo Jelly Bean" },
       items: [
-        { name: { tr: "Ayıcık", en: "Teddy Bear" }, price: 30, image: "urunimg/yupoayicik.png" },
-		{ name: { tr: "Solucan", en: "Worm" }, price: 30, image: "urunimg/yuposolucan.png" },
-		{ name: { tr: "Meyve Bahçesi", en: "Orchard" }, price: 30, image: "urunimg/yupomeyvebahcesi.png" },
-		{ name: { tr: "Kola", en: "Cola" }, price: 30, image: "urunimg/yupokola.png" },
-		{ name: { tr: "Lokumcuk", en: "Turkish Delight" }, price: 30, image: "urunimg/lokum.png" },
+        { name: { tr: "Ayıcık", en: "Teddy Bear" }, price: 50, image: "urunimg/yupoayicik.png" },
+		{ name: { tr: "Solucan", en: "Worm" }, price: 40, image: "urunimg/yuposolucan.png" },
+		{ name: { tr: "Meyve Bahçesi", en: "Orchard" }, price: 50, image: "urunimg/yupomeyvebahcesi.png" },
+		{ name: { tr: "Kola", en: "Cola" }, price: 40, image: "urunimg/yupokola.png" },
+		{ name: { tr: "Lokumcuk", en: "Turkish Delight" }, price: 50, image: "urunimg/lokum.png" },
                 
       ]
     },
@@ -1343,17 +1401,17 @@ const menuData = {
       title: { tr: "Ülker Şeker", en: "Ülker Sugar" },
       items: [
         { name: { tr: "Yupo Lolipop", en: "Yupo Lollipop" }, price: 10, image: "urunimg/yupololi.png" },
-		{ name: { tr: "Bonbon Nanelim", en: "Bonbon MY Mint" }, price: 20, image: "urunimg/nanelim.png" },
+		{ name: { tr: "Bonbon Nanelim", en: "Bonbon MY Mint" }, price: 30, image: "urunimg/nanelim.png" },
       ]
     },
 	{
       title: { tr: "Ülker Oneo", en: "Ülker Oneo" },
       items: [
-        { name: { tr: "Portakal & Kivi", en: "Orange & Kiwi" }, price: 20, image: "urunimg/oneopor.png" },
-        { name: { tr: "Nane & Kivi", en: "Mint" }, price: 20, image: "urunimg/oneonane.png" },  
-		{ name: { tr: "Yeşil Nane", en: "Mint" }, price: 20, image: "urunimg/oneoyesilnane.png" },
-		{ name: { tr: "Karpuz", en: "Watermelon" }, price: 20, image: "urunimg/oneokarpuz.png" },
-		{ name: { tr: "Çilek", en: "Strawberry" }, price: 20, image: "urunimg/oneocilek.png" }, 			
+        { name: { tr: "Portakal & Kivi", en: "Orange & Kiwi" }, price: 30, image: "urunimg/oneopor.png" },
+        { name: { tr: "Nane & Kivi", en: "Mint" }, price: 30, image: "urunimg/oneonane.png" },  
+		{ name: { tr: "Yeşil Nane", en: "Mint" }, price: 30, image: "urunimg/oneoyesilnane.png" },
+		{ name: { tr: "Karpuz", en: "Watermelon" }, price: 30, image: "urunimg/oneokarpuz.png" },
+		{ name: { tr: "Çilek", en: "Strawberry" }, price: 30, image: "urunimg/oneocilek.png" }, 			
       ]
     },
 	{
@@ -1369,15 +1427,15 @@ const menuData = {
       title: { tr: "Rocco Şeker", en: "Rocco Sugar" },
       items: [
         { name: { tr: "Lolipop", en: "Lollipop" }, price: 10, image: "urunimg/roccololipop.png" },
-		{ name: { tr: "Sıkışeker Ahududu & Limon", en: "Sıkışeker Raspberry & Lemon" }, price: 30, image: "urunimg/roccoahududu.png" },
-		{ name: { tr: "Sıkışeker Mandalina & Karpuz", en: "Sıkışeker Tangerine & Watermelon" }, price: 30, image: "urunimg/roccomandalina.png" },
-		{ name: { tr: "Sıkışeker Nar & Çilek", en: "Sıkışeker Pomegranate and Strawberry" }, price: 30, image: "urunimg/rocconar.png" },
+		{ name: { tr: "Sıkışeker Ahududu & Limon", en: "Sıkışeker Raspberry & Lemon" }, price: 35, image: "urunimg/roccoahududu.png" },
+		{ name: { tr: "Sıkışeker Mandalina & Karpuz", en: "Sıkışeker Tangerine & Watermelon" }, price: 35, image: "urunimg/roccomandalina.png" },
+		{ name: { tr: "Sıkışeker Nar & Çilek", en: "Sıkışeker Pomegranate and Strawberry" }, price: 35, image: "urunimg/rocconar.png" },
       ]
     },
 	{
       title: { tr: "Jelly Jelibon", en: "Jelly Jelly Bean" },
       items: [
-        { name: { tr: "Stick Fruit Garden", en: "Stick Fruit Garden" }, price: 30, image: "urunimg/jelly.png" },
+        { name: { tr: "Stick Fruit Garden", en: "Stick Fruit Garden" }, price: 25, image: "urunimg/jelly.png" },
 		
       ]
     },
@@ -1523,7 +1581,7 @@ doner: {
       {
       title: {  tr: "Boom Boom", en: "Boom Boom" },
       items: [
-        { name: { tr: "Boom Boom", en: "Boom Boom" }, price: 50, image: "urunimg/boomboom.png" },
+        { name: { tr: "Boom Boom", en: "Boom Boom" }, price: 45, image: "urunimg/boomboom.png" },
 		{ name: { tr: "Boom Boom Gold", en: "Boom Boom Gold" }, price: 50, image: "urunimg/boomboomgold.png" },
 		
 			
@@ -1536,7 +1594,7 @@ doner: {
 		 { name: { tr: "CL Classics Antep Fıstık", en: "Classics Antep Pistachio" }, price: 30, image: "urunimg/clfistik.png" },
 		 { name: { tr: "CL Classics Kakao", en: "Classics Antep Cacao" }, price: 30, image: "urunimg/clkakao.png" },
 		 { name: { tr: "Maraş Cup", en: "Maraş Cup" }, price: 40, image: "urunimg/cup.png" },
-		 { name: { tr: "Nogger Sandwich", en: "Nogger Sandwich" }, price: 75, image: "urunimg/nogger.png" },
+		 { name: { tr: "Nogger Sandwich", en: "Nogger Sandwich" }, price: 70, image: "urunimg/nogger.png" },
 		
 		
       ]
@@ -1544,10 +1602,10 @@ doner: {
 	{
       title: {  tr: "Stick", en: "Stick" },
       items: [
-        { name: { tr: "Milka Stick", en: "Milka Stick" }, price: 60, image: "urunimg/milkas.png" },
+        { name: { tr: "Milka Stick", en: "Milka Stick" }, price: 50, image: "urunimg/milkas.png" },
 		 { name: { tr: "Vienetta Stick", en: "Vienetta Stick" }, price: 30, image: "urunimg/vienetta.png" },
 		 { name: { tr: "Volcano Stick", en: "Volcano Stick" }, price: 60, image: "urunimg/volcanostick.png" },
-		  { name: { tr: "Conboo Kakao", en: "Conboo Cacao" }, price: 15, image: "urunimg/conboo.png" },
+		  { name: { tr: "Conboo Kakao", en: "Conboo Cacao" }, price: 20, image: "urunimg/conboo.png" },
 		
 		
 		
@@ -1557,7 +1615,7 @@ doner: {
       title: {  tr: "Max", en: "Max" },
       items: [
         { name: { tr: "Twister Forest", en: "Twister Forest" }, price: 20, image: "urunimg/forest.png" },
-		{ name: { tr: "Twister Ocean", en: "Twister Ocean" }, price: 20, image: "urunimg/ocean.png" },
+		{ name: { tr: "Twister Ocean", en: "Twister Ocean" }, price: 25, image: "urunimg/ocean.png" },
 		{ name: { tr: "Twister Cool", en: "Twister Cool" }, price: 20, image: "urunimg/cool.png" },
 		
 			
