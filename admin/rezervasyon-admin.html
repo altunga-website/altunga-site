@@ -331,43 +331,67 @@
 
     // Filtre uygulayıp göster
     function filtreleVeGoster() {
-      const isimFiltre = isimAra.value.trim().toLowerCase();
-      const saatBas = saatBaslangic.value;
-      const saatBit = saatBitis.value;
+  const isimFiltre = isimAra.value.trim().toLowerCase();
+  const saatBas = saatBaslangic.value;
+  const saatBit = saatBitis.value;
 
-      let filtreli = tumRezervasyonlar;
+  let filtreli = [...tumRezervasyonlar];
 
-      if (isimFiltre) {
-        filtreli = filtreli.filter(r => r.isim.toLowerCase().includes(isimFiltre));
-      }
+  if (isimFiltre) {
+    filtreli = filtreli.filter(r => r.isim.toLowerCase().includes(isimFiltre));
+  }
+  if (saatBas) {
+    filtreli = filtreli.filter(r => r.saat >= saatBas);
+  }
+  if (saatBit) {
+    filtreli = filtreli.filter(r => r.saat <= saatBit);
+  }
 
-      if (saatBas) {
-        filtreli = filtreli.filter(r => r.saat >= saatBas);
-      }
-      if (saatBit) {
-        filtreli = filtreli.filter(r => r.saat <= saatBit);
-      }
+  // === GRUPLAMA ===
+  const gruplar = {};
 
-      rezervasyonListesi.innerHTML = "";
-
-      if (filtreli.length === 0) {
-        rezervasyonListesi.textContent = "Seçilen filtrelere uygun rezervasyon bulunamadı.";
-        return;
-      }
-
-      filtreli.forEach(r => {
-        const kutu = document.createElement("div");
-        kutu.className = "rezervasyon-kutu";
-        kutu.innerHTML = `
-          <div class="etiket ${alanEtiketleri(r.alan)}">${r.alan.replaceAll("_", " ").toUpperCase()}</div>
-          <div class="saat">🕔 Saat: <strong>${r.saat}</strong></div>
-          <div class="isim">👤 İsim: <strong>${r.isim}</strong></div>
-          <div class="telefon">🆔 Telefon: <strong>${r.telefon}</strong></div>
-          <button class="sil" data-alan="${r.alan}" data-tarih="${tarihInput.value}" data-saat="${r.saat}">Sil</button>
-        `;
-        rezervasyonListesi.appendChild(kutu);
-      });
+  filtreli.forEach(r => {
+    const key = `${r.isim}__${r.telefon}__${r.alan}`;
+    if (!gruplar[key]) {
+      gruplar[key] = {
+        isim: r.isim,
+        telefon: r.telefon,
+        alan: r.alan,
+        saatler: []
+      };
     }
+    gruplar[key].saatler.push(r.saat);
+  });
+
+  // === GÖSTERİM ===
+  rezervasyonListesi.innerHTML = "";
+
+  const gruplar = Object.values(gruplar);
+  if (gruplar.length === 0) {
+    rezervasyonListesi.textContent = "Seçilen filtrelere uygun rezervasyon bulunamadı.";
+    return;
+  }
+
+  gruplar.forEach(grup => {
+    const kutu = document.createElement("div");
+    kutu.className = "rezervasyon-kutu";
+
+    const saatlerHTML = grup.saatler.map(s => `<li>${s}</li>`).join("");
+
+    kutu.innerHTML = `
+      <div class="etiket ${alanEtiketleri(grup.alan)}">${grup.alan.replaceAll("_", " ").toUpperCase()}</div>
+      <div class="isim">👤 <strong>${grup.isim}</strong></div>
+      <div class="telefon">📞 <strong>${grup.telefon}</strong></div>
+      <div class="saat">🕔 Saatler:
+        <ul style="padding-left:20px; margin-top:5px;">
+          ${saatlerHTML}
+        </ul>
+      </div>
+    `;
+
+    rezervasyonListesi.appendChild(kutu);
+  });
+}
 
     // Excel butonu (sadece filtreli listeyi csv yapar)
     excelBtn.addEventListener("click", () => {
