@@ -656,14 +656,14 @@ footer {
 
   <img src="logo.png" alt="Logo">
   <h1 id="headerTitle">Altunga E Spor Merkezi</h1>
-  <div class="controls">
-    <select id="languageSelect" onchange="setLanguage(this.value)">
-      <option value="tr">TR</option>
-      <option value="en">EN</option>
-	  
-    </select>
-    <button onclick="toggleTheme()">🌙/☀️</button>
-  </div>
+   <div class="controls">
+  <select id="languageSelect" onchange="setLanguage(this.value)">
+    <option value="tr">TR</option>
+    <option value="en">EN</option>
+  </select>
+  <button onclick="toggleTheme()" title="Tema">🌙/☀️</button>
+  <button onclick="window.location.href='rezervasyon.html'" title="Rezervasyon">🌐🛎️</button>
+</div>
 <button id="callBtn" onclick="openZilModal()" title="Görevli Çağır" style="
   position: fixed;
   bottom: 20px;
