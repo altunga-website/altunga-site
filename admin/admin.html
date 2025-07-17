@@ -222,9 +222,12 @@
 </head>
 <body>
   <div id="darkToggle">
+
     <button onclick="toggleDarkMode()">🌙 Gece Modu</button>
     <button onclick="window.print()">🖨️ Yazdır</button>
     <button onclick="indirePDF()">📄 PDF</button>
+	<button onclick="window.open('rezervasyon-admin.html', '_blank')" title="Rezervasyonlar">📅</button>
+
   </div>
 
   <div id="girisOverlay">
@@ -279,6 +282,7 @@
     </div>
   </div>
 
+
   <div id="kontrolButonlar" style="display:none">
     <button onclick="kullaniciDegistir()">Kullanıcı Değiştir</button>
     <button onclick="cikisYap()">Çıkış Yap</button>
@@ -322,6 +326,8 @@
 
   <audio id="ding" src="ding.mp3" preload="auto"></audio>
   <script>
+  
+  
   document.addEventListener("click", () => {
   const ding = document.getElementById("ding");
   if (ding) {
