@@ -418,6 +418,15 @@
       const gun = now.getDate().toString().padStart(2, "0");
       return `${yil}-${ay}-${gun}`;
     }
+	
+	document.addEventListener("DOMContentLoaded", () => {
+  if (localStorage.getItem("loggedIn") === "true") {
+    setLoggedIn();
+    tarihInput.value = bugununTarihiTR();
+    startRealtimeListener(tarihInput.value);
+  }
+});
+
   </script>
 </body>
 </html>
