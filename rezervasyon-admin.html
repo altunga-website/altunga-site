@@ -215,19 +215,16 @@
       loginForm.classList.remove("active");
       app.classList.add("active");
     }
-    function setLoggedOut() {
-      loginForm.classList.add("active");
-      app.classList.remove("active");
-      localStorage.removeItem("loggedIn");
-    }
+   function setLoggedOut() {
+  loginForm.classList.add("active");
+  app.classList.remove("active");
+  localStorage.removeItem("loggedIn");
 
-    if (localStorage.getItem("loggedIn") === "true") {
-      setLoggedIn();
-      tarihInput.value = bugununTarihiTR();
-      startRealtimeListener(tarihInput.value);
-    } else {
-      setLoggedOut();
-    }
+  // Giriş formu alanlarını temizle
+  document.getElementById("username").value = "";
+  document.getElementById("password").value = "";
+  errorMsg.textContent = "";
+}
 
     loginForm.addEventListener("submit", e => {
       e.preventDefault();
@@ -422,6 +419,5 @@
       return `${yil}-${ay}-${gun}`;
     }
   </script>
-
 </body>
 </html>
