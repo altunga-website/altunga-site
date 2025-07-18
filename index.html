@@ -404,9 +404,9 @@ header h1 {
 }
 .cart-container {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 10000;
+  bottom: env(safe-area-inset-bottom, 16px);
+  right: 16px;
+  z-index: 9999;
 }
 
 .toggle-cart {
@@ -676,12 +676,7 @@ a[href^="mailto"] {
   text-decoration: none;
   font-style: normal;
 }
-.sepet-btn {
-  position: fixed;
-  bottom: env(safe-area-inset-bottom, 12px);
-  right: 12px;
-  z-index: 9999;
-}
+
 
 
   </style>
