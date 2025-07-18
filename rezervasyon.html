@@ -141,6 +141,15 @@ margin-left: auto;
 margin-right: auto;
 
 }
+.uyari-mesaji {
+  text-align: center;
+  font-size: 14px;
+  color: #6c757d; /* Gri ton */
+  margin: 10px 0 20px;
+  filter: blur(0.3px);
+  opacity: 0.7;
+  font-style: italic;
+}
 
   </style>
 </head>
@@ -229,6 +238,7 @@ margin-right: auto;
       <select id="saat" required></select>
 
       <button type="submit">Rezervasyon Yap</button>
+	  <div class="uyari-mesaji">Masa ve oda alanlarında rezervasyon dışı değişiklikler meydana gelebilir.</div>
     </form>
     <div id="message"></div>
   </div>
@@ -402,7 +412,7 @@ const tomorrow = today.toLocaleDateString('en-CA'); // 'YYYY-MM-DD' formatı
 document.getElementById('tarih').setAttribute('min', tomorrow);
 
 </script>
-	  <footer style="text-align:center; padding: 20px; font-size: 14px; color: var(--text-color); opacity: 0.6;">
+<footer style="text-align:center; padding: 20px; font-size: 14px; color: var(--text-color); opacity: 0.6;">
    Designed by - M.Emin TAÇLI © Copyright 2025 Altunga E Spor Merkezi - Tüm hakları saklıdır.
 </footer>
 </body>
