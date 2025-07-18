@@ -10,7 +10,7 @@
   // Firebase yapılandırman (senin projenin ayarları)
   const firebaseConfig = {
     apiKey: "AIzaSyC2kYwYuv7drDw0zViXYN4DqpppbtP_coY",
-    authDomain: "altunga-esiparis.firebaseapp.com",
+    authDomain: "altunga-siparis.firebaseapp.com",
     databaseURL: "https://altunga-siparis-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "altunga-siparis",
     storageBucket: "altunga-siparis.appspot.com",
@@ -24,7 +24,9 @@
   const db = firebase.firestore(); // Firestore bağlantısı
 </script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+
 <title>Altunga E Spor Merkezi</title>
 <link rel="icon" type="image/png" href="logo.png">
 <style>
@@ -648,8 +650,8 @@ footer {
   scroll-behavior: auto; /* drag yaparken smooth olmasın */
 }
 .rezervasyon-floating {
-  position: absolute;
-  top: 20px;
+  position: absolute ;
+  top: 12px;
   right: 12px;
   background: none;
   padding: 0;
@@ -664,6 +666,15 @@ footer {
   height: auto;
   vertical-align: middle;
   display: block;
+}
+body {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+a[href^="tel"],
+a[href^="mailto"] {
+  color: inherit;
+  text-decoration: none;
+  font-style: normal;
 }
 
 
@@ -681,11 +692,12 @@ footer {
     <option value="en">EN</option>
   </select>
   <button onclick="toggleTheme()" title="Tema">🌙/☀️</button>
+  
 </div>
 
-<button class="rezervasyon-floating" onclick="window.location.href='rezervasyon.html'" title="Rezervasyon">
-  <img src="rezervasyon.svg" alt="Rezervasyon" />
-</button>
+<!-- Bu doğrudan body içine yerleştirilmeli -->
+
+
 
 <button id="callBtn" onclick="openZilModal()" title="Görevli Çağır" style="
   position: fixed;
@@ -1472,8 +1484,8 @@ hamburger: {
       title: { tr: "Hamburger Menü", en: "Hamburger Menu" },
       items: [
         { name: { tr: "Hamburger", en: "Hamburger" }, price: 285, image: "urunimg/burger1.png" },
-		{ name: { tr: "Tavukburger", en: "Chicken Burger" }, price: 280, image: "urunimg/tavukburger.png" },
-		{ name: { tr: "Köfteburger", en: "Meatball Burger" }, price: 300, image: "urunimg/kofteburger.png" },
+		{ name: { tr: "Tavukburger", en: "Chicken Burger" }, price: 270, image: "urunimg/tavukburger.png" },
+		{ name: { tr: "Köfteburger", en: "Meatball Burger" }, price: 120, image: "urunimg/kofteburger.png" },
         
         
       ]
@@ -1504,6 +1516,16 @@ kofte: {
       ]
     },
 	
+	{
+      title: { tr: "Double Hamburger Menü", en: "Double Hamburger Menu" },
+      items: [
+        { name: { tr: "Double Köfteburger", en: "Double Meatball Burger" }, price: 335, image: "urunimg/doublekofteburger.png" },
+		{ name: { tr: "Double McChicken®", en: "Double McChicken®" }, price: 360, image: "urunimg/McChicken.png" },
+		{ name: { tr: "Quarter Pounder® with Cheese", en: "Quarter Pounder® with Cheese" }, price: 380, image: "urunimg/QuarterPounder.png" },
+        
+        
+      ]
+    },
   ]
 },
 doner: {
@@ -2487,7 +2509,9 @@ document.ontouchstart = resetTimer;
 
 
 
-
+<button class="rezervasyon-floating" onclick="window.location.href='rezervasyon.html'" title="Rezervasyon">
+  <img src="rezervasyon.svg" alt="Rezervasyon" />
+</button>
 
 </body>
 </html>
