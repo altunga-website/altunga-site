@@ -138,11 +138,26 @@ header h1 {
   padding: 30px;
   width: 90%;
   max-width: 500px;
-  max-height: 90vh;
+  max-height: 80vh;
   overflow-y: auto;
+   overscroll-behavior: contain;
+   scrollbar-width: none;        /* Firefox için */
+  -ms-overflow-style: none; 
   position: relative;
   animation: zoomIn 0.3s ease forwards;
+  .modal-content::-webkit-scrollbar {
+  display: none;                /* Chrome, Safari için */
 }
+}
+
+@media (max-width: 600px) {
+  .modal-content {
+    width: 95%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+}
+
 @keyframes zoomIn {
   from { transform: scale(0.7); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
@@ -337,8 +352,11 @@ header h1 {
   background: var(--card-color);
   border: 1px solid #ccc;
   border-radius: 6px;
+  max-height: 300px; /* içerik çok uzarsa */
+  overflow-y: auto;
   margin-left: 10px;
   margin-top: 10px;
+  
 }
 
     .menu-buttons-grid {
