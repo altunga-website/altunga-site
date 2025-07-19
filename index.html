@@ -696,12 +696,106 @@ a[href^="mailto"] {
   font-style: normal;
 }
 
+#loader {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #0f172a; /* slate-900 koyu arka plan */
+    color: #f1f5f9; /* slate-100 yazı rengi */
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    animation: fadeIn 0.5s ease-in-out;
+  }
 
+  .loader-inner {
+    text-align: center;
+    animation: scaleIn 0.4s ease-in-out;
+  }
+
+  .loader-inner .icon {
+    font-size: 3rem;
+    animation: spin 1.4s linear infinite;
+    display: inline-block;
+    margin-bottom: 0.8rem;
+  }
+
+  .loader-inner .text {
+    font-size: 1.2rem;
+    letter-spacing: 0.5px;
+    color: #94a3b8; /* slate-400 yazı */
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes scaleIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+#loader {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #0f172a;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  color: #f1f5f9;
+}
+
+.loader-inner {
+  text-align: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.loader-inner .location-icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 1rem;
+  animation: spin 1.8s linear infinite;
+}
+
+.loader-inner .text {
+  font-size: 1.1rem;
+  color: #94a3b8;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 
   </style>
 </head>
 
 <body>
+<body>
+<body>
+  <div id="loader">
+    <div class="loader-inner">
+      <div class="icon">📍</div>
+      <div class="text">Konum doğrulanıyor...</div>
+    </div>
+  </div>
+
+
+  <!-- Buradan sonrası senin mevcut site içeriğin -->
+
 <header>
 
   <img src="logo.png" alt="Logo">
@@ -2473,16 +2567,16 @@ document.onmousemove = resetTimer;
 document.onkeydown = resetTimer;
 document.ontouchstart = resetTimer;
 
- const allowedLat = 39.7493563; // Değiştir: kurumun enlem değeri
-  const allowedLng = 37.0211706; // Değiştir: kurumun boylam değeri
-  const maxDistanceMeters = 200; // izin verilen maksimum mesafe (örnek: 200 metre)
+  const allowedLat = 39.7493563;
+  const allowedLng = 37.0211706;
+  const maxDistanceMeters = 200;
 
   function toRad(x) {
     return (x * Math.PI) / 180;
   }
 
   function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
-    const R = 6371000; // Dünya yarıçapı (metre)
+    const R = 6371000;
     const dLat = toRad(lat2 - lat1);
     const dLon = toRad(lon2 - lon1);
     const a =
@@ -2511,20 +2605,37 @@ document.ontouchstart = resetTimer;
 
           if (distance > maxDistanceMeters) {
             window.location.href = "unauthorized.html";
+          } else {
+            document.getElementById("loader")?.remove(); // konum geçerliyse loader'ı kaldır
           }
         },
         (error) => {
-          alert("Konum izni gerekli. Erişim engellendi.");
+          koShowAlert("Erişim Engellendi", "Konum izni gerekli. Lütfen izin verin veya yetkili alandan bağlanın.");
+          document.getElementById("loader")?.remove();
           window.location.href = "unauthorized.html";
         }
       );
     } else {
-      alert("Tarayıcınız konum özelliğini desteklemiyor.");
+      koShowAlert("Desteklenmiyor", "Tarayıcınız konum özelliğini desteklemiyor. Farklı bir cihazla deneyin.");
+      document.getElementById("loader")?.remove();
       window.location.href = "unauthorized.html";
     }
   }
 
-  window.onload = checkLocationPermission;
+  window.onload = function () {
+    setTimeout(checkLocationPermission, 300); // 300ms sonra başlat
+  };
+function koShowAlert(title, message) {
+  document.getElementById("koAlertTitle").innerText = title;
+  document.getElementById("koAlertMessage").innerText = message;
+  document.getElementById("koAlert").style.display = "flex";
+}
+
+function koCloseAlert() {
+  document.getElementById("koAlert").style.display = "none";
+}
+
+
 </script>
 <footer>
   <div class="footer-content">
@@ -2568,6 +2679,17 @@ document.ontouchstart = resetTimer;
 <button class="rezervasyon-floating" onclick="window.location.href='rezervasyon.html'" title="Rezervasyon">
   <img src="rezervasyon.svg" alt="Rezervasyon" />
 </button>
+<div id="loader">
+  <div class="loader-inner">
+    <svg class="location-icon" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+      <circle cx="12" cy="9" r="2.5"/>
+    </svg>
+    <div class="text">Konum doğrulanıyor...</div>
+  </div>
+</div>
+
+
 
 
 
