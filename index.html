@@ -2567,83 +2567,59 @@ document.onmousemove = resetTimer;
 document.onkeydown = resetTimer;
 document.ontouchstart = resetTimer;
 
-  const allowedLat = 39.7493563;
-  const allowedLng = 37.0211706;
-  const maxDistanceMeters = 200;
+const allowedLat = 39.7493563;
+const allowedLng = 37.0211706;
+const maxDistanceMeters = 200;
 
-  function toRad(x) {
-    return (x * Math.PI) / 180;
-  }
-
-  function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
-    const R = 6371000;
-    const dLat = toRad(lat2 - lat1);
-    const dLon = toRad(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRad(lat1)) *
-        Math.cos(toRad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  }
-function koShowAlert(title, message, redirectUrl = null) {
-  const alertBox = document.getElementById("koAlert");
-  const alertTitle = document.getElementById("koAlertTitle");
-  const alertMessage = document.getElementById("koAlertMessage");
-  const alertButton = document.getElementById("koAlertButton");
-
-  alertTitle.innerText = title;
-  alertMessage.innerText = message;
-
-  alertButton.onclick = () => {
-    alertBox.style.display = "none";
-    if (redirectUrl) {
-      window.location.href = redirectUrl;
-    }
-  };
-
-  alertBox.style.display = "flex";
+function toRad(x) {
+  return (x * Math.PI) / 180;
 }
 
- function checkLocationPermission() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const userLat = position.coords.latitude;
-        const userLng = position.coords.longitude;
+function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
+  const R = 6371000;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
 
-        const distance = getDistanceFromLatLonInMeters(
-          allowedLat,
-          allowedLng,
-          userLat,
-          userLng
-        );
-
-        if (distance > maxDistanceMeters) {
-          window.location.href = "unauthorized.html";
-        } else {
-          document.getElementById("loader")?.remove();
-        }
-      },
-     (error) => {
-  document.getElementById("loader")?.remove();
-  koShowAlert("Erişim Engellendi", "Konum izni gerekli. Lütfen izin verin veya yetkili alandan bağlanın.");
-  setTimeout(() => {
+function checkLocationPermission() {
+  if (!navigator.geolocation) {
+    // Tarayıcı desteklemiyorsa yönlendir
     window.location.href = "unauthorized.html";
-  }, 2000);
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const userLat = position.coords.latitude;
+      const userLng = position.coords.longitude;
+
+      const distance = getDistanceFromLatLonInMeters(
+        allowedLat,
+        allowedLng,
+        userLat,
+        userLng
+      );
+
+      if (distance > maxDistanceMeters) {
+        window.location.href = "unauthorized.html";
+      } else {
+        document.getElementById("loader")?.remove();
+      }
+    },
+    (error) => {
+      // Konum izni verilmezse veya hata olursa yönlendir
+      window.location.href = "unauthorized.html";
+    },
+    { timeout: 7000 }
+  );
 }
 
-    );
-  } else {
-    koShowAlert("Desteklenmiyor", "Tarayıcınız konum özelliğini desteklemiyor. Farklı bir cihazla deneyin.");
-    setTimeout(() => {
-      document.getElementById("loader")?.remove();
-      window.location.href = "unauthorized.html";
-    }, 1500);
-  }
-}
 window.addEventListener("load", () => {
   setTimeout(checkLocationPermission, 300);
 });
@@ -2702,38 +2678,7 @@ window.addEventListener("load", () => {
     <div class="text">Konum doğrulanıyor...</div>
   </div>
 </div>
-<div id="koAlert" style="
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 100000;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Inter', sans-serif;
-">
-  <div style="
-    background: white;
-    padding: 1.5rem 2rem;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    max-width: 90%;
-    text-align: center;
-  ">
-    <h2 id="koAlertTitle" style="font-size: 1.3rem; margin-bottom: 0.5rem;">Uyarı</h2>
-    <p id="koAlertMessage" style="margin-bottom: 1rem;">Mesaj</p>
-    <button id="koAlertButton" style="
-      background-color: #22c55e;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-    ">Tamam</button>
-  </div>
-</div>
+
 
 
 
