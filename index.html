@@ -2648,19 +2648,6 @@ window.addEventListener("load", () => {
   setTimeout(checkLocationPermission, 300);
 });
 
-function koShowAlert(msg) {
-  const box = document.getElementById("koAlert");
-  const text = document.getElementById("koAlertText");
-
-  if (!box || !text) return;
-
-  text.innerText = msg;
-  box.style.display = "block";
-
-  setTimeout(() => {
-    box.style.display = "none";
-  }, 4000);
-}
 
 
 </script>
@@ -2718,29 +2705,35 @@ function koShowAlert(msg) {
 <div id="koAlert" style="
   display: none;
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background-color: #dc2626;
-  color: white;
-  padding: 14px 20px;
-  font-weight: 600;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 100000;
+  display: none;
+  align-items: center;
+  justify-content: center;
   font-family: 'Inter', sans-serif;
-  text-align: center;
-  z-index: 99999;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  animation: slideDown 0.4s ease-out;
 ">
-  <span id="koAlertText">⚠️ Uyarı mesajı</span>
+  <div style="
+    background: white;
+    padding: 1.5rem 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    max-width: 90%;
+    text-align: center;
+  ">
+    <h2 id="koAlertTitle" style="font-size: 1.3rem; margin-bottom: 0.5rem;">Uyarı</h2>
+    <p id="koAlertMessage" style="margin-bottom: 1rem;">Mesaj</p>
+    <button id="koAlertButton" style="
+      background-color: #22c55e;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    ">Tamam</button>
+  </div>
 </div>
-
-<style>
-@keyframes slideDown {
-  from { transform: translateY(-100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-</style>
-
 
 
 
