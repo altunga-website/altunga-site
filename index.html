@@ -2588,51 +2588,78 @@ document.ontouchstart = resetTimer;
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   }
+function koShowAlert(title, message, redirectUrl = null) {
+  const alertBox = document.getElementById("koAlert");
+  const alertTitle = document.getElementById("koAlertTitle");
+  const alertMessage = document.getElementById("koAlertMessage");
+  const alertButton = document.getElementById("koAlertButton");
 
-  function checkLocationPermission() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const userLat = position.coords.latitude;
-          const userLng = position.coords.longitude;
+  alertTitle.innerText = title;
+  alertMessage.innerText = message;
 
-          const distance = getDistanceFromLatLonInMeters(
-            allowedLat,
-            allowedLng,
-            userLat,
-            userLng
-          );
-
-          if (distance > maxDistanceMeters) {
-            window.location.href = "unauthorized.html";
-          } else {
-            document.getElementById("loader")?.remove(); // konum geçerliyse loader'ı kaldır
-          }
-        },
-        (error) => {
-          koShowAlert("Erişim Engellendi", "Konum izni gerekli. Lütfen izin verin veya yetkili alandan bağlanın.");
-          document.getElementById("loader")?.remove();
-          window.location.href = "unauthorized.html";
-        }
-      );
-    } else {
-      koShowAlert("Desteklenmiyor", "Tarayıcınız konum özelliğini desteklemiyor. Farklı bir cihazla deneyin.");
-      document.getElementById("loader")?.remove();
-      window.location.href = "unauthorized.html";
+  alertButton.onclick = () => {
+    alertBox.style.display = "none";
+    if (redirectUrl) {
+      window.location.href = redirectUrl;
     }
-  }
-
-  window.onload = function () {
-    setTimeout(checkLocationPermission, 300); // 300ms sonra başlat
   };
-function koShowAlert(title, message) {
-  document.getElementById("koAlertTitle").innerText = title;
-  document.getElementById("koAlertMessage").innerText = message;
-  document.getElementById("koAlert").style.display = "flex";
+
+  alertBox.style.display = "flex";
 }
 
-function koCloseAlert() {
-  document.getElementById("koAlert").style.display = "none";
+ function checkLocationPermission() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const userLat = position.coords.latitude;
+        const userLng = position.coords.longitude;
+
+        const distance = getDistanceFromLatLonInMeters(
+          allowedLat,
+          allowedLng,
+          userLat,
+          userLng
+        );
+
+        if (distance > maxDistanceMeters) {
+          window.location.href = "unauthorized.html";
+        } else {
+          document.getElementById("loader")?.remove();
+        }
+      },
+     (error) => {
+  document.getElementById("loader")?.remove();
+  koShowAlert("Erişim Engellendi", "Konum izni gerekli. Lütfen izin verin veya yetkili alandan bağlanın.");
+  setTimeout(() => {
+    window.location.href = "unauthorized.html";
+  }, 2000);
+}
+
+    );
+  } else {
+    koShowAlert("Desteklenmiyor", "Tarayıcınız konum özelliğini desteklemiyor. Farklı bir cihazla deneyin.");
+    setTimeout(() => {
+      document.getElementById("loader")?.remove();
+      window.location.href = "unauthorized.html";
+    }, 1500);
+  }
+}
+window.addEventListener("load", () => {
+  setTimeout(checkLocationPermission, 300);
+});
+
+function koShowAlert(msg) {
+  const box = document.getElementById("koAlert");
+  const text = document.getElementById("koAlertText");
+
+  if (!box || !text) return;
+
+  text.innerText = msg;
+  box.style.display = "block";
+
+  setTimeout(() => {
+    box.style.display = "none";
+  }, 4000);
 }
 
 
@@ -2688,6 +2715,32 @@ function koCloseAlert() {
     <div class="text">Konum doğrulanıyor...</div>
   </div>
 </div>
+<div id="koAlert" style="
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #dc2626;
+  color: white;
+  padding: 14px 20px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  text-align: center;
+  z-index: 99999;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  animation: slideDown 0.4s ease-out;
+">
+  <span id="koAlertText">⚠️ Uyarı mesajı</span>
+</div>
+
+<style>
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+</style>
+
 
 
 
