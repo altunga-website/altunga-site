@@ -2583,8 +2583,17 @@ function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
 }
 
 function checkLocationPermission() {
+  const params = new URLSearchParams(window.location.search);
+  const isAdmin = params.get("admin") === "true";
+
+  if (!isAdmin) {
+    // admin değilse loader'ı kaldır ve geç
+    document.getElementById("loader")?.remove();
+    return;
+  }
+
   if (!navigator.geolocation) {
-    // Tarayıcı desteklemiyorsa yönlendir
+    // Tarayıcı desteklemiyorsa admin bile olsa yönlendir
     window.location.href = "unauthorized.html";
     return;
   }
@@ -2619,29 +2628,8 @@ window.addEventListener("load", () => {
   setTimeout(checkLocationPermission, 300);
 });
 
-  // URL'den admin kontrolü
-  const params = new URLSearchParams(window.location.search);
-  const isAdmin = params.get("admin") === "true";
 
-  window.addEventListener("load", () => {
-    const loader = document.getElementById("loader");
 
-    if (isAdmin && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          console.log("Admin konumu:", position.coords.latitude, position.coords.longitude);
-          loader.style.display = "none";
-        },
-        (error) => {
-          console.error("Konum alınamadı:", error.message);
-          loader.style.display = "none"; // hata olsa da loader kapansın
-        }
-      );
-    } else {
-      // Admin değilse loader kapat
-      loader.style.display = "none";
-    }
-  });
 
 </script>
 <footer>
