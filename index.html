@@ -2593,43 +2593,42 @@ function checkLocationPermission() {
   const lastCheck = sessionStorage.getItem("locationCheckTime");
   const now = Date.now();
 
-  // Eğer 1 dakika içinde tekrar yüklenirse kontrolü atla
-  if (lastCheck && now - parseInt(lastCheck) < locationCacheTime) {
-    document.getElementById("loader")?.remove();
-    return;
-  }
-
   if (!navigator.geolocation) {
     window.location.href = "unauthorized.html";
     return;
   }
 
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const userLat = position.coords.latitude;
-      const userLng = position.coords.longitude;
+  // İlk girişte veya cache süresi dolduğunda tekrar konum al
+  if (!lastCheck || now - parseInt(lastCheck) > locationCacheTime) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const userLat = position.coords.latitude;
+        const userLng = position.coords.longitude;
 
-      const distance = getDistanceFromLatLonInMeters(
-        allowedLat,
-        allowedLng,
-        userLat,
-        userLng
-      );
+        const distance = getDistanceFromLatLonInMeters(
+          allowedLat,
+          allowedLng,
+          userLat,
+          userLng
+        );
 
-      if (distance > maxDistanceMeters) {
+        if (distance > maxDistanceMeters) {
+          window.location.href = "unauthorized.html";
+        } else {
+          sessionStorage.setItem("locationCheckTime", now.toString());
+          document.getElementById("loader")?.remove();
+        }
+      },
+      () => {
         window.location.href = "unauthorized.html";
-      } else {
-        sessionStorage.setItem("locationCheckTime", now.toString()); // ✅ zamanı kaydet
-        document.getElementById("loader")?.remove();
-      }
-    },
-    (error) => {
-      window.location.href = "unauthorized.html";
-    },
-    { timeout: 15000, enableHighAccuracy: true, maximumAge: 0 }
-  );
+      },
+      { timeout: 15000, enableHighAccuracy: true }
+    );
+  } else {
+    // Cache süresi dolmamışsa direkt loader'ı kaldır
+    document.getElementById("loader")?.remove();
+  }
 }
-
 
 
 
