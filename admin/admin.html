@@ -306,7 +306,15 @@
   <table>
     <thead>
       <tr>
-        <th>ID</th><th>Masa / Oda</th><th>Ürünler</th><th>Toplam</th><th>Tarih</th><th>Durum</th><th>İşlem</th>
+       <th>ID</th>
+<th>Masa / Oda</th>
+<th>Ürünler</th>
+<th>Adet</th>
+<th>Toplam</th>
+<th>Tarih</th>
+<th>Durum</th>
+<th>İşlem</th>
+
       </tr>
     </thead>
     <tbody id="siparisListesi"></tbody>
@@ -605,12 +613,15 @@ const tarih = tarihObj.toLocaleString("tr-TR");
 	  const iptalBtn = aktifRol.startsWith("kasiyer") ? `<button class='delete-btn' onclick='iptalEt("${id}")'>İptal Et</button>` : "";
 
 
-      tr.innerHTML = `
-        <td>${id}</td>
-        <td>${data.masa || ''} ${data.oda || ''}</td>
-        <td>${urunler}</td>
-        <td>₺${data.toplam}</td>
-        <td>${tarih}</td>
+     const toplamAdet = data.urunler.reduce((acc, u) => acc + (u.adet || 1), 0);
+
+tr.innerHTML = `
+  <td>${id}</td>
+  <td>${data.masa || ''} ${data.oda || ''}</td>
+  <td>${urunler}</td>
+  <td>${toplamAdet}</td>
+  <td>₺${data.toplam}</td>
+  <td>${tarih}</td>
         <td><span class='status ${data.durum}'>${data.durum}</span></td>
         <td>
           <button class='update-btn' onclick='durumGuncelle("${id}", "Hazirlaniyor")'>Hazırlanıyor</button>
