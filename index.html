@@ -2571,6 +2571,7 @@ document.ontouchstart = resetTimer;
 const allowedLat = 39.7493563;
 const allowedLng = 37.0211706;
 const maxDistanceMeters = 900;
+const locationCacheTime = 60000; // 1 dakika
 
 function toRad(x) {
   return (x * Math.PI) / 180;
@@ -2589,8 +2590,11 @@ function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
 }
 
 function checkLocationPermission() {
-  // Eğer bu oturumda zaten onaylandıysa tekrar kontrol etme
-  if (sessionStorage.getItem("locationVerified") === "true") {
+  const lastCheck = sessionStorage.getItem("locationCheckTime");
+  const now = Date.now();
+
+  // Eğer 1 dakika içinde tekrar yüklenirse kontrolü atla
+  if (lastCheck && now - parseInt(lastCheck) < locationCacheTime) {
     document.getElementById("loader")?.remove();
     return;
   }
@@ -2615,14 +2619,14 @@ function checkLocationPermission() {
       if (distance > maxDistanceMeters) {
         window.location.href = "unauthorized.html";
       } else {
-        sessionStorage.setItem("locationVerified", "true"); // ✅ Onay kaydedildi
+        sessionStorage.setItem("locationCheckTime", now.toString()); // ✅ zamanı kaydet
         document.getElementById("loader")?.remove();
       }
     },
     (error) => {
       window.location.href = "unauthorized.html";
     },
-    { timeout: 15000, enableHighAccuracy: true, maximumAge: 0 } // ✅ timeout arttı + en güncel konum
+    { timeout: 15000, enableHighAccuracy: true, maximumAge: 0 }
   );
 }
 
