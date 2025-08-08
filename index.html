@@ -2022,11 +2022,16 @@ async function siparisVer() {
     return;
   }
 
-  const toplam = sepet.reduce((acc, item) => acc + item.fiyat, 0);
+  // Adet bilgisini dikkate alarak toplamı hesapla
+  const toplam = sepet.reduce((acc, item) => acc + (item.fiyat * (item.adet || 1)), 0);
 
   try {
     await db.collection("siparisler").add({
-      urunler: sepet,
+      urunler: sepet.map(item => ({
+        ad: item.gosterim || item.ad,
+        adet: item.adet || 1,
+        fiyat: item.fiyat
+      })),
       masa: masa || null,
       oda: oda || null,
       toplam,
@@ -2054,6 +2059,7 @@ async function siparisVer() {
     customAlert("Sipariş gönderilemedi!");
   }
 }
+
 
 const sliderItems = document.querySelectorAll('.slider-item');
 
@@ -2564,7 +2570,7 @@ document.ontouchstart = resetTimer;
 
 const allowedLat = 39.7493563;
 const allowedLng = 37.0211706;
-const maxDistanceMeters = 200;
+const maxDistanceMeters = 900;
 
 function toRad(x) {
   return (x * Math.PI) / 180;
