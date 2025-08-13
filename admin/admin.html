@@ -605,7 +605,9 @@ function customAlert(msg) {
         siparisListesi.insertBefore(tr, siparisListesi.firstChild);
 
       }
-      const urunler = data.urunler.map(u => `• ${u.ad}`).join("<br>");
+      const urunler = data.urunler
+  .map(u => `• ${(u.adet || 1)}x ${u.ad}`)
+  .join("<br>");
       const tarihObj = data.tarih.toDate ? data.tarih.toDate() : new Date(data.tarih);
 const tarih = tarihObj.toLocaleString("tr-TR");
 
