@@ -758,12 +758,7 @@ a[href^="mailto"] {
   animation: fadeIn 0.5s ease-in-out;
 }
 
-.loader-inner .location-icon {
-  width: 64px;
-  height: 64px;
-  margin-bottom: 1rem;
-  animation: spin 1.8s linear infinite;
-}
+
 
 .loader-inner .text {
   font-size: 1.1rem;
@@ -2598,31 +2593,7 @@ function checkLocationPermission() {
     return;
   }
 
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const userLat = position.coords.latitude;
-      const userLng = position.coords.longitude;
-
-      const distance = getDistanceFromLatLonInMeters(
-        allowedLat,
-        allowedLng,
-        userLat,
-        userLng
-      );
-
-      if (distance > maxDistanceMeters) {
-        window.location.href = "unauthorized.html";
-      } else {
-        // Konum doğrulandı, oturum için kaydet
-        sessionStorage.setItem("locationVerified", "true");
-        document.getElementById("loader")?.remove();
-      }
-    },
-    () => {
-      window.location.href = "unauthorized.html";
-    },
-    { timeout: 7000, enableHighAccuracy: true }
-  );
+ 
 }
 
 window.addEventListener("load", () => {
@@ -2675,15 +2646,7 @@ window.addEventListener("load", () => {
 <button class="rezervasyon-floating" onclick="window.location.href='rezervasyon.html'" title="Rezervasyon">
   <img src="rezervasyon.svg" alt="Rezervasyon" />
 </button>
-<div id="loader">
-  <div class="loader-inner">
-    <svg class="location-icon" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-      <circle cx="12" cy="9" r="2.5"/>
-    </svg>
-    <div class="text">Konum doğrulanıyor...</div>
-  </div>
-</div>
+
 
 
 
