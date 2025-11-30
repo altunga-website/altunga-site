@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dinamik Maç Ekranı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ffd700; /* Altın Sarısı */
+            --glass-bg: rgba(0, 0, 0, 0.55);
+            --video-fade-time: 2s;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Oswald', sans-serif;
+            background-color: #000; color: white; height: 100vh; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+
+        /* --- VİDEO ARKA PLANI --- */
+        #videoContainer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
+        }
+        .bg-video {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
+            filter: blur(10px) brightness(0.6); transform: scale(1.1);
+            opacity: 0; transition: opacity var(--video-fade-time) ease-in-out;
+        }
+        .bg-video.active { opacity: 1; }
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.8) 100%); z-index: -1;
+        }
+
+        /* --- TAM EKRAN BUTONU --- */
+        .fullscreen-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px; height: 50px;
+            background: rgba(0,0,0,0.5);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            color: white;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 100;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        .fullscreen-btn:hover {
+            background: var(--primary-color); color: black; transform: scale(1.1); border-color: var(--primary-color);
+        }
+        .fullscreen-btn svg { width: 24px; height: 24px; }
+
+        /* Firma Logosu */
+        .firm-brand {
+            position: relative; z-index: 50; margin-bottom: 20px;
+            animation: slideDown 1s ease-out;
+        }
+        .firm-brand img {
+            height: 130px; width: auto; object-fit: contain;
+            filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.5));
+            transition: transform 0.3s;
+        }
+
+        /* Ana Kart */
+        .match-card {
+            position: relative; z-index: 10;
+            width: 92%; max-width: 1100px; text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 30px; background: var(--glass-bg);
+            backdrop-filter: blur(15px); border-radius: 25px;
+            box-shadow: 0 0 80px rgba(0,0,0,0.8);
+            animation: fadeIn 1.2s ease-out;
+            display: flex; flex-direction: column; gap: 15px;
+        }
+
+        .header-badge {
+            background: var(--primary-color); color: black; padding: 5px 25px;
+            font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; font-weight: bold;
+            align-self: center; transform: skew(-15deg);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); margin-bottom: 10px;
+        }
+        .header-badge span { display: block; transform: skew(15deg); }
+
+        .teams-container { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; }
+        .team { flex: 1; display: flex; flex-direction: column; align-items: center; }
+
+        /* --- LOGO ANİMASYONLARI --- */
+        .team img {
+            width: 160px; height: 160px; object-fit: contain;
+            filter: drop-shadow(0 0 25px rgba(255,255,255,0.15));
+            /* Temel geçiş ayarı */
+            transition: all 0.5s ease;
+        }
+
+        /* 1. Nabız (Pulse) - Nefes alıp verme */
+        @keyframes animPulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(255,255,255,0.2)); }
+            50% { transform: scale(1.08); filter: drop-shadow(0 0 35px rgba(255, 215, 0, 0.6)); }
+        }
+        /* 2. Titreme (Shake) - Hırçınlık */
+        @keyframes animShake {
+             0%, 100% { transform: translateX(0); }
+             10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+             20%, 40%, 60%, 80% { transform: translateX(4px); }
+        }
+        /* 3. Büyüme (Grow) - Dominantlık */
+        @keyframes animGrow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        /* 4. Yalpalanma (Wobble) - Heyecan */
+        @keyframes animWobble {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(-3deg) scale(1.05); }
+            75% { transform: rotate(3deg) scale(1.05); }
+        }
+
+        /* JS ile eklenecek sınıflar */
+        .anim-type-1 { animation: animPulse 2s infinite ease-in-out; }
+        .anim-type-2 { animation: animShake 0.5s infinite linear; } /* Hızlı titreme */
+        .anim-type-3 { animation: animGrow 3s infinite ease-in-out; }
+        .anim-type-4 { animation: animWobble 2.5s infinite ease-in-out; }
+
+
+        .team-name {
+            font-size: 2.2rem; margin-top: 20px; text-transform: uppercase; font-weight: 700;
+            text-shadow: 0 2px 15px black;
+        }
+
+        .versus {
+            font-family: 'Rajdhani', sans-serif; font-size: 4rem; color: var(--primary-color);
+            font-style: italic; text-shadow: 0 0 30px var(--primary-color); animation: pulseText 1.5s infinite alternate;
+        }
+
+        /* Sayaç */
+        .countdown-wrapper {
+            background: rgba(0, 0, 0, 0.5); padding: 15px; border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1); margin: 5px 0;
+        }
+        .countdown-title { font-size: 0.9rem; letter-spacing: 2px; color: #aaa; margin-bottom: 10px; text-transform: uppercase; }
+        .countdown { display: flex; justify-content: center; gap: 25px; font-family: 'Rajdhani', sans-serif; }
+        .time-box { display: flex; flex-direction: column; align-items: center; min-width: 75px; }
+        .time-value {
+            font-size: 3.2rem; font-weight: 700; line-height: 1; color: var(--primary-color);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        .time-label { font-size: 0.75rem; color: #ddd; margin-top: 5px; }
+        .live-text {
+            color: red; font-size: 3rem; font-weight: bold;
+            animation: blink 0.5s infinite alternate; display: none; text-shadow: 0 0 30px red;
+        }
+        .cta { font-size: 1.5rem; color: white; letter-spacing: 1px; margin-top: 15px; font-weight: bold;}
+
+        /* Genel Animasyonlar */
+        @keyframes pulseText { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.1); opacity: 1; } }
+        @keyframes blink { from { opacity: 1; } to { opacity: 0.3; } }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-50px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 768px) {
+            .firm-brand img { height: 90px; }
+            .teams-container { flex-direction: column; gap: 30px; }
+            .team img { width: 120px; height: 120px; }
+            .time-value { font-size: 2.4rem; }
+            .versus { font-size: 2.5rem; margin: 10px 0;}
+        }
+    </style>
+</head>
+<body>
+
+    <div id="videoContainer">
+        <video class="bg-video active" id="vidSlot1" autoplay muted loop></video>
+        <video class="bg-video" id="vidSlot2" autoplay muted loop></video>
+    </div>
+    <div class="overlay"></div>
+
+    <button id="fsBtn" class="fullscreen-btn" title="Tam Ekran Yap">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+    </button>
+
+    <div class="firm-brand">
+        <img id="firmLogo" src="" alt="Firma Logosu">
+    </div>
+
+    <div class="match-card">
+        <div class="header-badge">
+            <span id="leagueName">LİG BİLGİSİ</span>
+        </div>
+
+        <div class="teams-container">
+            <div class="team">
+                <img id="homeLogo" src="" alt="Home" class="anim-type-1"> <div class="team-name" id="homeName">HOME</div>
+            </div>
+
+            <div class="versus">VS</div>
+
+            <div class="team">
+                <img id="awayLogo" src="" alt="Away" class="anim-type-3"> <div class="team-name" id="awayName">AWAY</div>
+            </div>
+        </div>
+
+        <div class="countdown-wrapper">
+            <div id="countdownTitle" class="countdown-title">BÜYÜK MAÇA KALAN SÜRE</div>
+            <div id="timerContainer" class="countdown">
+                <div class="time-box"><span class="time-value" id="days">00</span><span class="time-label">GÜN</span></div>
+                <div class="time-box"><span class="time-value" id="hours">00</span><span class="time-label">SAAT</span></div>
+                <div class="time-box"><span class="time-value" id="minutes">00</span><span class="time-label">DK</span></div>
+                <div class="time-box"><span class="time-value" id="seconds">00</span><span class="time-label">SN</span></div>
+            </div>
+            <div id="liveMessage" class="live-text">MAÇ BAŞLADI!</div>
+        </div>
+
+        <div class="cta" id="ctaText">--</div>
+    </div>
+
+    <script>
+        // ==========================================
+        // AYARLAR
+        // ==========================================
+        const matchConfig = {
+            // Video Listesi (Slideshow için)
+            backgroundVideoList: [
+                "arkaplan.mp4", 
+                "arkaplan2.mp4",
+				"arkaplan3.mp4"
+            ],
+            videoInterval: 10000, // Video değişim süresi (ms)
+
+            firmLogoUrl: "logo.png", 
+            league: "DEV DERBİ ALTUNGA'DA İZLENİR !",
+            homeTeam: "FENERBAHÇE",
+            homeLogoUrl: "https://upload.wikimedia.org/wikipedia/tr/8/86/Fenerbah%C3%A7e_SK.png",
+            awayTeam: "GALATASARAY",
+            awayLogoUrl: "https://upload.wikimedia.org/wikipedia/commons/f/f6/Galatasaray_Sports_Club_Logo.png",
+            matchDateTime: "2025-12-01 20:00:00",
+            ctaText: "REZERVASYON: 0 507 723 75 81"
+        };
+
+        // ==========================================
+        // MOTOR
+        // ==========================================
+        let currentVideoIndex = 0;
+        let activeSlot = 1;
+
+        function initScreen() {
+            // Verileri Doldur
+            document.getElementById('firmLogo').src = matchConfig.firmLogoUrl;
+            document.getElementById('leagueName').innerText = matchConfig.league;
+            document.getElementById('homeName').innerText = matchConfig.homeTeam;
+            document.getElementById('homeLogo').src = matchConfig.homeLogoUrl;
+            document.getElementById('awayName').innerText = matchConfig.awayTeam;
+            document.getElementById('awayLogo').src = matchConfig.awayLogoUrl;
+            document.getElementById('ctaText').innerText = matchConfig.ctaText;
+
+            // Başlatıcılar
+            startVideoSlideshow();
+            startCountdown();
+            startLogoDynamics(); // Yeni logo animasyon sistemi
+            setupFullscreenButton(); // Tam ekran butonu
+        }
+
+        // --- YENİ LOGO ANİMASYON SİSTEMİ ---
+        function startLogoDynamics() {
+            const homeImg = document.getElementById('homeLogo');
+            const awayImg = document.getElementById('awayLogo');
+            // Tanımladığımız 4 animasyon sınıfı
+            const animClasses = ['anim-type-1', 'anim-type-2', 'anim-type-3', 'anim-type-4'];
+
+            // Her 6 saniyede bir animasyonları rastgele değiştir
+            setInterval(() => {
+                // Mevcut sınıfları temizle
+                homeImg.classList.remove(...animClasses);
+                awayImg.classList.remove(...animClasses);
+                
+                // Rastgele yeni sınıflar seç (İkisi aynı olmasın diye basit bir kontrol)
+                let rnd1 = Math.floor(Math.random() * animClasses.length);
+                let rnd2 = Math.floor(Math.random() * animClasses.length);
+                if (rnd1 === rnd2) rnd2 = (rnd2 + 1) % animClasses.length;
+
+                // Yeni sınıfları ekle (Tarayıcının temizlemeyi algılaması için minik gecikme)
+                setTimeout(() => {
+                    homeImg.classList.add(animClasses[rnd1]);
+                    awayImg.classList.add(animClasses[rnd2]);
+                }, 50);
+            }, 6000); // 6 Saniyede bir değişim
+        }
+
+        // --- TAM EKRAN BUTONU İŞLEVİ ---
+        function setupFullscreenButton() {
+            const fsBtn = document.getElementById('fsBtn');
+            fsBtn.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.log(`Error attempting to enable full-screen mode: ${err.message}`);
+                    });
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            });
+        }
+
+        // --- VİDEO SLIDESHOW ---
+        function startVideoSlideshow() {
+            const vid1 = document.getElementById('vidSlot1');
+            const vid2 = document.getElementById('vidSlot2');
+            const urls = matchConfig.backgroundVideoList;
+            if (urls.length === 0) return;
+            vid1.src = urls[0];
+
+            if (urls.length > 1) {
+                setInterval(() => {
+                    currentVideoIndex = (currentVideoIndex + 1) % urls.length;
+                    let nextVideoElement = activeSlot === 1 ? vid2 : vid1;
+                    let currentVideoElement = activeSlot === 1 ? vid1 : vid2;
+
+                    nextVideoElement.src = urls[currentVideoIndex];
+                    nextVideoElement.onloadeddata = () => {
+                           nextVideoElement.classList.add('active');
+                           currentVideoElement.classList.remove('active');
+                           activeSlot = activeSlot === 1 ? 2 : 1;
+                    };
+                     setTimeout(() => { if (!nextVideoElement.classList.contains('active')) { nextVideoElement.classList.add('active'); currentVideoElement.classList.remove('active'); activeSlot = activeSlot === 1 ? 2 : 1; } }, 1500);
+                }, matchConfig.videoInterval);
+            }
+        }
+
+        // --- SAYAÇ ---
+        function startCountdown() {
+            const countDate = new Date(matchConfig.matchDateTime).getTime();
+            const timer = setInterval(() => {
+                const now = new Date().getTime();
+                const gap = countDate - now;
+                const second = 1000; minute = second * 60; hour = minute * 60; day = hour * 24;
+                const d = Math.floor(gap / day); const h = Math.floor((gap % day) / hour);
+                const m = Math.floor((gap % hour) / minute); const s = Math.floor((gap % minute) / second);
+                document.getElementById('days').innerText = d > 9 ? d : '0' + d;
+                document.getElementById('hours').innerText = h > 9 ? h : '0' + h;
+                document.getElementById('minutes').innerText = m > 9 ? m : '0' + m;
+                document.getElementById('seconds').innerText = s > 9 ? s : '0' + s;
+                if (gap < 0) {
+                    clearInterval(timer);
+                    document.getElementById('timerContainer').style.display = "none";
+                    document.getElementById('countdownTitle').style.display = "none";
+                    document.getElementById('liveMessage').style.display = "block";
+                }
+            }, 1000);
+        }
+
+        window.onload = initScreen;
+    </script>
+</body>
+</html>
