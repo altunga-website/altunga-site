@@ -1,941 +1,679 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <meta name="format-detection" content="telephone=no">
+  <title>Altunga E Spor Merkezi</title>
+  <link rel="icon" type="image/png" href="logo.png">
 
-<!-- Firebase SDK: Klasik (compat) sürüm -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-<script>	
-  // Firebase yapılandırman (senin projenin ayarları)
-  const firebaseConfig = {
-    apiKey: "AIzaSyC2kYwYuv7drDw0zViXYN4DqpppbtP_coY",
-    authDomain: "altunga-siparis.firebaseapp.com",
-    databaseURL: "https://altunga-siparis-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "altunga-siparis",
-    storageBucket: "altunga-siparis.appspot.com",
-    messagingSenderId: "152830720353",
-    appId: "1:152830720353:web:cc3d3646e6a859c0ca2d20",
-    measurementId: "G-JKXK55E39H"
-  };
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-  // Firebase başlat
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore(); // Firestore bağlantısı
-</script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<meta name="format-detection" content="telephone=no">
+  <script>
+    // Firebase yapılandırman
+    const firebaseConfig = {
+      apiKey: "AIzaSyC2kYwYuv7drDw0zViXYN4DqpppbtP_coY",
+      authDomain: "altunga-siparis.firebaseapp.com",
+      databaseURL: "https://altunga-siparis-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "altunga-siparis",
+      storageBucket: "altunga-siparis.appspot.com",
+      messagingSenderId: "152830720353",
+      appId: "1:152830720353:web:cc3d3646e6a859c0ca2d20",
+      measurementId: "G-JKXK55E39H"
+    };
 
-<title>Altunga E Spor Merkezi</title>
-<link rel="icon" type="image/png" href="logo.png">
-<style>
+    // Firebase başlat
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore(); 
+  </script>
 
-:root {
-  --bg-color: #f5f5f5;
-  --text-color: #333;
-  --card-color: #fff;
-  --header-color: #6b6e73;
-  --button-color: #007bff;
-  --button-hover: #0056b3;
-  --accordion-bg: #f0f0f0;
-  --accordion-sub-bg: #f9f9f9;
-  --accordion-hover-bg: #eee;
-  --accordion-border: #ccc;
-}
-.dark-theme {
-  --bg-color: #121212;
-  --text-color: #eee;
-  --card-color: #1e1e1e;
-  --header-color: #333;
-  --button-color: #4444ff;
-  --button-hover: #2222aa;
-  --accordion-bg: #222;
-  --accordion-sub-bg: #333;
-  --accordion-hover-bg: #444;
-  --accordion-border: #555;
-}
-body {
-  background: var(--bg-color);
-  color: var(--text-color);
-  font-family: sans-serif;
-  margin: 0;
-  transition: background-color 0.3s, color 0.z3s;
-}
-header {
-  background: var(--header-color);
-  color: white;
-  padding: 20px;
-  text-align: center;
-}
-header img {
-  max-height: 100px;
-  display: block;
-  margin: auto;
-}
-header h1 {
-  margin: 0;
-}
-.controls {
-  margin-top: 10px;
-}
-.controls select, .controls button {
-  padding: 5px 10px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  margin: 0 5px;
-}
-
-.menu-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 15px;
-  padding: 20px;
-   justify-content: center;
-}
-
-
-.menu-item {
-  background: var(--card-color);
-  padding: 10px;
-  border-radius: 10px;
-  text-align: center;
-  height: 120px; /* kutunun yüksekliği */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-
-.menu-item img {
-  display: block;
-  max-height: 60px;
-  width: auto;
-  margin: 0 auto 8px;
-  object-fit: contain;
-}
-.menu-item h2 {
-  margin: 0;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.6);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 9998;
-}
-.modal-content {
-  background: var(--card-color);
-  border-radius: 12px;
-  padding: 30px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 80vh;
-  overflow-y: auto;
-   overscroll-behavior: contain;
-   scrollbar-width: none;        /* Firefox için */
-  -ms-overflow-style: none; 
-  position: relative;
-  animation: zoomIn 0.3s ease forwards;
-  .modal-content::-webkit-scrollbar {
-  display: none;                /* Chrome, Safari için */
-}
-}
-
-@media (max-width: 600px) {
-  .modal-content {
-    width: 95%;
-    max-height: 80vh;
-    overflow-y: auto;
-  }
-}
-
-@keyframes zoomIn {
-  from { transform: scale(0.7); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-.modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 35px;
-  height: 35px;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.menu-buttons-grid {
-  display: flex;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 10px;
-  margin-top: 20px;
-}
-.menu-buttons-grid button {
-  padding: 10px;
-  font-size: 15px;
-  border: none;
-  border-radius: 8px;
-  background-color: #f0f0f0;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.menu-buttons-grid button:hover { background-color: #ddd; }
-
-.masa-oda {
-  margin-top: 20px;
-  text-align: center;
-  display: none;
-  animation: slideDown 0.5s ease forwards;
-}
-@keyframes slideDown {
-  from { transform: translateY(-10px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-.masa-oda input {
-  padding: 10px;
-  width: 90%;
-  max-width: 400px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  background-color: var(--card-color);
-  color: var(--text-color);
-  border: 1px solid var(--accordion-border);
-}
-
-.buttons {
-  margin-top: 20px;
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-.buttons button {
-  padding: 10px 20px;
-  background: var(--button-color);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.buttons button:hover { background: var(--button-hover); }
-
-.toggle-cart {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 10000;
-  background: #dc3545;
-  color: white;
-  padding: 12px 18px;
-  border-radius: 50px;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-.toggle-cart:hover { background: #c82333; }
-
-.cart-box {
-  display: none;
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  background: var(--card-color);
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  z-index: 9999;
-  max-width: 280px;
-}
-.cart-box ul { list-style: none; padding: 0; margin: 0; }
-.cart-box li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 5px;
-}
-.cart-total { text-align: right; margin-top: 10px; font-weight: bold; }
-.clear-cart {
-  margin-top: 10px;
-  background: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 5px 10px;
-  width: 100%;
-  cursor: pointer;
-}
-.remove-btn {
-  background: none;
-  border: none;
-  color: #c00;
-  cursor: pointer;
-}
-.dark-theme .accordion-button {
-  background-color: #2c2c2c !important;
-  color: #f0f0f0 !important;
-}
-.custom-alert {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #dc3545;
-  color: white;
-  padding: 12px 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  z-index: 99999;
-  display: none;
-  animation: fadeInOut 3s ease forwards;
-}
-
-@keyframes fadeInOut {
-  0% { opacity: 0; transform: translateX(-50%) translateY(-10px);}
-  10% { opacity: 1; transform: translateX(-50%) translateY(0);}
-  90% { opacity: 1; transform: translateX(-50%) translateY(0);}
-  100% { opacity: 0; transform: translateX(-50%) translateY(-10px);}
-}
-
-@media (max-width: 600px) {
-  .menu-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-
-</style>
-<style>
-    .accordion-button {
-  background: var(--accordion-bg);
-  font-weight: bold;
-  padding: 10px;
-  width: 100%;
-  text-align: left;
-  border-radius: 6px;
-  margin-top: 10px;
-  cursor: pointer;
-  border: none;
-  font-size: 16px;
-  position: relative;
-}
-
-.accordion-button::after {
-  content: '▼';
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  transition: 0.3s ease;
-}
-
-.accordion-button.active::after {
-  transform: translateY(-50%) rotate(180deg);
-}
-
-.accordion-content {
-  display: none;
-  padding: 10px;
-  margin-bottom: 10px;
-  background: var(--card-color);
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  max-height: 300px; /* içerik çok uzarsa */
-  overflow-y: auto;
-  margin-left: 10px;
-  margin-top: 10px;
-  
-}
-
-    .menu-buttons-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
+  <style>
+    /* --- MODERN E-SPOR TEMASI --- */
+    :root {
+      --bg-body: #0f172a; 
+      --bg-card: #1e293b; 
+      --bg-glass: rgba(15, 23, 42, 0.95); 
+      --primary: #3b82f6; 
+      --accent: #10b981; /* Yeşil */
+      --danger: #ef4444; 
+      --text-main: #f1f5f9; 
+      --text-muted: #94a3b8; 
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+      --radius: 16px;
+      --font-main: 'Poppins', sans-serif;
     }
 
+    /* LIGHT MODE DEĞİŞKENLERİ */
+    body.light-mode {
+      --bg-body: #f1f5f9;
+      --bg-card: #ffffff;
+      --bg-glass: rgba(255, 255, 255, 0.95);
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
 
-.accordion-content .accordion-button {
-  background-color: var(--accordion-sub-bg);
-  font-size: 14px;
-  width: 100%;
-  margin-top: 10px;
-  border-radius: 6px;
-  color: var(--text-color);
-  padding: 8px 12px;
-}
-.accordion-content > button {
-  display: block;
-  width: 100%;
-  margin-bottom: 10px;
-  background-color: var(--accordion-sub-bg);
-  color: var(--text-color);
-  border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  padding: 10px 14px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-.accordion-content > button:hover {
-  background-color: var(--accordion-hover-bg);
-}
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
 
-/* Subgroup (iç accordion) butonları */
-.accordion-sub-content {
-  padding: 10px 12px;
-  border-radius: 6px;
-  background: var(--card-color);
-  border: 1px solid var(--accordion-border);
-  margin-top: 10px;
-  margin-left: 10px;
-}
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      margin: 0;
+      padding-bottom: 120px;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.15) 0%, transparent 40%);
+      background-attachment: fixed;
+      min-height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
+    }
 
-.accordion-sub-content button {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 10px 14px;
-  margin-bottom: 8px;
-  background-color: var(--accordion-sub-bg);
-  color: var(--text-color);
-  border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
+    /* --- HEADER --- */
+    header {
+      background: var(--bg-glass);
+      padding: 15px 20px;
+      position: relative;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
 
-.accordion-sub-content button:hover {
-  background-color: var(--accordion-hover-bg);
-}
-.cart-container {
-  position: fixed;
-  bottom: env(safe-area-inset-bottom, 16px);
-  right: 16px;
-  z-index: 9999;
-}
+    header img {
+      max-height: 50px;
+      filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5));
+    }
 
-.toggle-cart {
-  background: #dc3545;
-  color: white;
-  padding: 12px 18px;
-  border-radius: 50px;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  position: relative;
-}
+    header h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 0;
+      background: linear-gradient(to right, var(--text-main), var(--text-muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
 
-.cart-badge {
-  position: absolute;
-  top: 0px;
-  right:2px;
-  transform: translate(50%, -50%);
-  background: gold;
-  color: black;
-  font-weight: bold;
-  border-radius: 50%;
-  padding: 4px 8px;
-  font-size: 13px;
-  z-index: 10001;
-  display: none;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
-}
+    /* --- KONTROLLER --- */
+    .controls { 
+      display: flex; 
+      gap: 12px;
+      align-items: center; 
+      justify-content: center;
+    }
 
-.accordion-subgroup {
-  margin-top: 10px;
-  padding-top: 10px; /* isteğe bağlı */
-  border-radius: 8px;
-}
-.menu-item-button {
-  background-color: var(--accordion-sub-bg);
-  color: var(--text-color);
-  border: none;
-  border-radius: 10px;
-  padding: 12px;
-  font-size: 16px;
-  margin-bottom: 10px;
-  width: 100%;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
+    .controls select, 
+    .theme-toggle-btn {
+      height: 40px; 
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      padding: 0 15px;
+      font-family: var(--font-main);
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
 
-.menu-item-button:hover {
-  background-color: var(--accordion-hover-bg);
-}
-.menu-item-button {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.menu-item-button img {
-  height: 20px;
-  width: auto;
-}
-.toggle-cart {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 10000;
-  background: #dc3545;
-  color: white;
-  padding: 12px 18px;
-  border-radius: 50px;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-}
+    .controls select:focus, 
+    .theme-toggle-btn:focus {
+      border-color: var(--primary);
+    }
 
-.cart-badge {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: gold;
-  color: black;
-  font-weight: bold;
-  border-radius: 50%;
-  min-width: 20px;
-  height: 20px;
-  line-height: 20px;
-  font-size: 13px;
-  text-align: center;
-  padding: 0 5px;
-  z-index: 10001;
-  display: none;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
-}
-.cart-inputs {
-  text-align: center;
-}
+    .controls select {
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      text-align: center;
+      min-width: 70px;
+    }
+    
+    .theme-toggle-btn {
+      min-width: 45px;
+      font-size: 1.1rem;
+    }
+    .theme-toggle-btn:active { transform: scale(0.95); }
 
-.cart-input {
-  width: 90%;
-  max-width: 240px;
-  padding: 6px 10px;
-  margin: 0 auto;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  display: block;
-  text-align: center;
-}
+    .controls select option {
+        background: #1e293b;
+        color: #fff;
+    }
+    body.light-mode .controls select option {
+        background: #fff;
+        color: #000;
+    }
 
-footer {
-  background-color: #f1f1f1;
-  padding: 20px;
-  text-align: center;
-}
+    /* --- SLIDER --- */
+    .slider-title {
+      padding-left: 20px;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-top: 25px;
+      margin-bottom: 15px;
+      font-weight: 600;
+      text-transform: uppercase;
+      border-left: 4px solid var(--accent);
+      line-height: 1;
+    }
 
-.dark-theme footer {
-  background-color: #333; /* Dark background */
-  color: white; /* Light text */
-}
+    .popular-slider-container {
+      width: 100%;
+      overflow: hidden; 
+      padding-bottom: 20px;
+      position: relative;
+    }
 
-.admin-btn {
-  padding: 10px 20px;
-  background-color: #4CAF50; /* Button color */
-  color: white;
-  text-decoration: none;
-  border-radius: 5px;
-  font-size: 8px;
-}
+    .popular-slider-track {
+      display: flex;
+      gap: 15px;
+      width: max-content;
+      animation: smoothScroll 40s linear infinite; 
+    }
+    
+    .popular-slider-track:hover { animation-play-state: paused; }
 
-.dark-theme .admin-btn {
-  background-color: #45a049; /* Dark mode button color */
-}
-.popular-slider-container {
-  width: 100%;
-   overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-  position: relative;
-  margin-top: 3px; /* İhtiyaca göre düzenleyin */
-  cursor: grab; /* Fareyi tutma şekline çevir */
-  scroll-behavior: smooth;
-}
-.popular-slider-container::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari */
-}
+    @keyframes smoothScroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); } 
+    }
 
-.popular-slider-container {
-  scrollbar-width: none; /* Firefox */
-}
-.slider-title {
-  text-align: center; /* Yatayda ortalar */
-  margin: 2 auto;     /* Varsayılan margin ile centering */
-}
-.popular-slider {
-  display: flex;
-  gap: 15px;
-  width: 80%;
-   max-width: 100%;
-   margin: 0 auto;
-  animation: scrollSlider 50s linear infinite;
-    animation-play-state: running; /* Başlangıçta çalışır */
-	 
-}
-/* Masaüstü ve tabletler için varsayılan stil */
-.popular-slider .slider-item {
-  width: 200px;
-  height: 120px;
-}
+    .slider-item {
+      width: 160px;
+      height: 120px;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      flex-shrink: 0; 
+      overflow: hidden;
+      position: relative;
+    }
 
-/* Mobil cihazlar için stil */
-@media only screen and (max-width: 767px) {
-  .popular-slider .slider-item {
-    width: 200px;  /* Mobilde daha küçük genişlik */
-    height: 100px; /* Mobilde daha küçük yükseklik */
-  }
+    .slider-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: var(--radius);
+      display: block;
+    }
+    
+    /* --- MENÜ GRID --- */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      padding: 20px;
+    }
+    
+    @media (min-width: 600px) { .menu-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 900px) { .menu-grid { grid-template-columns: repeat(4, 1fr); } }
 
-  .popular-slider {
-    width: 100%;  /* Slider'ı tam genişlikte yapıyoruz */
-  }
-}
+    .menu-item {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      height: 130px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
 
-.popular-slider:hover {
-  animation-play-state: paused;
-}
+    .menu-item:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 25px rgba(59, 130, 246, 0.25);
+      transform: translateY(-5px);
+    }
 
-.slider-item {
-  flex: 0 0 auto;
-  width: calc(15% - 10px); /* Ürün kutusunun genişliğini %25 olarak ayarladık */
-  background: var(--card-color);
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  padding: 10px;
-  text-align: center;
-  aspect-ratio: 16 / 9; /* 16:9 oranını korur */
-  overflow: hidden;
-}
+    .menu-item img {
+      height: 50px;
+      margin-bottom: 10px;
+      transition: transform 0.3s;
+      filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3));
+    }
+    .menu-item:hover img { transform: scale(1.1) rotate(5deg); }
+    .menu-item h2 { font-size: 0.95rem; font-weight: 600; margin: 0; color: var(--text-main); }
 
-@media (max-width: 768px) {
-  .slider-item {
-    width: calc(50% - 10px); /* Daha küçük ekranlar için 2 sütun */
-  }
-}
+    /* --- MODAL --- */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 9998;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
 
-@media (max-width: 480px) {
-  .slider-item {
-    width: 100%; /* Çok küçük ekranlar için tam genişlik */
-  }
-}
+    .modal-content {
+      background: var(--bg-card);
+      color: var(--text-main);
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      border-radius: 24px;
+      padding: 25px;
+      border: 1px solid rgba(255,255,255,0.1);
+      overflow-y: auto;
+      position: relative;
+      animation: modalSlideUp 0.3s ease;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    
+    .modal-content::-webkit-scrollbar { display: none; }
 
-.slider-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+    @keyframes modalSlideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
 
-.slider-item h3 {
-  margin-top: 10px;
-  font-size: 18px;
-  color: var(--text-color);
-}
+    .modal-close {
+      position: absolute;
+      top: 15px; right: 15px;
+      background: rgba(255,255,255,0.1);
+      color: var(--text-muted);
+      border: none;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      font-size: 20px;
+      line-height: 32px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .modal-close:hover { background: var(--danger); color: white; }
 
+    #modalTitle { margin-top: 0; color: var(--primary); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 15px; }
 
+    .accordion-button {
+      background: rgba(255,255,255,0.03);
+      color: var(--text-main);
+      padding: 14px;
+      width: 100%;
+      text-align: left;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      position: relative;
+    }
+    .accordion-button::after { content: '❯'; position: absolute; right: 20px; font-size: 12px; opacity: 0.7; }
+    .accordion-button.active { background: rgba(59, 130, 246, 0.15); border: 1px solid var(--primary); color: var(--primary); }
+    .accordion-button.active::after { transform: rotate(90deg); }
+    .accordion-content { display: none; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 0 0 12px 12px; margin-top: -8px; margin-bottom: 10px; }
 
-@media (max-width: 768px) {
-  .slider-item {
-    width: calc(50% - 10px); /* Küçük ekranlarda 2'li sütun düzeni */
-  }
-}
+    .menu-item-button {
+      display: flex; align-items: center; width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid transparent;
+      padding: 10px;
+      margin-bottom: 6px;
+      border-radius: 10px;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+    .menu-item-button:hover { background: rgba(16, 185, 129, 0.1); border-color: var(--accent); }
+    .menu-item-button img { width: 36px; height: 36px; object-fit: contain; margin-right: 12px; background: white; border-radius: 6px; padding: 2px; }
 
-@media (max-width: 480px) {
-  .slider-item {
-    width: 100%; /* Çok küçük ekranlarda tam genişlik */
-  }
-}
-/* Slider ürünlerine fare tıklanabilir özelliği ekleyelim */
-.popular-slider .slider-item {
-  cursor: pointer; /* Fare işaretçisini tıklanabilir yapar */
-}
+    /* --- LIGHT MODE POPUP/MENÜ DÜZELTMELERİ --- */
+    body.light-mode .accordion-button {
+        background: #f8fafc; /* Koyu gri yerine açık gri */
+        border: 1px solid #e2e8f0;
+        color: #1e293b;
+    }
+    body.light-mode .accordion-button.active {
+        background: #eff6ff;
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+    body.light-mode .accordion-content {
+        background: #f1f5f9; /* Koyu saydam yerine açık gri zemin */
+        border: 1px solid #e2e8f0;
+        border-top: none;
+    }
+    body.light-mode .menu-item-button {
+        background: #ffffff; /* Beyaz kutucuk */
+        border: 1px solid #cbd5e1;
+        color: #1e293b;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    body.light-mode .menu-item-button:hover {
+        border-color: var(--accent);
+        background: #f0fdf4;
+    }
 
-.popular-slider-container.dragging {
-  cursor: grabbing;
-  scroll-behavior: auto; /* drag yaparken smooth olmasın */
-}
-.rezervasyon-floating {
-  position: absolute ;
-  top: env(safe-area-inset-top, 12px);
-  right: env(safe-area-inset-right, 12px);
-  background: none;
-  padding: 0;
-  border: none;
-  box-shadow: none;
-  z-index: 9997;
-  cursor: pointer;
-}
+    /* --- CART BOX --- */
+    .cart-container { position: fixed; bottom: 20px; right: 20px; z-index: 10000; }
 
-.rezervasyon-floating img {
-  width: 88px;
-  height: auto;
-  vertical-align: middle;
-  display: block;
-}
-body {
-  padding-bottom: env(safe-area-inset-bottom);
-}
-a[href^="tel"],
-a[href^="mailto"] {
-  color: inherit;
-  text-decoration: none;
-  font-style: normal;
-}
+    .toggle-cart {
+      background: linear-gradient(135deg, var(--danger), #c02636);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 50px;
+      border: none;
+      font-family: var(--font-main);
+      font-weight: 600;
+      box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+      cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
+      position: relative; /* Badge konumlandırması için */
+    }
 
-#loader {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: #0f172a; /* slate-900 koyu arka plan */
-    color: #f1f5f9; /* slate-100 yazı rengi */
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Inter', sans-serif;
-    animation: fadeIn 0.5s ease-in-out;
-  }
+    /* GÜNCELLENMİŞ BADGE STİLİ */
+    .cart-badge { 
+      background: #ffd700; /* Sarı Renk */
+      color: #000; /* Siyah Yazı */
+      font-weight: 800; 
+      border-radius: 50%; 
+      min-width: 22px; 
+      height: 22px; 
+      line-height: 20px; 
+      text-align: center; 
+      font-size: 11px;
+      position: absolute; /* Askıda durması için */
+      top: -8px; /* Yukarı as */
+      right: -5px; /* Sağa as */
+      border: 2px solid #fff; /* Ayrıştırıcı beyaz çerçeve */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
 
-  .loader-inner {
-    text-align: center;
-    animation: scaleIn 0.4s ease-in-out;
-  }
+    .cart-box {
+      display: none;
+      position: fixed;
+      bottom: 80px; 
+      right: 20px;
+      width: 340px; 
+      max-width: 90vw; 
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 20px;
+      z-index: 9999;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      animation: fadeInCart 0.2s ease-out;
+      max-height: 70vh;
+      overflow-y: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .cart-box::-webkit-scrollbar { display: none; }
 
-  .loader-inner .icon {
-    font-size: 3rem;
-    animation: spin 1.4s linear infinite;
-    display: inline-block;
-    margin-bottom: 0.8rem;
-  }
+    @keyframes fadeInCart {
+      from { opacity: 0; transform: translateY(20px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
 
-  .loader-inner .text {
-    font-size: 1.2rem;
-    letter-spacing: 0.5px;
-    color: #94a3b8; /* slate-400 yazı */
-  }
+    .cart-box h3 {
+      margin-top: 0; color: var(--text-main); font-size: 1.1rem;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;
+    }
 
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
+    #cart-list { list-style: none; padding: 0; margin: 0; }
+    #cart-list li {
+      background: rgba(255,255,255,0.03);
+      padding: 10px; margin-bottom: 6px; border-radius: 8px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    /* Light Mode Sepet İçi Liste */
+    body.light-mode #cart-list li {
+        background: #f1f5f9;
+        color: #1e293b;
+    }
 
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+    #cart-list li.empty { text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 20px 0; }
 
-  @keyframes scaleIn {
-    from { transform: scale(0.95); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-  }
-#loader {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: #0f172a;
-  z-index: 99999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Inter', sans-serif;
-  color: #f1f5f9;
-}
+    .cart-inputs input {
+      width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-main); padding: 10px; border-radius: 8px; margin-top: 8px;
+      font-family: var(--font-main); text-align: center; font-size: 0.9rem;
+    }
+    body.light-mode .cart-inputs input {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+        color: #1e293b;
+    }
 
-.loader-inner {
-  text-align: center;
-  animation: fadeIn 0.5s ease-in-out;
-}
+    .cart-total { text-align: right; font-size: 1.1rem; font-weight: 700; color: var(--accent); margin: 15px 0; }
 
+    #cartOrderBtn {
+      background: linear-gradient(135deg, var(--accent), #059669);
+      color: white; border: none; width: 100%; padding: 12px; border-radius: 10px;
+      font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+    
+    .clear-cart { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 6px; border-radius: 8px; margin-top: 10px; width: 100%; cursor: pointer; font-size: 0.8rem; }
 
+    /* --- ALERT --- */
+    .custom-alert {
+      position: fixed; top: 80px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 50px;
+      z-index: 100000;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      font-weight: 600;
+      display: none;
+      animation: fadeInOut 2.5s ease forwards;
+      white-space: nowrap;
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translate(-50%, -10px); }
+      15% { opacity: 1; transform: translate(-50%, 0); }
+      85% { opacity: 1; transform: translate(-50%, 0); }
+      100% { opacity: 0; transform: translate(-50%, -10px); }
+    }
 
-.loader-inner .text {
-  font-size: 1.1rem;
-  color: #94a3b8;
-}
+    /* --- FLOATING BUTTONS --- */
+    #callBtn {
+      position: fixed; bottom: 25px; left: 25px;
+      width: 50px; height: 50px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #2563eb) !important;
+      color: white; border: none; z-index: 10001; font-size: 24px !important;
+      display: flex; align-items: center; justify-content: center; padding: 0 !important;
+      animation: pulseBlue 2s infinite; cursor: pointer;
+    }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+    .rezervasyon-floating {
+      position: absolute; top: 15px; right: 15px;
+      background: rgba(255,255,255,0.1); backdrop-filter: blur(5px);
+      padding: 4px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer; z-index: 1001; 
+    }
+    .rezervasyon-floating img { width: 60px; height: auto; display: block; }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+    /* Footer */
+    footer { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 0.75rem; }
+    .admin-btn { display: inline-block; margin-bottom: 10px; background: var(--bg-card); padding: 6px 12px; border-radius: 8px; color: var(--text-muted); text-decoration: none; border: 1px solid rgba(255,255,255,0.05); }
+    
+    /* Zil Modal */
+    #zilModal .modal-content { text-align: center; }
+    #zilModal button { font-family: var(--font-main); margin: 6px; padding: 10px 20px; border-radius: 8px; cursor: pointer; border: none; font-weight: 600; }
+    #zilModal input { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 10px; border-radius: 6px; text-align: center; }
 
   </style>
 </head>
 
 <body>
-<body>
-<body>
 
-
-
-  <!-- Buradan sonrası senin mevcut site içeriğin -->
-
-<header>
-
-  <img src="logo.png" alt="Logo">
-  <h1 id="headerTitle">Altunga E Spor Merkezi</h1>
- <div class="controls">
-  <select id="languageSelect" onchange="setLanguage(this.value)">
-    <option value="tr">TR</option>
-    <option value="en">EN</option>
-  </select>
-  <button onclick="toggleTheme()" title="Tema">🌙/☀️</button>
-
-
-
-<!-- Görevli Çağır Butonu -->
-<button id="callBtn" onclick="openZilModal()" title="Görevli Çağır" style="
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  background: #28a745; /* Yeşil */
-  color: white;
-  padding: 12px 18px;
-  border-radius: 50px;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-  z-index: 10001;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  transition: background 0.3s ease;
-">
-  👨‍💼 Görevli Çağır
-</button>
-
-
-
-</header>
-<h2 class="slider-title" id="sliderTitle">Popüler Ürünler</h2>
-
-
-
-<div class="popular-slider-container">
-  
-  <div class="popular-slider">
-    <div class="slider-item" data-name="Magnum Classic" data-price="80">
-      <img src="populer/magnumclassicpopuler.png" alt="Ürün 1">
+  <header>
+    <img src="logo.png" alt="Logo">
+    <h1 id="headerTitle">Altunga E Spor Merkezi</h1>
+    
+    <div class="controls">
+      <select id="languageSelect" onchange="setLanguage(this.value)">
+        <option value="tr">TR</option>
+        <option value="en">EN</option>
+      </select>
+      
+      <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn">
+        🌙
+      </button>
     </div>
-   
-    <div class="slider-item" data-name="Red Bull Pink E. 250ml." data-price="80">
-      <img src="populer/rebullpink.png" alt="Ürün 3">
-         </div>
-		<div class="slider-item" data-name="Nescafe Black Roast 250ml." data-price="80">
-      <img src="populer/nescafex.png" alt="Ürün 8">
-        </div>
-    <div class="slider-item" data-name="Monster Mango Loco 500ml." data-price="70">
-      <img src="populer/monstermango.png" alt="Ürün 5">
-        </div>
-    <div class="slider-item" data-name="Doritos Tako Mega Boy 193gr" data-price="100">
-      <img src="populer/doritostaco.png" alt="Ürün 6">
-         </div><div class="slider-item" data-name="Gong Pops Taco" data-price="60">
-      <img src="populer/tacopopuler.png" alt="Ürün 2">
-        </div>  <div class="slider-item" data-name="Patso Menü" data-price="80">
-      <img src="populer/patsomenu.png" alt="Ürün 4">
+
+    <button class="rezervasyon-floating" onclick="window.location.href='rezervasyon.html'" title="Rezervasyon">
+        <img src="rezervasyon.svg" alt="Rezervasyon" />
+    </button>
+  </header>
+
+
+  <h2 class="slider-title" id="sliderTitle">Popüler Ürünler</h2>
+  
+  <div class="popular-slider-container">
+    <div class="popular-slider-track" id="sliderTrack">
+      <div class="slider-item" data-name="Magnum Classic" data-price="80">
+        <img src="populer/magnumclassicpopuler.png" alt="Ürün">
+      </div>
+      <div class="slider-item" data-name="Red Bull Pink E. 250ml." data-price="80">
+        <img src="populer/rebullpink.png" alt="Ürün">
+      </div>
+      <div class="slider-item" data-name="Nescafe Black Roast" data-price="80">
+        <img src="populer/nescafex.png" alt="Ürün">
+      </div>
+      <div class="slider-item" data-name="Monster Mango Loco" data-price="70">
+        <img src="populer/monstermango.png" alt="Ürün">
+      </div>
+      <div class="slider-item" data-name="Doritos Tako Mega" data-price="100">
+        <img src="populer/doritostaco.png" alt="Ürün">
+      </div>
+      <div class="slider-item" data-name="Gong Pops Taco" data-price="60">
+        <img src="populer/tacopopuler.png" alt="Ürün">
+      </div>
+      <div class="slider-item" data-name="Patso Menü" data-price="80">
+        <img src="populer/patsomenu.png" alt="Ürün">
+      </div>
+      <div class="slider-item" data-name="Nogger Sandwich" data-price="70">
+        <img src="populer/nogger.png" alt="Ürün">
+      </div>
     </div>
-		 
+  </div>
+
+  <div class="menu-grid">
+    <div class="menu-item" onclick="showMenu('icecekler')">
+      <img src="icecekler.png">
+      <h2 id="menuIcecekler">İçecekler</h2>
+    </div>
+    <div class="menu-item" onclick="showMenu('atistirmalik')">
+      <img src="cips.png">
+      <h2 id="menuAtistirmalik">Atıştırmalık</h2>
+    </div>
+    <div class="menu-item" onclick="showMenu('sekerleme')">
+      <img src="jelibon.png">
+      <h2 id="menuSekerleme">Şekerleme</h2>
+    </div>
+    <div class="menu-item" onclick="showMenu('fastfood')">
+      <img src="patso.png">
+      <h2 id="menuFastfood">Fast Food</h2>
+    </div>
+    <div class="menu-item" onclick="showMenu('dondurma')">
+      <img src="dondurma.png">
+      <h2 id="menuDondurma">Dondurma</h2>
+    </div>
+    <div class="menu-item" onclick="showMenu('doner')">
+      <img src="doner.png">
+      <h2 id="menuDoner">Döner</h2>
+    </div>
+  </div>
+
+  <div class="custom-alert" id="customAlert">Sepete Eklendi!</div>
+
+  <div class="modal-overlay" id="menuModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()">×</button>
+      <h2 id="modalTitle"></h2>
+      <div id="modalButtons"></div>
+    </div>
+  </div>
+
+  <div class="cart-box" id="cartBox">
+    <h3 id="cartTitle">Sepet <button class="modal-close" onclick="toggleCart()" style="position:static; margin-left:auto; width:24px; height:24px; line-height:24px; font-size:16px;">×</button></h3>
     
-    <div class="slider-item" data-name="Nogger Sandwich" data-price="70">
-      <img src="populer/nogger.png" alt="Ürün 9">
-         </div>
-    <!-- Diğer slider-item'lar -->
-  </div>
-</div>
-
-
-
-<div class="menu-grid">
-  <div class="menu-item" onclick="showMenu('icecekler')">
-    <img src="icecekler.png"><h2 id="menuIcecekler">İçecekler</h2>
-  </div>
-   <div class="menu-item" onclick="showMenu('atistirmalik')">
-    <img src="cips.png"><h2 id="menuAtistirmalik">Atıştırmalık</h2>
-  </div>
-  <div class="menu-item" onclick="showMenu('sekerleme')">
-    <img src="jelibon.png"><h2 id="menuSekerleme">Şekerleme</h2>
-  </div>
-  <div class="menu-item" onclick="showMenu('fastfood')">
-    <img src="patso.png"><h2 id="menuFastfood">Fast Food</h2>
-  </div>
-  <div class="menu-item" onclick="showMenu('dondurma')">
-    <img src="dondurma.png"><h2 id="menuDondurma">Dondurma</h2>
-  </div>
- 
-   <div class="menu-item" onclick="showMenu('doner')">
-    <img src="doner.png"><h2 id="menuDoner">Döner</h2>
-  </div>
-  
-</div>
-
-<div class="custom-alert" id="customAlert"></div>
-
-<div class="modal-overlay" id="menuModal">
-  <div class="modal-content">
-    <button class="modal-close" onclick="closeModal()">×</button>
-    <h2 id="modalTitle"></h2>
-    <div id="modalButtons" class="menu-buttons-grid"></div>
-
+    <ul id="cart-list"><li class="empty">Sepetiniz boş</li></ul>
     
-
+    <div class="cart-inputs" id="cartInputsWrapper">
+      <input type="text" id="masaInputCart" placeholder="Masa No - ör: Hüma 5">
+      <input type="text" id="odaInputCart" placeholder="Oda No - ör: Vip Ps 2">
+    </div>
     
+    <div class="cart-total" id="cart-total">Toplam: 0 TL</div>
+    
+    <button id="cartOrderBtn" onclick="siparisVer()" style="display: none;">Sipariş Ver</button>
+    <button class="clear-cart" onclick="sepetiTemizle()">Sepeti Temizle</button>
   </div>
-</div>
 
-<div class="cart-box" id="cartBox">
-  <h3 id="cartTitle">Sepet</h3>
-  <ul id="cart-list"><li class="empty">Sepetiniz boş</li></ul>
-  <!-- Masa / Oda inputları -->
-<div class="cart-inputs" id="cartInputsWrapper" style="margin-top: 10px;">
-<input type="text" id="masaInputCart" placeholder="Masa No - ör: Hüma 5" 
-       style="margin-top:10px; width: 80%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+  <div class="cart-container">
+    <button class="toggle-cart" onclick="toggleCart()">
+      🛒 <span id="cartText">Sepet</span> <span id="cartBadge" class="cart-badge" style="display:none">0</span>
+    </button>
+  </div>
 
-<input type="text" id="odaInputCart" placeholder="Oda No - ör: Vip Ps 2" 
-       style="margin-top:10px; width: 80%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-</div>
-  <div class="cart-total" id="cart-total">Toplam: 0 TL</div>
-  <button id="cartOrderBtn" onclick="siparisVer()" style="display: none; background: #28a745; color: white; border: none; border-radius: 8px; padding: 5px 10px; width: 100%; cursor: pointer; margin-top: 8px;">
-  Sipariş Ver
-</button>
-  <button class="clear-cart" onclick="sepetiTemizle()">Sepeti Temizle</button>
-</div>
-<div class="cart-container">
-  <button class="toggle-cart" onclick="toggleCart()">
-    🛒 Sepet<span id="cartBadge" class="cart-badge">0</span>
-  </button>
-  
-</div>
+  <button id="callBtn" onclick="openZilModal()" title="Görevli Çağır">🔔</button>
 
+  <div class="modal-overlay" id="zilModal">
+    <div class="modal-content">
+      <div style="font-size: 50px;">🛎️</div>
+      <p id="zilSoru" style="font-size: 1.1rem; margin: 15px 0;">Görevliyi hangi amaçla çağırmak istiyorsunuz?</p>
 
+      <div id="zilSecimButonlari">
+        <button onclick="secimiYap('bilişim')" style="background-color: #3b82f6; color: white;">💻 Bilişim</button>
+        <button onclick="secimiYap('sipariş')" style="background-color: #10b981; color: white;">🧾 Sipariş</button>
+        <button onclick="closeZilModal()" style="background-color: #475569; color: white;">❌ İptal</button>
+      </div>
 
+      <div id="zilForm" style="display: none;">
+        <input id="popupMasa" placeholder="Masa No" />
+        <input id="popupOda" placeholder="Oda No" />
+        <div style="margin-top: 15px;">
+          <button onclick="callStaff()" style="background-color: #ef4444; color: white;">Gönder</button>
+          <button onclick="closeZilModal()" style="background-color: #475569; color: white;">İptal</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<audio id="dingSound" src="ding.mp3" preload="auto"></audio>
+  <audio id="dingSound" src="ding.mp3" preload="auto"></audio>
+
+  <footer>
+    <div class="footer-content">
+      <a href="https://altunga-website.github.io/altunga-site/admin/admin.html" target="_blank" class="admin-btn">Yönetici Girişi</a>
+    </div>
+    Designed by - M.Emin TAÇLI © 2025 Altunga E Spor Merkezi
+  </footer>
 
 <script>
 const translations = {
   tr: {
     header: "Altunga E Spor Merkezi",
     icecekler: "İçecekler",
-	atistirmalik:"Atıştırmalık",
+    atistirmalik:"Atıştırmalık",
     tost: "Tost",
-	doner:"Döner",
-	kofte:"Köfte",
-	hamburger: "Hamburger",
-	sekerleme: "Şekerleme",
+    doner:"Döner",
+    sekerleme: "Şekerleme",
     fastfood: "Fast Food",
     dondurma: "Dondurma",
     cart: "Sepet",
@@ -948,21 +686,16 @@ const translations = {
     table: "Masa No",
     room: "Oda No",
     clearCart: "Sepeti Temizle",
-	  sliderTitle: "Popüler Ürünler",
-	
-
-	
-	
+    sliderTitle: "Popüler Ürünler",
+    added: "Sepete Eklendi",
   },
   en: {
     header: "Altunga E Sport Center",
     icecekler: "Drinks",
-	atistirmalik:"Snack",
+    atistirmalik:"Snack",
     tost: "Toast",
-	doner:"Doner",
-	kofte:"Meatball",
-	hamburger: "Hamburger",
-	sekerleme: "Candy",
+    doner:"Doner",
+    sekerleme: "Candy",
     fastfood: "Fast Food",
     dondurma: "Ice Cream",
     cart: "Cart",
@@ -975,817 +708,679 @@ const translations = {
     table: "Table No",
     room: "Room No",
     clearCart: "Clear Cart",
-	 sliderTitle: "Popular Products",
+    sliderTitle: "Popular Products",
+    added: "Added to Cart",
   }
 };
 
-
 let currentLang = 'tr';
+let isDarkMode = true; // Varsayılan karanlık mod
 const sepet = [];
 
-
-
 const menuData = {
-
   icecekler: {
     title: { tr: "İçecekler", en: "Drinks" },
     groups: [
-  {
+      {
         title: { tr: "Su", en: "Water" },
         items: [
-          { name: { tr: "Su 500ml", en: "Water 500ml" }, price: 15, image: "urunimg/su.png" }, //
-        ]
-      },
-  {
-    title: { tr: "Gazlı İçecekler", en: "Fizzy Drinks" },  // ← Ana başlık
-    subgroups: [                               // ← Alt başlıkları açar
-      {
-        title: { tr: "Coca Cola", en: "Coca Cola" },
-        items: [
-          { name: { tr: "Coca Cola C.Şişe 200ml.", en: "Coca Cola G.Bottle 200ml." }, price: 40,image: "urunimg/cola200.png" },
-		  { name: { tr: "Coca Cola C.Şişe 300ml.", en: "Coca Cola G.Bottle 300ml." }, price: 60 ,image: "urunimg/sise300.png"},
-          { name: { tr: "Coca Cola 330ml.", en: "Coca Cola 330ml." }, price: 70,image: "urunimg/kutukola.png" },
-		  { name: { tr: "Coca Cola Zero 330ml.", en: "Coca Cola Zero 330ml." }, price: 60,image: "urunimg/zeroc.png" },
-		  { name: { tr: "Coca Cola 1lt.", en: "Coca Cola 1lt." }, price: 70,image: "urunimg/1ltcola.png" },
-		  { name: { tr: "Coca Cola 1lt. Light", en: "Coca Cola 1lt. Light" }, price: 70 ,image: "urunimg/1ltcolalight.png" },
-		  { name: { tr: "Coca Cola 2,5lt.", en: "Coca Cola 2,5lt." }, price: 100 ,image: "urunimg/2,5litre.png" },
-		  
-        ]
-		
-      },
-	        {
-        title: { tr: "Fanta", en: "Fanta" },
-        items: [
-          { name: { tr: "Fanta C.Şişe 200ml.", en: "Fanta G.Bottle 200ml." }, price: 40,image: "urunimg/fanta200cam.png" },
-		  { name: { tr: "Fanta 330ml.", en: "Fanta 330ml." }, price: 60,image: "urunimg/fanta330.png" },
-		  { name: { tr: "Fanta 1lt.", en: "Fanta 1lt." }, price: 70,image: "urunimg/fanta1lt.png" },
-		  
-		  
-        ]
-		
-      },
-	   {
-        title: { tr: "Sprite", en: "Fanta" },
-        items: [
-          { name: { tr: "Sprite 330ml.", en: "Sprite 330ml." }, price: 60,image: "urunimg/sprite330.png" },
-		  
-		  
-		  
-        ]
-		
-      },
-	  {
-        title: { tr: "Cola Turka", en: "Cola Turka" },
-        items: [
-          { name: { tr: "Cola Turka 200ml.", en: "Cola Turka 200ml." }, price: 25,image: "urunimg/colaturka200.png" },
-          
-        ]
-      },
-     
-    ]
-  },
-    {
-    title: { tr: "Maden Suyu", en: "Mineral Water" },  // ← Ana başlık
-    subgroups: [                               // ← Alt başlıkları açar
-      {
-        title: { tr: "Avşar Maden Suyu", en: "Avsar Mineral Water" },
-        items: [
-          { name: { tr: "Avşar Doğal", en: "Avsar Natural" }, price: 20,image: "urunimg/avsarnatural.png" },
-          { name: { tr: "Avşar Limonlu", en: "Avşar Lemon" }, price: 20,image: "urunimg/avsarlimon.png" },
-		  { name: { tr: "Avşar Mango & Ananas", en: "Avsar Mango & Pineapple" }, price: 20,image: "urunimg/avsarmango.png" },
-		 { name: { tr: "Avşar Karpuz & Çilek", en: "Avsar Watermelon & Strawberry" }, price: 20,image: "urunimg/avsarkarpuz.png" },
-		  { name: { tr: "Avşar Karadut & Frenk Üzümü", en: "Avsar Black Mulberry & Blackcurrant" }, price: 20,image: "urunimg/avsarkaradut.png" },
-		  { name: { tr: "Avşar Düşes Armudu", en: "Avsar Duchess Pear" }, price: 20,image: "urunimg/avsarduses.png" },
-		  
-        ]
-		
-      },
-	  
-	  
-      {
-        title: { tr: "Damla Minera", en: "Damla Minera" },
-        items: [
-          { name: { tr: "Damla Minera Sade", en: "Damla Minera Plain" }, price: 15,image: "urunimg/damlasade.png" },
-          { name: { tr: "Damla Minera Limonlu", en: "Damla Minera Lemon" }, price: 20,image: "urunimg/damlalimon.png" },
-		   { name: { tr: "Damla Çilekli & Karpuzlu", en: "Damla Strawberry & Watermelon" }, price: 20,image: "urunimg/damlacilek.png" },
-		   { name: { tr: "Damla Mango & Ananas", en: "Damla Mango & Pineapple" }, price: 20,image: "urunimg/damlamango.png" },
-		   { name: { tr: "Damla Elmalı", en: "Damla Apple" }, price: 20,image: "urunimg/damlaelmali.png" },
-		   { name: { tr: "Damla Minera 330ml.", en: "Damla Minera 330ml." }, price: 40,image: "urunimg/damla330.png" },
-        ]
-      },
-	  {
-        title: { tr: "Freşa", en: "Freşa" },
-        items: [
-          { name: { tr: "Karpuz & Çilek", en: "Watermelon & Strawberry" }, price: 20,image: "urunimg/fresacilek.png" },
-		  { name: { tr: "Limon", en: "Lemon" }, price: 20,image: "urunimg/fresalimon.png" },
-			{ name: { tr: "Çilek", en: "Strawberry" }, price: 20,image: "urunimg/fresakarpuz.png" },
-			
-        ]
-      },
-	  {
-        title: { tr: "Beypazarı", en: "Beypazarı" },
-        items: [
-          { name: { tr: "Beypazarı Sade", en: "Beypazarı Plain" }, price: 15,image: "urunimg/beypazari.png" },
-        
-        ]
-      },
-	  
-    ]
-  },
-  {
-    title: { tr: "Enerji İçeceği", en: "Energy Drink" },  // ← Ana başlık
-    subgroups: [                               // ← Alt başlıkları açar
-      {
-        title: { tr: "Red Bull", en: "Red Bull" },
-        items: [
-		{ name: { tr: "Red Bull 250ml.", en: "Red Bull 250ml." }, price: 80,image: "urunimg/redbull250.png" },
-		{ name: { tr: "Red Bull Peach E. 250ml.", en: "Red Bull Peach E. 250ml." }, price: 80,image: "urunimg/redbullpeach.png" },
-		{ name: { tr: "Red Bull Yellow E. 250ml.", en: "Red Bull Yellow E. 250ml." }, price: 80,image: "urunimg/redbullyellow.png" },
-		{ name: { tr: "Red Bull White E. 250ml.", en: "Red Bull White E. 250ml." }, price: 80,image: "urunimg/redbullwhite.png" },
-		{ name: { tr: "Red Bull Pink E. 250ml.", en: "Red Bull Pink E. 250ml." }, price: 80,image: "urunimg/redbullpink.png" },
-		{ name: { tr: "Red Bull Red E. 250ml.", en: "Red Bull Red E. 250ml." }, price: 80,image: "urunimg/redbullred.png" },
-		{ name: { tr: "Red Bull Sugar E. 250ml.", en: "Red Bull Sugar E. 250ml." }, price: 80,image: "urunimg/redbullsugar.png" },
-		{ name: { tr: "Red Bull Blue E. 250ml.", en: "Red Bull Blue E. 250ml." }, price: 80,image: "urunimg/redbullblue.png" },
-          { name: { tr: "Red Bull Klasik 355ml.", en: "Red Bull Classic 355ml." }, price: 100,image: "urunimg/redbull355.png" },
-          
-		  
-        ]
-		
-      },
-	  {
-        title: { tr: "Monster", en: "Monster" },
-        items: [
-		{ name: { tr: "Monster Klasik 500ml.", en: "Monster Classics 500ml." }, price: 70,image: "urunimg/monster500.png" },
-		{ name: { tr: "Monster U.Tropikal 500ml.", en: "Monster U.Tropikal 500ml." }, price: 70,image: "urunimg/monsterutropical.png" },
-		{ name: { tr: "Monster Pipeline P. 500ml.", en: "Monster Pipeline P. 500ml." }, price: 70,image: "urunimg/monsterpipeline.png" },
-		{ name: { tr: "Monster The Doctor S. 500ml.", en: "Monster The Doctor Y. 500ml." }, price: 70,image: "urunimg/monsterthedoctor.png" },
-		{ name: { tr: "Monster Watermelon 500ml.", en: "Monster Watermelon 500ml." }, price: 70,image: "urunimg/monsterwatermelon.png" },
-		{ name: { tr: "Monster R.W. Pineapple 500ml.", en: "Monster R.W. Pineapple 500ml." }, price: 70,image: "urunimg/monsterpineapple.png" },
-		{ name: { tr: "Monster U.Sunrise 500ml.", en: "Monster U.Sunrise 500ml." }, price: 70,image: "urunimg/monstersunrise.png" },
-		{ name: { tr: "Monster Mango Loco 500ml.", en: "Monster Mango Loco 500ml." }, price: 70,image: "urunimg/monstermango.png" },
-          { name: { tr: "Monster Ultra White 500ml.", en: "Monster Ultra White 500ml." }, price: 70,image: "urunimg/monsterultra.png" },
-          
-		  
-        ]
-		
-      },
-	  {
-        title: { tr: "Burn", en: "Burn" },
-        items: [
-		{ name: { tr: "Burn Original 250ml.", en: "Burn Original 250ml." }, price: 60,image: "urunimg/burn250.png" },
-		{ name: { tr: "Burn Gold Spark 250ml.", en: "Burn Gold Spark 250ml." }, price: 60,image: "urunimg/burngold.png" },
-		{ name: { tr: "Burn Zero Sugar 250ml.", en: "Burn Zero Sugar 250ml." }, price: 60,image: "urunimg/burnzero.png" },
-		{ name: { tr: "Burn 500ml.", en: "Burn 500ml." }, price: 100,image: "urunimg/burn500.png" },
-		
-          
-		  
-        ]
-		
-      },
-       {
-        title: { tr: "Powerade", en: "Powerade" },
-        items: [
-		{ name: { tr: "Powerade Ice Blast 500ml.", en: "Powerade Ice Blast 500ml." }, price: 60,image: "urunimg/poweradeice.png" },
-		{ name: { tr: "Powerade Sun Brush 500ml.", en: "Powerade Sun Brush 500ml." }, price: 60,image: "urunimg/poweradesun.png" },
-		
-		
-          
-		  
-        ]
-		
-      },
-    ]
-  },
-  {
-    title: { tr: "Soğuk Çay", en: "Ice Tea" },  // ← Ana başlık
-    subgroups: [                               // ← Alt başlıkları açar
-      {
-        title: { tr: "Fusetea", en: "Fusetea" },
-        items: [
-          { name: { tr: "Fusetea Şeftali 330ml.", en: "Fusetea Peach 330ml." }, price: 60,image: "urunimg/fuseteaseftali.png" },
-          { name: { tr: "Fusetea Limon 330ml.", en: "Fusetea Lemon 330ml." }, price: 60,image: "urunimg/fusetealimon.png" },
-		  { name: { tr: "Fusetea Frambuaz & Böğürtlen 330ml.", en: "Fusetea Raspberry & Blackberry 330ml." }, price: 60,image: "urunimg/fuseteabogurtlen.png" },
-		  { name: { tr: "Fusetea Mango & Ananas 330ml.", en: "Fusetea Mango & Pineapple 330ml." }, price: 60,image: "urunimg/fuseteamango.png" },
-		  { name: { tr: "Fusetea Karpuz 330ml.", en: "Fusetea Watermelon 330ml." }, price: 60,image: "urunimg/fuseteakarpuz.png" },
-		  { name: { tr: "Fusetea Kavun & Çilek 330ml.", en: "Fusetea Melon & Strawberry 330ml." }, price: 60,image: "urunimg/fuseteakavun.png" },
-		  { name: { tr: "Fusetea Şeftali 1lt.", en: "Fusetea Peach 1lt." }, price: 70,image: "urunimg/fuseteaseftali1lt.png" },
-		  { name: { tr: "Fusetea Karpuz 1lt.", en: "Fusetea Watermelon 1lt." }, price: 70,image: "urunimg/fuseteakarpuz1lt.png" },
-		  { name: { tr: "Fusetea Limon 1lt.", en: "Fusetea Lemon 1lt." }, price: 70,image: "urunimg/fusetealimon1lt.png" },
-		  { name: { tr: "Fusetea Mango & Ananas 1lt.", en: "Fusetea Mango & Pineapple 1lt." }, price: 70,image: "urunimg/fuseteamango1lt.png" },
-		  { name: { tr: "Fusetea Kavun & Çilek 1lt.", en: "Fusetea Melon & Strawberry 1lt." }, price: 70,image: "urunimg/fuseteakavun1lt.png" },
-		  { name: { tr: "Fusetea Ejder Meyveli 1lt.", en: "Fusetea Dragon Fruit 1lt." }, price: 70,image: "urunimg/fuseteaejder.png" },
+          { name: { tr: "Su 500ml", en: "Water 500ml" }, price: 15, image: "urunimg/su.png" },
         ]
       },
       {
-        title: { tr: "Didi", en: "Didi" },
-        items: [
-          { name: { tr: "Didi Şeftali 330ml.", en: "Didi Peach 330ml." }, price: 50,image: "urunimg/didiseftali.png" },
-          { name: { tr: "Didi Limon 330ml.", en: "Didi Lemon 330ml." }, price: 50,image: "urunimg/didilimon.png" },
-		   { name: { tr: "Didi Bergamot 330ml.", en: "Didi Bergamot 330ml." }, price: 50,image: "urunimg/didibergamot.png" },
-        ]
-      }
-    ]
-  },
-  {
-    title: { tr: "Soğuk Kahve", en: "Iced Coffee" },  // ← Ana başlık
-    subgroups: [                               // ← Alt başlıkları açar
-      {
-        title: { tr: "Obsesso", en: "Obsesso" },
-        items: [
-          { name: { tr: "Obsesson Latte Sütlü 250ml.", en: "Obsesson Latte Milk 250ml." }, price: 70,image: "urunimg/obsessolattesutlu.png" },
-          { name: { tr: "Obsesson Caramel Macchiato 250ml.", en: "Obsesson Caramel Macchiato 250ml.." }, price: 70,image: "urunimg/obsessocaramel.png" },
-		 
-        ]
-      },
-      {
-        title: { tr: "Nescafe", en: "Nescafe" },
-        items: [
-          { name: { tr: "Nescafe Xpress L. Original 250ml.", en: "Nescafe Xpress L. Original 250ml." }, price: 80,image: "urunimg/nescafeorijinal.png" },
-          { name: { tr: "Nescafe Black Roast 250ml.", en: "Nescafe Black Roast 250ml." }, price: 80,image: "urunimg/nescafeblack.png" },
-		  
-        ]
-      }
-    ]
-  },
-  {
-    title: { tr: "Meyve Suyu", en: "Fruit Juice" },  // ← Ana başlık
-    subgroups: [                               // ← Alt başlıkları açar
-      {
-        title: { tr: "Cappy", en: "Cappy" },
-        items: [
-          { name: { tr: "Cappy Vişne 330ml.", en: "Cappy Cherry 330ml." }, price: 60,image: "urunimg/cappyvisne.png" },
-          { name: { tr: "Cappy Portakal 330ml.", en: "Fusetea Orange 330ml." }, price: 60,image: "urunimg/cappyportakal.png" },
-		  { name: { tr: "Cappy Atom - Ballı K. 330ml.", en: "Cappy Atomic Honey & Mix. 330ml." }, price: 60,image: "urunimg/cappyatom.png" },
-		  
+        title: { tr: "Gazlı İçecekler", en: "Fizzy Drinks" },
+        subgroups: [
+          {
+            title: { tr: "Coca Cola", en: "Coca Cola" },
+            items: [
+              { name: { tr: "Coca Cola C.Şişe 200ml.", en: "Coca Cola G.Bottle 200ml." }, price: 40,image: "urunimg/cola200.png" },
+              { name: { tr: "Coca Cola C.Şişe 300ml.", en: "Coca Cola G.Bottle 300ml." }, price: 60 ,image: "urunimg/sise300.png"},
+              { name: { tr: "Coca Cola 330ml.", en: "Coca Cola 330ml." }, price: 70,image: "urunimg/kutukola.png" },
+              { name: { tr: "Coca Cola Zero 330ml.", en: "Coca Cola Zero 330ml." }, price: 60,image: "urunimg/zeroc.png" },
+              { name: { tr: "Coca Cola 1lt.", en: "Coca Cola 1lt." }, price: 70,image: "urunimg/1ltcola.png" },
+              { name: { tr: "Coca Cola 1lt. Light", en: "Coca Cola 1lt. Light" }, price: 70 ,image: "urunimg/1ltcolalight.png" },
+              { name: { tr: "Coca Cola 2,5lt.", en: "Coca Cola 2,5lt." }, price: 100 ,image: "urunimg/2,5litre.png" },
+            ]
+          },
+          {
+            title: { tr: "Fanta", en: "Fanta" },
+            items: [
+              { name: { tr: "Fanta C.Şişe 200ml.", en: "Fanta G.Bottle 200ml." }, price: 40,image: "urunimg/fanta200cam.png" },
+              { name: { tr: "Fanta 330ml.", en: "Fanta 330ml." }, price: 60,image: "urunimg/fanta330.png" },
+              { name: { tr: "Fanta 1lt.", en: "Fanta 1lt." }, price: 70,image: "urunimg/fanta1lt.png" },
+            ]
+          },
+          {
+            title: { tr: "Sprite", en: "Fanta" },
+            items: [
+              { name: { tr: "Sprite 330ml.", en: "Sprite 330ml." }, price: 60,image: "urunimg/sprite330.png" },
+            ]
+          },
+          {
+            title: { tr: "Cola Turka", en: "Cola Turka" },
+            items: [
+              { name: { tr: "Cola Turka 200ml.", en: "Cola Turka 200ml." }, price: 25,image: "urunimg/colaturka200.png" },
+            ]
+          },
         ]
       },
       {
-        title: { tr: "Caprisun", en: "Caprisun" },
-        items: [
-          { name: { tr: "Caprisun Multivitamin 200ml.", en: "Caprisun Multivitamin 200ml." }, price: 25,image: "urunimg/caprisunmulti.png" },
-          { name: { tr: "Caprisun Safari 200ml.", en: "Caprisun Safari 200ml." }, price: 25,image: "urunimg/caprisunsafari.png" },
-		   { name: { tr: "Caprisun Mystic Dragon 200ml.", en: "Caprisun Mystic Dragon 200ml." }, price: 25,image: "urunimg/caprisundragon.png" },
+        title: { tr: "Maden Suyu", en: "Mineral Water" },
+        subgroups: [
+          {
+            title: { tr: "Avşar Maden Suyu", en: "Avsar Mineral Water" },
+            items: [
+              { name: { tr: "Avşar Doğal", en: "Avsar Natural" }, price: 20,image: "urunimg/avsarnatural.png" },
+              { name: { tr: "Avşar Limonlu", en: "Avşar Lemon" }, price: 20,image: "urunimg/avsarlimon.png" },
+              { name: { tr: "Avşar Mango & Ananas", en: "Avsar Mango & Pineapple" }, price: 20,image: "urunimg/avsarmango.png" },
+              { name: { tr: "Avşar Karpuz & Çilek", en: "Avsar Watermelon & Strawberry" }, price: 20,image: "urunimg/avsarkarpuz.png" },
+              { name: { tr: "Avşar Karadut & Frenk Üzümü", en: "Avsar Black Mulberry & Blackcurrant" }, price: 20,image: "urunimg/avsarkaradut.png" },
+              { name: { tr: "Avşar Düşes Armudu", en: "Avsar Duchess Pear" }, price: 20,image: "urunimg/avsarduses.png" },
+            ]
+          },
+          {
+            title: { tr: "Damla Minera", en: "Damla Minera" },
+            items: [
+              { name: { tr: "Damla Minera Sade", en: "Damla Minera Plain" }, price: 15,image: "urunimg/damlasade.png" },
+              { name: { tr: "Damla Minera Limonlu", en: "Damla Minera Lemon" }, price: 20,image: "urunimg/damlalimon.png" },
+              { name: { tr: "Damla Çilekli & Karpuzlu", en: "Damla Strawberry & Watermelon" }, price: 20,image: "urunimg/damlacilek.png" },
+              { name: { tr: "Damla Mango & Ananas", en: "Damla Mango & Pineapple" }, price: 20,image: "urunimg/damlamango.png" },
+              { name: { tr: "Damla Elmalı", en: "Damla Apple" }, price: 20,image: "urunimg/damlaelmali.png" },
+              { name: { tr: "Damla Minera 330ml.", en: "Damla Minera 330ml." }, price: 40,image: "urunimg/damla330.png" },
+            ]
+          },
+          {
+            title: { tr: "Freşa", en: "Freşa" },
+            items: [
+              { name: { tr: "Karpuz & Çilek", en: "Watermelon & Strawberry" }, price: 20,image: "urunimg/fresacilek.png" },
+              { name: { tr: "Limon", en: "Lemon" }, price: 20,image: "urunimg/fresalimon.png" },
+              { name: { tr: "Çilek", en: "Strawberry" }, price: 20,image: "urunimg/fresakarpuz.png" },
+            ]
+          },
+          {
+            title: { tr: "Beypazarı", en: "Beypazarı" },
+            items: [
+              { name: { tr: "Beypazarı Sade", en: "Beypazarı Plain" }, price: 15,image: "urunimg/beypazari.png" },
+            ]
+          },
         ]
       },
-	  {
-        title: { tr: "Link", en: "Link" },
-        items: [
-          { name: { tr: "Link Çilekli 200ml.", en: "Link Strawberry 200ml." }, price: 20,image: "urunimg/linkcilekli.png" },
-          
+      {
+        title: { tr: "Enerji İçeceği", en: "Energy Drink" },
+        subgroups: [
+          {
+            title: { tr: "Red Bull", en: "Red Bull" },
+            items: [
+              { name: { tr: "Red Bull 250ml.", en: "Red Bull 250ml." }, price: 80,image: "urunimg/redbull250.png" },
+              { name: { tr: "Red Bull Peach E. 250ml.", en: "Red Bull Peach E. 250ml." }, price: 80,image: "urunimg/redbullpeach.png" },
+              { name: { tr: "Red Bull Yellow E. 250ml.", en: "Red Bull Yellow E. 250ml." }, price: 80,image: "urunimg/redbullyellow.png" },
+              { name: { tr: "Red Bull White E. 250ml.", en: "Red Bull White E. 250ml." }, price: 80,image: "urunimg/redbullwhite.png" },
+              { name: { tr: "Red Bull Pink E. 250ml.", en: "Red Bull Pink E. 250ml." }, price: 80,image: "urunimg/redbullpink.png" },
+              { name: { tr: "Red Bull Red E. 250ml.", en: "Red Bull Red E. 250ml." }, price: 80,image: "urunimg/redbullred.png" },
+              { name: { tr: "Red Bull Sugar E. 250ml.", en: "Red Bull Sugar E. 250ml." }, price: 80,image: "urunimg/redbullsugar.png" },
+              { name: { tr: "Red Bull Blue E. 250ml.", en: "Red Bull Blue E. 250ml." }, price: 80,image: "urunimg/redbullblue.png" },
+              { name: { tr: "Red Bull Klasik 355ml.", en: "Red Bull Classic 355ml." }, price: 100,image: "urunimg/redbull355.png" },
+            ]
+          },
+          {
+            title: { tr: "Monster", en: "Monster" },
+            items: [
+              { name: { tr: "Monster Klasik 500ml.", en: "Monster Classics 500ml." }, price: 70,image: "urunimg/monster500.png" },
+              { name: { tr: "Monster U.Tropikal 500ml.", en: "Monster U.Tropikal 500ml." }, price: 70,image: "urunimg/monsterutropical.png" },
+              { name: { tr: "Monster Pipeline P. 500ml.", en: "Monster Pipeline P. 500ml." }, price: 70,image: "urunimg/monsterpipeline.png" },
+              { name: { tr: "Monster The Doctor S. 500ml.", en: "Monster The Doctor Y. 500ml." }, price: 70,image: "urunimg/monsterthedoctor.png" },
+              { name: { tr: "Monster Watermelon 500ml.", en: "Monster Watermelon 500ml." }, price: 70,image: "urunimg/monsterwatermelon.png" },
+              { name: { tr: "Monster R.W. Pineapple 500ml.", en: "Monster R.W. Pineapple 500ml." }, price: 70,image: "urunimg/monsterpineapple.png" },
+              { name: { tr: "Monster U.Sunrise 500ml.", en: "Monster U.Sunrise 500ml." }, price: 70,image: "urunimg/monstersunrise.png" },
+              { name: { tr: "Monster Mango Loco 500ml.", en: "Monster Mango Loco 500ml." }, price: 70,image: "urunimg/monstermango.png" },
+              { name: { tr: "Monster Ultra White 500ml.", en: "Monster Ultra White 500ml." }, price: 70,image: "urunimg/monsterultra.png" },
+            ]
+          },
+          {
+            title: { tr: "Burn", en: "Burn" },
+            items: [
+              { name: { tr: "Burn Original 250ml.", en: "Burn Original 250ml." }, price: 60,image: "urunimg/burn250.png" },
+              { name: { tr: "Burn Gold Spark 250ml.", en: "Burn Gold Spark 250ml." }, price: 60,image: "urunimg/burngold.png" },
+              { name: { tr: "Burn Zero Sugar 250ml.", en: "Burn Zero Sugar 250ml." }, price: 60,image: "urunimg/burnzero.png" },
+              { name: { tr: "Burn 500ml.", en: "Burn 500ml." }, price: 100,image: "urunimg/burn500.png" },
+            ]
+          },
+          {
+            title: { tr: "Powerade", en: "Powerade" },
+            items: [
+              { name: { tr: "Powerade Ice Blast 500ml.", en: "Powerade Ice Blast 500ml." }, price: 60,image: "urunimg/poweradeice.png" },
+              { name: { tr: "Powerade Sun Brush 500ml.", en: "Powerade Sun Brush 500ml." }, price: 60,image: "urunimg/poweradesun.png" },
+            ]
+          },
+        ]
+      },
+      {
+        title: { tr: "Soğuk Çay", en: "Ice Tea" },
+        subgroups: [
+          {
+            title: { tr: "Fusetea", en: "Fusetea" },
+            items: [
+              { name: { tr: "Fusetea Şeftali 330ml.", en: "Fusetea Peach 330ml." }, price: 60,image: "urunimg/fuseteaseftali.png" },
+              { name: { tr: "Fusetea Limon 330ml.", en: "Fusetea Lemon 330ml." }, price: 60,image: "urunimg/fusetealimon.png" },
+              { name: { tr: "Fusetea Frambuaz & Böğürtlen 330ml.", en: "Fusetea Raspberry & Blackberry 330ml." }, price: 60,image: "urunimg/fuseteabogurtlen.png" },
+              { name: { tr: "Fusetea Mango & Ananas 330ml.", en: "Fusetea Mango & Pineapple 330ml." }, price: 60,image: "urunimg/fuseteamango.png" },
+              { name: { tr: "Fusetea Karpuz 330ml.", en: "Fusetea Watermelon 330ml." }, price: 60,image: "urunimg/fuseteakarpuz.png" },
+              { name: { tr: "Fusetea Kavun & Çilek 330ml.", en: "Fusetea Melon & Strawberry 330ml." }, price: 60,image: "urunimg/fuseteakavun.png" },
+              { name: { tr: "Fusetea Şeftali 1lt.", en: "Fusetea Peach 1lt." }, price: 70,image: "urunimg/fuseteaseftali1lt.png" },
+              { name: { tr: "Fusetea Karpuz 1lt.", en: "Fusetea Watermelon 1lt." }, price: 70,image: "urunimg/fuseteakarpuz1lt.png" },
+              { name: { tr: "Fusetea Limon 1lt.", en: "Fusetea Lemon 1lt." }, price: 70,image: "urunimg/fusetealimon1lt.png" },
+              { name: { tr: "Fusetea Mango & Ananas 1lt.", en: "Fusetea Mango & Pineapple 1lt." }, price: 70,image: "urunimg/fuseteamango1lt.png" },
+              { name: { tr: "Fusetea Kavun & Çilek 1lt.", en: "Fusetea Melon & Strawberry 1lt." }, price: 70,image: "urunimg/fuseteakavun1lt.png" },
+              { name: { tr: "Fusetea Ejder Meyveli 1lt.", en: "Fusetea Dragon Fruit 1lt." }, price: 70,image: "urunimg/fuseteaejder.png" },
+            ]
+          },
+          {
+            title: { tr: "Didi", en: "Didi" },
+            items: [
+              { name: { tr: "Didi Şeftali 330ml.", en: "Didi Peach 330ml." }, price: 50,image: "urunimg/didiseftali.png" },
+              { name: { tr: "Didi Limon 330ml.", en: "Didi Lemon 330ml." }, price: 50,image: "urunimg/didilimon.png" },
+              { name: { tr: "Didi Bergamot 330ml.", en: "Didi Bergamot 330ml." }, price: 50,image: "urunimg/didibergamot.png" },
+            ]
+          }
+        ]
+      },
+      {
+        title: { tr: "Soğuk Kahve", en: "Iced Coffee" },
+        subgroups: [
+          {
+            title: { tr: "Obsesso", en: "Obsesso" },
+            items: [
+              { name: { tr: "Obsesson Latte Sütlü 250ml.", en: "Obsesson Latte Milk 250ml." }, price: 70,image: "urunimg/obsessolattesutlu.png" },
+              { name: { tr: "Obsesson Caramel Macchiato 250ml.", en: "Obsesson Caramel Macchiato 250ml.." }, price: 70,image: "urunimg/obsessocaramel.png" },
+            ]
+          },
+          {
+            title: { tr: "Nescafe", en: "Nescafe" },
+            items: [
+              { name: { tr: "Nescafe Xpress L. Original 250ml.", en: "Nescafe Xpress L. Original 250ml." }, price: 80,image: "urunimg/nescafeorijinal.png" },
+              { name: { tr: "Nescafe Black Roast 250ml.", en: "Nescafe Black Roast 250ml." }, price: 80,image: "urunimg/nescafeblack.png" },
+            ]
+          }
+        ]
+      },
+      {
+        title: { tr: "Meyve Suyu", en: "Fruit Juice" },
+        subgroups: [
+          {
+            title: { tr: "Cappy", en: "Cappy" },
+            items: [
+              { name: { tr: "Cappy Vişne 330ml.", en: "Cappy Cherry 330ml." }, price: 60,image: "urunimg/cappyvisne.png" },
+              { name: { tr: "Cappy Portakal 330ml.", en: "Fusetea Orange 330ml." }, price: 60,image: "urunimg/cappyportakal.png" },
+              { name: { tr: "Cappy Atom - Ballı K. 330ml.", en: "Cappy Atomic Honey & Mix. 330ml." }, price: 60,image: "urunimg/cappyatom.png" },
+            ]
+          },
+          {
+            title: { tr: "Caprisun", en: "Caprisun" },
+            items: [
+              { name: { tr: "Caprisun Multivitamin 200ml.", en: "Caprisun Multivitamin 200ml." }, price: 25,image: "urunimg/caprisunmulti.png" },
+              { name: { tr: "Caprisun Safari 200ml.", en: "Caprisun Safari 200ml." }, price: 25,image: "urunimg/caprisunsafari.png" },
+              { name: { tr: "Caprisun Mystic Dragon 200ml.", en: "Caprisun Mystic Dragon 200ml." }, price: 25,image: "urunimg/caprisundragon.png" },
+            ]
+          },
+          {
+            title: { tr: "Link", en: "Link" },
+            items: [
+              { name: { tr: "Link Çilekli 200ml.", en: "Link Strawberry 200ml." }, price: 20,image: "urunimg/linkcilekli.png" },
+            ]
+          },
         ]
       },
     ]
-  },
-]
   },
   
   atistirmalik: {
     title: { tr: "Atıştırmalık", en: "Snack" },
     groups: [
-  {
-    title: { tr: "Cips", en: "Chips" },  // ← Ana başlık
-    subgroups: [                               // ← Alt başlıkları açar
       {
-        title: { tr: "Ruffles", en: "Ruffles" },
-        items: [
-		{ name: { tr: "Original 20gr.", en: "Original 20gr." }, price: 35,image: "urunimg/rufflesoriginal.png" },
-		{ name: { tr: "Original 50gr.", en: "Original 50gr." }, price: 35,image: "urunimg/rufflesoriginal.png" },
-          { name: { tr: "Original Orta Boy 88gr.", en: "Original Medium Size 88gr." }, price: 60,image: "urunimg/rufflesoriginal.png" },
-		  { name: { tr: "Original Orta Boy 105gr.", en: "Original Medium Size 105gr." }, price: 60,image: "urunimg/rufflesoriginal.png" },
-          { name: { tr: "Original Büyük Boy 160gr.", en: "Original Large Size 160gr." }, price: 80,image: "urunimg/rufflesoriginal.png" },
-		  { name: { tr: "Original Mega Boy 193gr.", en: "Original Mega Size 193gr." }, price: 100,image: "urunimg/rufflesoriginalmega.png" },
-		  { name: { tr: "Ketçaplı 50gr.", en: "Ketçaplı 50gr." }, price: 35,image: "urunimg/rufflesketcap.png" },
-		  { name: { tr: "Ketçaplı Orta Boy 105gr.", en: "Ketchup Medium Size 105gr." }, price: 60,image: "urunimg/rufflesketcap.png" },
-		  { name: { tr: "Ketçaplı Büyük Boy 160gr.", en: "Ketchup Large Size 160gr." }, price: 80,image: "urunimg/rufflesketcap.png" },
-		  { name: { tr: "Peynir & Soğan Orta Boy 105gr.", en: "Cheese & Onion Medium Size 105gr." }, price: 60,image: "urunimg/rufflespeynir.png" },
-		  { name: { tr: "Peynir & Soğan Büyük Boy 160gr.", en: "Cheese & Onion Large Size 160gr." }, price: 80,image: "urunimg/rufflespeynir.png" },
-		   { name: { tr: "Mangalda Orta Boy 105gr.", en: "Barbecue Medium Size 105gr." }, price: 60,image: "urunimg/rufflesmangalda.png" },
-		   { name: { tr: "Değiş Tokuş Orta Boy 105gr.", en: "Swap Medium Size 105gr." }, price: 60,image: "urunimg/rufflesdegis.png" },
+        title: { tr: "Cips", en: "Chips" },
+        subgroups: [
+          {
+            title: { tr: "Ruffles", en: "Ruffles" },
+            items: [
+              { name: { tr: "Original 20gr.", en: "Original 20gr." }, price: 35,image: "urunimg/rufflesoriginal.png" },
+              { name: { tr: "Original 50gr.", en: "Original 50gr." }, price: 35,image: "urunimg/rufflesoriginal.png" },
+              { name: { tr: "Original Orta Boy 88gr.", en: "Original Medium Size 88gr." }, price: 60,image: "urunimg/rufflesoriginal.png" },
+              { name: { tr: "Original Orta Boy 105gr.", en: "Original Medium Size 105gr." }, price: 60,image: "urunimg/rufflesoriginal.png" },
+              { name: { tr: "Original Büyük Boy 160gr.", en: "Original Large Size 160gr." }, price: 80,image: "urunimg/rufflesoriginal.png" },
+              { name: { tr: "Original Mega Boy 193gr.", en: "Original Mega Size 193gr." }, price: 100,image: "urunimg/rufflesoriginalmega.png" },
+              { name: { tr: "Ketçaplı 50gr.", en: "Ketçaplı 50gr." }, price: 35,image: "urunimg/rufflesketcap.png" },
+              { name: { tr: "Ketçaplı Orta Boy 105gr.", en: "Ketchup Medium Size 105gr." }, price: 60,image: "urunimg/rufflesketcap.png" },
+              { name: { tr: "Ketçaplı Büyük Boy 160gr.", en: "Ketchup Large Size 160gr." }, price: 80,image: "urunimg/rufflesketcap.png" },
+              { name: { tr: "Peynir & Soğan Orta Boy 105gr.", en: "Cheese & Onion Medium Size 105gr." }, price: 60,image: "urunimg/rufflespeynir.png" },
+              { name: { tr: "Peynir & Soğan Büyük Boy 160gr.", en: "Cheese & Onion Large Size 160gr." }, price: 80,image: "urunimg/rufflespeynir.png" },
+              { name: { tr: "Mangalda Orta Boy 105gr.", en: "Barbecue Medium Size 105gr." }, price: 60,image: "urunimg/rufflesmangalda.png" },
+              { name: { tr: "Değiş Tokuş Orta Boy 105gr.", en: "Swap Medium Size 105gr." }, price: 60,image: "urunimg/rufflesdegis.png" },
+            ]
+          },
+          {
+            title: { tr: "Lays", en: "Lays" },
+            items: [
+              { name: { tr: "Lays Yoğurt ve Mevsim Yeşil. Küçük Boy 50gr.", en: "Lays Yog. & S. Greens Small Size 50gr." }, price: 35,image: "urunimg/laysyogurttan.png" },
+              { name: { tr: "Lays Klasik Küçük Boy 50gr.", en: "Lays Classic Small Size 50gr." }, price: 35,image: "urunimg/laysklasik50.png" },
+              { name: { tr: "Lays Klasik Orta Boy 107gr.", en: "Lays Classic Medium Size 50gr." }, price: 60,image: "urunimg/laysklasik107.png" },
+              { name: { tr: "Lays Fırından Orta Boy 92gr.", en: "Lays Oven Medium Size 92gr." }, price: 60,image: "urunimg/laysfirindan.png" },
+              { name: { tr: "Lays Fırından Büyük Boy 134gr.", en: "Lays Oven Baked Large Size 134gr." }, price: 80,image: "urunimg/laysfirindan.png" },
+              { name: { tr: "Lays Baharatlı Orta Boy 105gr.", en: "Lays Spicy Large Size 105gr." }, price: 60,image: "urunimg/laysbaharatli.png" },
+              { name: { tr: "Lays Yoğurt ve Mevsim Yeşil. Orta Boy 105gr.", en: "Lays Yog. & S. Greens Medium Size 105gr." }, price: 60,image: "urunimg/laysyogurttan.png" },
+              { name: { tr: "Lays Yoğurt ve Mevsim Yeşil. Büyük Boy 160gr.", en: "Lays Yog. & S. Greens Large Size 160gr." }, price: 80,image: "urunimg/laysyogurttan.png" },
+              { name: { tr: "Lays Baharatlı Büyük Boy 160gr.", en: "Lays Spicy Large Size 160gr." }, price: 80,image: "urunimg/laysbaharatli.png" },
+              { name: { tr: "Lays Klasik Büyük Boy 160gr.", en: "Lays Classic Large Size 160gr." }, price: 80,image: "urunimg/laysklasik.png" },
+            ]
+          },
+          {
+            title: { tr: "Doritos", en: "Doritos" },
+            items: [
+              { name: { tr: "Doritos Shoots Mexicano - Acı (30gr.", en: "Doritos Shoots Mexicano - Acı 30gr." }, price: 25,image: "urunimg/doritosshootsmexicano.png" },
+              { name: { tr: "Doritos Shoots 30gr.", en: "Doritos Shoots 30gr." }, price: 25,image: "urunimg/doritosshoots.png" },
+              { name: { tr: "Doritos Tako Küçük Boy 53gr.", en: "Doritos Taco Small Size 53gr." }, price: 35,image: "urunimg/doritostaco.png" },
+              { name: { tr: "Doritos Hot Corn Acı B. Küçük Boy 53gr.", en: "Doritos Hot Corn Pepper Small Size 53gr." }, price: 35,image: "urunimg/doritoshotcorn.png" },
+              { name: { tr: "Doritos Hot Corn Büyük Boy 180gr.", en: "Doritos Hot Corn Large Size 180gr." }, price: 80,image: "urunimg/doritoshotcorn.png" },
+              { name: { tr: "Doritos Tako Orta Boy 114gr.", en: "Doritos Taco Medium Size 114gr." }, price: 60,image: "urunimg/doritostaco.png" },
+              { name: { tr: "Doritos Tako Büyük Boy 185gr.", en: "Doritos Taco Large Size 185gr." }, price: 80,image: "urunimg/doritostaco.png" },
+              { name: { tr: "Doritos Nacho P. Orta Boy 109gr.", en: "Doritos Nacho C. Medium Size 109gr." }, price: 60,image: "urunimg/doritosnacho.png" },
+              { name: { tr: "Doritos Nacho P. Büyük Boy 160gr.", en: "Doritos Nacho C. Large Size 160gr." }, price: 80,image: "urunimg/doritosnacho.png" },
+              { name: { tr: "Doritos Tako Mega Boy 193gr.", en: "Doritos Taco Mega Size 193gr." }, price: 100,image: "urunimg/doritostaco.png" },
+              { name: { tr: "Doritos Extreme Mex. Orta Boy 109gr.", en: "Doritos Extreme Mex. Medium Size 109gr." }, price: 60,image: "urunimg/doritosextreme.png" },
+              { name: { tr: "Doritos Flamin Hot Orta Boy 102gr.", en: "Doritos Flamin Hot Medium Size 102gr." }, price: 60,image: "urunimg/doritosflamin.png" },
+              { name: { tr: "Doritos Turca Süper Boy 109gr.", en: "Doritos Turca Super Size 109gr." }, price: 60,image: "urunimg/doritosturca.png" },
+              { name: { tr: "Doritos Değiş Tokuş 115gr.", en: "Doritos Swap 109gr." }, price: 60,image: "urunimg/doritosswap.png" },
+            ]
+          },
+          {
+            title: { tr: "Çerezza", en: "Çerezza" },
+            items: [
+              { name: { tr: "Çerezza Kokteyl Baharatlı Orta Boy 117 gr.", en: "Çerezza Cocktail S. Medium Size 117 gr." }, price: 60,image: "urunimg/cerezzakokteyl.png" },
+              { name: { tr: "Çerezza Sinema Pey.Soğ. Orta Boy 121 gr.", en: "Çerezza Cinema Che. Oni. Medium Size 121 gr." }, price: 60,image: "urunimg/cerezzasinema.png" },
+              { name: { tr: "Çerezza Süt Mısırı Orta Boy 121 gr.", en: "Çerezza Milk Corn Medium Size 121 gr." }, price: 60,image: "urunimg/cerezzamisir.png" },
+              { name: { tr: "Çerezza Popcorn Orta Boy 80 gr.", en: "Çerezza Popcorn Medium Size 80 gr." }, price: 60,image: "urunimg/cerezzapopcorn.png" },
+              { name: { tr: "Çerezza Acılı Süper Boy 117 gr.", en: "Çerezza Hot Super Boy 117 gr." }, price: 60,image: "urunimg/cerezzaacili.png" },
+              { name: { tr: "Çerezza Dev Bah. Dom. Soslu 150 gr.", en: "Çerezza Giant Spicy Tomato Sauce 150 gr." }, price: 80,image: "urunimg/cerezzadev.png" },
+              { name: { tr: "Çerezza Dev Yer. Fıs. Büyük Boy 145 gr.", en: "Çerezza Giant Peanut Large Size 145gr." }, price: 80,image: "urunimg/cerezzadevyer.png" },
+            ]
+          },
+          {
+            title: { tr: "Cheetos", en: "Cheetos" },
+            items: [
+              { name: { tr: "Cheetos Biftek & Soğan 43gr.", en: "Cheetos Steak & Onion 43gr." }, price: 35,image: "urunimg/cheetos.png" },
+              { name: { tr: "Cheetos Biftek & Soğan 23gr.", en: "Cheetos Steak & Onion 23gr." }, price: 20,image: "urunimg/cheetosshoots.png" },
+            ]
+          },
+          {
+            title: { tr: "Eti Mısır Patlağı", en: "Eti Popcorn" },
+            items: [
+              { name: { tr: "Gong Peynir ve Acılı M. Patlağı", en: "Gong Cheese and Spicy Popcorn" }, price: 20, image: "urunimg/gongaci.png" },
+              { name: { tr: "Gong Bal ve Hardallı M. Patlağı", en: "Gong Honey and Mustard Popcorn" }, price: 20, image: "urunimg/gongbal.png" },
+              { name: { tr: "Gong Orijinal Lezzet", en: "Gong Original Taste" }, price: 20, image: "urunimg/gongoriginal.png" },
+              { name: { tr: "Gong Pops Bal ve Hardallı M. Patlağı", en: "Gong Pops Honey and Mustard Popcorn" }, price: 60, image: "urunimg/gongpopsbal.png" },
+              { name: { tr: "Gong Pops Taco", en: "Gong Pops Taco" }, price: 60, image: "urunimg/gongpopstaco.png" },
+            ]
+          },
         ]
       },
       {
-        title: { tr: "Lays", en: "Lays" },
-        items: [
-		{ name: { tr: "Lays Yoğurt ve Mevsim Yeşil. Küçük Boy 50gr.", en: "Lays Yog. & S. Greens Small Size 50gr." }, price: 35,image: "urunimg/laysyogurttan.png" },
-		{ name: { tr: "Lays Klasik Küçük Boy 50gr.", en: "Lays Classic Small Size 50gr." }, price: 35,image: "urunimg/laysklasik50.png" },
-		{ name: { tr: "Lays Klasik Orta Boy 107gr.", en: "Lays Classic Medium Size 50gr." }, price: 60,image: "urunimg/laysklasik107.png" },
-		{ name: { tr: "Lays Fırından Orta Boy 92gr.", en: "Lays Oven Medium Size 92gr." }, price: 60,image: "urunimg/laysfirindan.png" },
-		{ name: { tr: "Lays Fırından Büyük Boy 134gr.", en: "Lays Oven Baked Large Size 134gr." }, price: 80,image: "urunimg/laysfirindan.png" },
-		{ name: { tr: "Lays Baharatlı Orta Boy 105gr.", en: "Lays Spicy Large Size 105gr." }, price: 60,image: "urunimg/laysbaharatli.png" },
-		{ name: { tr: "Lays Yoğurt ve Mevsim Yeşil. Orta Boy 105gr.", en: "Lays Yog. & S. Greens Medium Size 105gr." }, price: 60,image: "urunimg/laysyogurttan.png" },
-		{ name: { tr: "Lays Yoğurt ve Mevsim Yeşil. Büyük Boy 160gr.", en: "Lays Yog. & S. Greens Large Size 160gr." }, price: 80,image: "urunimg/laysyogurttan.png" },
-		{ name: { tr: "Lays Baharatlı Büyük Boy 160gr.", en: "Lays Spicy Large Size 160gr." }, price: 80,image: "urunimg/laysbaharatli.png" },
-          { name: { tr: "Lays Klasik Büyük Boy 160gr.", en: "Lays Classic Large Size 160gr." }, price: 80,image: "urunimg/laysklasik.png" },
-		  		  
+        title: { tr: "Bisküvi", en: "Biscuit" },
+        subgroups: [
+          {
+            title: { tr: "Ülker", en: "Ülker" },
+            items: [
+              { name: { tr: "Haylayf", en: "Haylayf" }, price: 15, image: "urunimg/haylayf.png" },
+              { name: { tr: "Çizi Peynirli", en: "Çizi Cheese" }, price: 25, image: "urunimg/cizipeynirli.png" },
+              { name: { tr: "Çiziviç Peynirli", en: "Çiziviç Cheese" }, price: 25, image: "urunimg/cizipeynir.png" },
+              { name: { tr: "İkram Çikolatalı", en: "İkram Chocolate" }, price: 30, image: "urunimg/ikramcikolatali.png" },
+              { name: { tr: "İkram Fındıklı", en: "İkram Hazelnut" }, price: 30, image: "urunimg/ikramfindik.png" },
+              { name: { tr: "Hanımeller Fındıklı", en: "Hanımeller Hazelnut" }, price: 25, image: "urunimg/hanimellerfindikli.png" },
+              { name: { tr: "Hanımeller Çoko Damla", en: "Hanımeller Choco Drops" }, price: 30, image: "urunimg/hanimellercokodam.png" },
+              { name: { tr: "Biskrem", en: "Biskrem" }, price: 30, image: "urunimg/biskrem.png" },
+              { name: { tr: "Halley", en: "Halley" }, price: 30, image: "urunimg/halleyy.png" },
+              { name: { tr: "Hanımeller Frambuazlı", en: "Hanımeller Raspberry" }, price: 30, image: "urunimg/hanimellerframbuaz.png" },
+              { name: { tr: "Biskrem Cookie", en: "Biskrem Cookie" }, price: 30, image: "urunimg/biskremcookie.png" },
+              { name: { tr: "Halley Karadutlu", en: "Halley Black Mulberry" }, price: 30, image: "urunimg/halleykaradut.png" },
+              { name: { tr: "Probis", en: "Probis" }, price: 30, image: "urunimg/probis.png" },
+              { name: { tr: "Cocostar Atıştırmalık", en: "Cocostar Snack" }, price: 30, image: "urunimg/cocostaratistirmalik.png" },
+            ]
+          },
+          {
+            title: { tr: "Eti", en: "Eti" },
+            items: [
+              { name: { tr: "Tutku", en: "Tutku" }, price: 30, image: "urunimg/tutku.png" },
+              { name: { tr: "Benim'o Bitter", en: "Benim'o Bitter" }, price: 40, image: "urunimg/benimobitter.png" },
+              { name: { tr: "Benim'o Çikolatalı", en: "Benim'o Chocolate" }, price: 40, image: "urunimg/benimociko.png" },
+              { name: { tr: "Nero", en: "Nero" }, price: 30, image: "urunimg/nero.png" },
+              { name: { tr: "Cin", en: "Cin" }, price: 30, image: "urunimg/cin.png" },
+            ]
+          },
         ]
       },
-	  {
-        title: { tr: "Doritos", en: "Doritos" },
-        items: [
-		{ name: { tr: "Doritos Shoots Mexicano - Acı (30gr.", en: "Doritos Shoots Mexicano - Acı 30gr." }, price: 25,image: "urunimg/doritosshootsmexicano.png" },
-		{ name: { tr: "Doritos Shoots 30gr.", en: "Doritos Shoots 30gr." }, price: 25,image: "urunimg/doritosshoots.png" },
-		{ name: { tr: "Doritos Tako Küçük Boy 53gr.", en: "Doritos Taco Small Size 53gr." }, price: 35,image: "urunimg/doritostaco.png" },
-		{ name: { tr: "Doritos Hot Corn Acı B. Küçük Boy 53gr.", en: "Doritos Hot Corn Pepper Small Size 53gr." }, price: 35,image: "urunimg/doritoshotcorn.png" },
-		{ name: { tr: "Doritos Hot Corn Büyük Boy 180gr.", en: "Doritos Hot Corn Large Size 180gr." }, price: 80,image: "urunimg/doritoshotcorn.png" },
-		{ name: { tr: "Doritos Tako Orta Boy 114gr.", en: "Doritos Taco Medium Size 114gr." }, price: 60,image: "urunimg/doritostaco.png" },
-		{ name: { tr: "Doritos Tako Büyük Boy 185gr.", en: "Doritos Taco Large Size 185gr." }, price: 80,image: "urunimg/doritostaco.png" },
-		{ name: { tr: "Doritos Nacho P. Orta Boy 109gr.", en: "Doritos Nacho C. Medium Size 109gr." }, price: 60,image: "urunimg/doritosnacho.png" },
-		{ name: { tr: "Doritos Nacho P. Büyük Boy 160gr.", en: "Doritos Nacho C. Large Size 160gr." }, price: 80,image: "urunimg/doritosnacho.png" },
-		{ name: { tr: "Doritos Tako Mega Boy 193gr.", en: "Doritos Taco Mega Size 193gr." }, price: 100,image: "urunimg/doritostaco.png" },
-		{ name: { tr: "Doritos Extreme Mex. Orta Boy 109gr.", en: "Doritos Extreme Mex. Medium Size 109gr." }, price: 60,image: "urunimg/doritosextreme.png" },
-		{ name: { tr: "Doritos Flamin Hot Orta Boy 102gr.", en: "Doritos Flamin Hot Medium Size 102gr." }, price: 60,image: "urunimg/doritosflamin.png" },
-		{ name: { tr: "Doritos Turca Süper Boy 109gr.", en: "Doritos Turca Super Size 109gr." }, price: 60,image: "urunimg/doritosturca.png" },
-		{ name: { tr: "Doritos Değiş Tokuş 115gr.", en: "Doritos Swap 109gr." }, price: 60,image: "urunimg/doritosswap.png" },
-		  		  
+      {
+        title: { tr: "Gofret & Çikolata", en: "Wafer & Chocolate" },
+        subgroups: [
+          {
+            title: { tr: "Eti", en: "Eti" },
+            items: [
+              { name: { tr: "Canga", en: "Canga" }, price: 30,image: "urunimg/canga.png" },
+              { name: { tr: "Petito Gofret", en: "Petito Wafer" }, price: 20,image: "urunimg/petitogofret.png" },
+              { name: { tr: "Maximus Loading XL", en: "Maximus Loading XL" }, price: 30,image: "urunimg/maximusloadingxl.png" },
+              { name: { tr: "Hoşbeş Kakaolu", en: "Hoşbeş Cocoa" }, price: 20,image: "urunimg/hosbeskakao.png" },
+              { name: { tr: "Maximus", en: "Maximus" }, price: 20,image: "urunimg/maximus36.png" },
+              { name: { tr: "Karam", en: "Karam" }, price: 30,image: "urunimg/karamgurme.png" },
+              { name: { tr: "Petito Patim", en: "Petito Patim" }, price: 20,image: "urunimg/petitopatim.png" },
+              { name: { tr: "Petito Mini", en: "Petito Mini" }, price: 50,image: "urunimg/petitomini.png" },
+              { name: { tr: "Maximus Çilekli", en: "Maximus Strawberry" }, price: 20,image: "urunimg/maximuscilekli.png" },
+              { name: { tr: "Canga Antep Fıstıklı", en: "Canga Antep Pistachio" }, price: 60,image: "urunimg/cangaantep.png" },
+              { name: { tr: "Maximus Muzlu", en: "Maximus Banana" }, price: 20,image: "urunimg/maximusmuzlu.png" },
+              { name: { tr: "Hoşbeş Fındıklı", en: "Hoşbeş Hazelnut" }, price: 20,image: "urunimg/hosbesfindikli.png" },
+            ]
+          },
+          {
+            title: { tr: "Ülker", en: "Ülker" },
+            items: [
+              { name: { tr: "Caramio Karamel", en: "Caramio Caramel" }, price: 30, image: "urunimg/caramiokaramel.png" },
+              { name: { tr: "Çokonat Antep Fıstıklı", en: "Çokonat Antep Pistachio" }, price: 30, image: "urunimg/cokonatfindikli.png" },
+              { name: { tr: "Olala Tiramisu", en: "Olala Tiramisu" }, price: 30, image: "urunimg/olalatramisu.png" },
+              { name: { tr: "Olala Bold", en: "Olala Bold" }, price: 30, image: "urunimg/olalabold.png" },
+              { name: { tr: "9 Kat Tat Muzlu", en: "9 Kat Tat Banana" }, price: 20, image: "urunimg/9katmuzlu.png" },
+              { name: { tr: "9 Kat Tat Fındıklı", en: "9 Kat Tat Hazelnut" }, price: 20, image: "urunimg/9katfindikli.png" },
+              { name: { tr: "9 Kat Tat Portakallı", en: "9 Kat Tat Orange" }, price: 20, image: "urunimg/9katportakal.png" },
+              { name: { tr: "Çokonat", en: "Çokonat" }, price: 30, image: "urunimg/cokonat.png" },
+              { name: { tr: "Dido Sütlü Çikolatalı", en: "Dido Milk Chocolate" }, price: 30, image: "urunimg/didosutluciko.png" },
+              { name: { tr: "Coco Star", en: "Coco Star" }, price: 15, image: "urunimg/cocostar1.png" },
+              { name: { tr: "Laviva", en: "Laviva" }, price: 30, image: "urunimg/laviva.png" },
+              { name: { tr: "Rulokat", en: "Rulokat" }, price: 30, image: "urunimg/rulokat.png" },
+              { name: { tr: "Piko", en: "Piko" }, price: 15, image: "urunimg/piko.png" },
+              { name: { tr: "Dido Frambuazlı", en: "Dido Raspberry" }, price: 30, image: "urunimg/didoframbuaz.png" },
+              { name: { tr: "Dido Trio", en: "Dido Trio" }, price: 35, image: "urunimg/didotrioo.png" },
+              { name: { tr: "Dido Trio Colors Çilekli", en: "Dido Trio Colors Strawberry" }, price: 30, image: "urunimg/didotrio.png" },
+              { name: { tr: "Dido Gold", en: "Dido Gold" }, price: 35, image: "urunimg/didogold.png" },
+              { name: { tr: "Fındık Rüyası", en: "Fındık Rüyası" }, price: 35, image: "urunimg/findikruyasi.png" },
+              { name: { tr: "Çokomel", en: "Çokomel" }, price: 10, image: "urunimg/cokomel.png" },
+            ]
+          },
+          {
+            title: { tr: "Alpella", en: "Alpella" },
+            items: [
+              { name: { tr: "Harby Karamelli", en: "Harby Caramel" }, price: 15, image: "urunimg/harbykaramel.png" },
+              { name: { tr: "Harby Sütlü", en: "Harby Milk" }, price: 15, image: "urunimg/harbysutlu.png" },
+              { name: { tr: "3GEN Beyaz", en: "3GEN White" }, price: 20, image: "urunimg/3genbeyaz.png" },
+            ]
+          },
         ]
       },
-	  {
-        title: { tr: "Çerezza", en: "Çerezza" },
-        items: [
-		{ name: { tr: "Çerezza Kokteyl Baharatlı Orta Boy 117 gr.", en: "Çerezza Cocktail S. Medium Size 117 gr." }, price: 60,image: "urunimg/cerezzakokteyl.png" },
-		{ name: { tr: "Çerezza Sinema Pey.Soğ. Orta Boy 121 gr.", en: "Çerezza Cinema Che. Oni. Medium Size 121 gr." }, price: 60,image: "urunimg/cerezzasinema.png" },
-		{ name: { tr: "Çerezza Süt Mısırı Orta Boy 121 gr.", en: "Çerezza Milk Corn Medium Size 121 gr." }, price: 60,image: "urunimg/cerezzamisir.png" },
-		{ name: { tr: "Çerezza Popcorn Orta Boy 80 gr.", en: "Çerezza Popcorn Medium Size 80 gr." }, price: 60,image: "urunimg/cerezzapopcorn.png" },
-		{ name: { tr: "Çerezza Acılı Süper Boy 117 gr.", en: "Çerezza Hot Super Boy 117 gr." }, price: 60,image: "urunimg/cerezzaacili.png" },
-		{ name: { tr: "Çerezza Dev Bah. Dom. Soslu 150 gr.", en: "Çerezza Giant Spicy Tomato Sauce 150 gr." }, price: 80,image: "urunimg/cerezzadev.png" },
-		{ name: { tr: "Çerezza Dev Yer. Fıs. Büyük Boy 145 gr.", en: "Çerezza Giant Peanut Large Size 145gr." }, price: 80,image: "urunimg/cerezzadevyer.png" },
-		
-		  		  
-        ]
-      },{
-	     title: { tr: "Cheetos", en: "Cheetos" },
-        items: [
-		{ name: { tr: "Cheetos Biftek & Soğan 43gr.", en: "Cheetos Steak & Onion 43gr." }, price: 35,image: "urunimg/cheetos.png" },
-		{ name: { tr: "Cheetos Biftek & Soğan 23gr.", en: "Cheetos Steak & Onion 23gr." }, price: 20,image: "urunimg/cheetosshoots.png" },
-		
-		
-		  		  
+      {
+        title: { tr: "Kek", en: "Cake" },
+        subgroups: [
+          {
+            title: { tr: "Eti", en: "Eti" },
+            items: [
+              { name: { tr: "Popkek Muzlu", en: "Popkek Banana" }, price: 20,image: "urunimg/popkekmuz.png" },
+              { name: { tr: "Popkek Çikolatalı", en: "Popkek Chocolate" }, price: 20,image: "urunimg/popkekciko.png" },
+              { name: { tr: "Popkek Limonlu", en: "Popkek Lemon" }, price: 20,image: "urunimg/popkeklimonlu.png" },
+              { name: { tr: "Popkek Vişneli", en: "Popkek Cherry" }, price: 20,image: "urunimg/popkekvisneli.png" },
+              { name: { tr: "Popkek Portakal", en: "Popkek Orange" }, price: 20,image: "urunimg/popkekportakal.png" },
+              { name: { tr: "Popkek Bitter", en: "Popkek Bitter" }, price: 20,image: "urunimg/popkekbitter.png" },
+              { name: { tr: "Popkek Hindistan Cevizli", en: "Popkek Coconut" }, price: 20,image: "urunimg/popkekcoconut.png" },
+              { name: { tr: "Browni Gold Çikolatalı", en: "Browni Gold Chocolate" }, price: 20,image: "urunimg/brownigold.png" },
+              { name: { tr: "Browni Gold Vişneli", en: "Browni Gold Cherry" }, price: 20,image: "urunimg/brownigoldvisneli.png" },
+              { name: { tr: "Browni İntense Gold Karamel", en: "Browni Intense Gold Caramel" }, price: 30,image: "urunimg/browniintense.png" },
+              { name: { tr: "Browni İntense Gold Çikolatalı", en: "Browni Intense Gold Chocolate" }, price: 30,image: "urunimg/browniintenseciko.png" },
+              { name: { tr: "Sütburger Sütlü & Çilekli", en: "Sütburger Milk & Cherry" }, price: 20,image: "urunimg/sutburgercilekli.png" },
+              { name: { tr: "Sütburger Sütlü & Ballı", en: "Sütburger Milk & Honey" }, price: 20,image: "urunimg/sutburgerballi.png" },
+            ]
+          },
+          {
+            title: { tr: "Ülker", en: "Ülker" },
+            items: [
+              { name: { tr: "Dankek Mousse", en: "Dankek Mousse" }, price: 30,image: "urunimg/dankekmousse.png" },
+              { name: { tr: "8 Kek Muzlu", en: "8 Kek Banana" }, price: 15,image: "urunimg/8kekmuzlu.png" },
+              { name: { tr: "8 Kek Orman Meyveli", en: "8 Kek Forest Fruity" }, price: 15,image: "urunimg/8kekorman.png" },
+              { name: { tr: "8 Kek Çilekli", en: "8 Kek Strawberry" }, price: 15,image: "urunimg/8kekcilek.png" },
+              { name: { tr: "8 Kek Çikolatalı", en: "8 Kek Chocolate" }, price: 15,image: "urunimg/8kekcikolatali.png" },
+              { name: { tr: "Kekstra Jöle Bol", en: "Kekstra Jöle Plenty" }, price: 15,image: "urunimg/kekstrajolebol.png" },
+            ]
+          },
         ]
       },
-	  {
-        title: { tr: "Eti Mısır Patlağı", en: "Eti Popcorn" },
-        items: [
-		{ name: { tr: "Gong Peynir ve Acılı M. Patlağı", en: "Gong Cheese and Spicy Popcorn" }, price: 20, image: "urunimg/gongaci.png" },
-		{ name: { tr: "Gong Bal ve Hardallı M. Patlağı", en: "Gong Honey and Mustard Popcorn" }, price: 20, image: "urunimg/gongbal.png" },
-		{ name: { tr: "Gong Orijinal Lezzet", en: "Gong Original Taste" }, price: 20, image: "urunimg/gongoriginal.png" },
-		{ name: { tr: "Gong Pops Bal ve Hardallı M. Patlağı", en: "Gong Pops Honey and Mustard Popcorn" }, price: 60, image: "urunimg/gongpopsbal.png" },
-		{ name: { tr: "Gong Pops Taco", en: "Gong Pops Taco" }, price: 60, image: "urunimg/gongpopstaco.png" },  
+      {
+        title: { tr: "Kraker", en: "Cracker" },
+        subgroups: [
+          {
+            title: { tr: "Ülker", en: "Ülker" },
+            items: [
+              { name: { tr: "Çubuk Kraker", en: "Crackers" }, price: 10,image: "urunimg/kraker.png" },
+              { name: { tr: "Susamlı Çubuk Kraker", en: "Sesame Crackers" }, price: 20,image: "urunimg/susamlikraker.png" },
+              { name: { tr: "Krispi Acılı", en: "Krispi Hot" }, price: 20,image: "urunimg/krispiacili.png" },
+              { name: { tr: "Krispi Baharatlı", en: "Krispi Spicy" }, price: 20,image: "urunimg/krispibaharatli.png" },
+              { name: { tr: "Krispi Peynirli", en: "Krispi Cheese" }, price: 20,image: "urunimg/krispipeynirli.png" },
+            ]
+          },
         ]
       },
     ]
   },
-  {
-  title: { tr: "Bisküvi", en: "Biscuit" },
-  subgroups: [
-    {
-      title: { tr: "Ülker", en: "Ülker" },
-      items: [
-        { name: { tr: "Haylayf", en: "Haylayf" }, price: 15, image: "urunimg/haylayf.png" },
-		{ name: { tr: "Çizi Peynirli", en: "Çizi Cheese" }, price: 25, image: "urunimg/cizipeynirli.png" },
-		{ name: { tr: "Çiziviç Peynirli", en: "Çiziviç Cheese" }, price: 25, image: "urunimg/cizipeynir.png" },
-		{ name: { tr: "İkram Çikolatalı", en: "İkram Chocolate" }, price: 30, image: "urunimg/ikramcikolatali.png" },
-		{ name: { tr: "İkram Fındıklı", en: "İkram Hazelnut" }, price: 30, image: "urunimg/ikramfindik.png" },
-		{ name: { tr: "Hanımeller Fındıklı", en: "Hanımeller Hazelnut" }, price: 25, image: "urunimg/hanimellerfindikli.png" },
-		{ name: { tr: "Hanımeller Çoko Damla", en: "Hanımeller Choco Drops" }, price: 30, image: "urunimg/hanimellercokodam.png" },
-		{ name: { tr: "Biskrem", en: "Biskrem" }, price: 30, image: "urunimg/biskrem.png" },
-		{ name: { tr: "Halley", en: "Halley" }, price: 30, image: "urunimg/halleyy.png" },
-		{ name: { tr: "Hanımeller Frambuazlı", en: "Hanımeller Raspberry" }, price: 30, image: "urunimg/hanimellerframbuaz.png" },
-		{ name: { tr: "Biskrem Cookie", en: "Biskrem Cookie" }, price: 30, image: "urunimg/biskremcookie.png" },
-		{ name: { tr: "Halley Karadutlu", en: "Halley Black Mulberry" }, price: 30, image: "urunimg/halleykaradut.png" },
-		{ name: { tr: "Probis", en: "Probis" }, price: 30, image: "urunimg/probis.png" },
-		{ name: { tr: "Cocostar Atıştırmalık", en: "Cocostar Snack" }, price: 30, image: "urunimg/cocostaratistirmalik.png" },
-		
-      ]
-    },
-	 {
-      title: { tr: "Eti", en: "Eti" },
-      items: [
-        { name: { tr: "Tutku", en: "Tutku" }, price: 30, image: "urunimg/tutku.png" },
-		{ name: { tr: "Benim'o Bitter", en: "Benim'o Bitter" }, price: 40, image: "urunimg/benimobitter.png" },
-		{ name: { tr: "Benim'o Çikolatalı", en: "Benim'o Chocolate" }, price: 40, image: "urunimg/benimociko.png" },
-		{ name: { tr: "Nero", en: "Nero" }, price: 30, image: "urunimg/nero.png" },
-		{ name: { tr: "Cin", en: "Cin" }, price: 30, image: "urunimg/cin.png" },
-		
-      ]
-    },
-	
-  ]
-},
-{
-    title: { tr: "Gofret & Çikolata", en: "Wafer & Chocolate" },  // ← Ana başlık
-    subgroups: [                               // ← Alt başlıkları açar
-      {
-        title: { tr: "Eti", en: "Eti" },
-        items: [
-          { name: { tr: "Canga", en: "Canga" }, price: 30,image: "urunimg/canga.png" },
-          { name: { tr: "Petito Gofret", en: "Petito Wafer" }, price: 20,image: "urunimg/petitogofret.png" },
-		  { name: { tr: "Maximus Loading XL", en: "Maximus Loading XL" }, price: 30,image: "urunimg/maximusloadingxl.png" },
-		  { name: { tr: "Hoşbeş Kakaolu", en: "Hoşbeş Cocoa" }, price: 20,image: "urunimg/hosbeskakao.png" },
-		  { name: { tr: "Maximus", en: "Maximus" }, price: 20,image: "urunimg/maximus36.png" },
-		  { name: { tr: "Karam", en: "Karam" }, price: 30,image: "urunimg/karamgurme.png" },
-		  { name: { tr: "Petito Patim", en: "Petito Patim" }, price: 20,image: "urunimg/petitopatim.png" },
-		  { name: { tr: "Petito Mini", en: "Petito Mini" }, price: 50,image: "urunimg/petitomini.png" },
-		  { name: { tr: "Maximus Çilekli", en: "Maximus Strawberry" }, price: 20,image: "urunimg/maximuscilekli.png" },
-		  { name: { tr: "Canga Antep Fıstıklı", en: "Canga Antep Pistachio" }, price: 60,image: "urunimg/cangaantep.png" },
-		  { name: { tr: "Maximus Muzlu", en: "Maximus Banana" }, price: 20,image: "urunimg/maximusmuzlu.png" },
-		  { name: { tr: "Hoşbeş Fındıklı", en: "Hoşbeş Hazelnut" }, price: 20,image: "urunimg/hosbesfindikli.png" },
-		 
-        ]
-      },
-      {
-        title: { tr: "Ülker", en: "Ülker" },
-        items: [
-         { name: { tr: "Caramio Karamel", en: "Caramio Caramel" }, price: 30, image: "urunimg/caramiokaramel.png" },
-		{ name: { tr: "Çokonat Antep Fıstıklı", en: "Çokonat Antep Pistachio" }, price: 30, image: "urunimg/cokonatfindikli.png" },
-		{ name: { tr: "Olala Tiramisu", en: "Olala Tiramisu" }, price: 30, image: "urunimg/olalatramisu.png" },
-		{ name: { tr: "Olala Bold", en: "Olala Bold" }, price: 30, image: "urunimg/olalabold.png" },
-		{ name: { tr: "9 Kat Tat Muzlu", en: "9 Kat Tat Banana" }, price: 20, image: "urunimg/9katmuzlu.png" },
-		{ name: { tr: "9 Kat Tat Fındıklı", en: "9 Kat Tat Hazelnut" }, price: 20, image: "urunimg/9katfindikli.png" }, 
-		{ name: { tr: "9 Kat Tat Portakallı", en: "9 Kat Tat Orange" }, price: 20, image: "urunimg/9katportakal.png" },		
-		{ name: { tr: "Çokonat", en: "Çokonat" }, price: 30, image: "urunimg/cokonat.png" },  
-		{ name: { tr: "Dido Sütlü Çikolatalı", en: "Dido Milk Chocolate" }, price: 30, image: "urunimg/didosutluciko.png" }, 
-		{ name: { tr: "Coco Star", en: "Coco Star" }, price: 15, image: "urunimg/cocostar1.png" },
-		{ name: { tr: "Laviva", en: "Laviva" }, price: 30, image: "urunimg/laviva.png" },
-		{ name: { tr: "Rulokat", en: "Rulokat" }, price: 30, image: "urunimg/rulokat.png" },
-		{ name: { tr: "Piko", en: "Piko" }, price: 15, image: "urunimg/piko.png" },
-		{ name: { tr: "Dido Frambuazlı", en: "Dido Raspberry" }, price: 30, image: "urunimg/didoframbuaz.png" },
-		{ name: { tr: "Dido Trio", en: "Dido Trio" }, price: 35, image: "urunimg/didotrioo.png" },
-		{ name: { tr: "Dido Trio Colors Çilekli", en: "Dido Trio Colors Strawberry" }, price: 30, image: "urunimg/didotrio.png" },
-		{ name: { tr: "Dido Gold", en: "Dido Gold" }, price: 35, image: "urunimg/didogold.png" },
-		{ name: { tr: "Fındık Rüyası", en: "Fındık Rüyası" }, price: 35, image: "urunimg/findikruyasi.png" },
-		{ name: { tr: "Çokomel", en: "Çokomel" }, price: 10, image: "urunimg/cokomel.png" },
-        ]
-      },
-	  {
-      title: { tr: "Alpella", en: "Alpella" },
-      items: [
-        { name: { tr: "Harby Karamelli", en: "Harby Caramel" }, price: 15, image: "urunimg/harbykaramel.png" },
-		{ name: { tr: "Harby Sütlü", en: "Harby Milk" }, price: 15, image: "urunimg/harbysutlu.png" },
-		{ name: { tr: "3GEN Beyaz", en: "3GEN White" }, price: 20, image: "urunimg/3genbeyaz.png" },
-		
-		
-      ]
-    },
-    ]
-  },
-  {
-    title: { tr: "Kek", en: "Cake" },  // ← Ana başlık
-    subgroups: [                               // ← Alt başlıkları açar
-      {
-        title: { tr: "Eti", en: "Eti" },
-        items: [
-		{ name: { tr: "Popkek Muzlu", en: "Popkek Banana" }, price: 20,image: "urunimg/popkekmuz.png" },
-		{ name: { tr: "Popkek Çikolatalı", en: "Popkek Chocolate" }, price: 20,image: "urunimg/popkekciko.png" },
-		{ name: { tr: "Popkek Limonlu", en: "Popkek Lemon" }, price: 20,image: "urunimg/popkeklimonlu.png" },
-		{ name: { tr: "Popkek Vişneli", en: "Popkek Cherry" }, price: 20,image: "urunimg/popkekvisneli.png" },
-		{ name: { tr: "Popkek Portakal", en: "Popkek Orange" }, price: 20,image: "urunimg/popkekportakal.png" },
-		{ name: { tr: "Popkek Bitter", en: "Popkek Bitter" }, price: 20,image: "urunimg/popkekbitter.png" },
-		 { name: { tr: "Popkek Hindistan Cevizli", en: "Popkek Coconut" }, price: 20,image: "urunimg/popkekcoconut.png" },
-          { name: { tr: "Browni Gold Çikolatalı", en: "Browni Gold Chocolate" }, price: 20,image: "urunimg/brownigold.png" },
-          { name: { tr: "Browni Gold Vişneli", en: "Browni Gold Cherry" }, price: 20,image: "urunimg/brownigoldvisneli.png" },
-		  { name: { tr: "Browni İntense Gold Karamel", en: "Browni Intense Gold Caramel" }, price: 30,image: "urunimg/browniintense.png" },
-		  { name: { tr: "Browni İntense Gold Çikolatalı", en: "Browni Intense Gold Chocolate" }, price: 30,image: "urunimg/browniintenseciko.png" },
-		  { name: { tr: "Sütburger Sütlü & Çilekli", en: "Sütburger Milk & Cherry" }, price: 20,image: "urunimg/sutburgercilekli.png" },
-		  { name: { tr: "Sütburger Sütlü & Ballı", en: "Sütburger Milk & Honey" }, price: 20,image: "urunimg/sutburgerballi.png" },
-		 
-        ]
-      },
-      {
-        title: { tr: "Ülker", en: "Ülker" },
-        items: [
-         { name: { tr: "Dankek Mousse", en: "Dankek Mousse" }, price: 30,image: "urunimg/dankekmousse.png" },
-		 { name: { tr: "8 Kek Muzlu", en: "8 Kek Banana" }, price: 15,image: "urunimg/8kekmuzlu.png" },
-		 { name: { tr: "8 Kek Orman Meyveli", en: "8 Kek Forest Fruity" }, price: 15,image: "urunimg/8kekorman.png" },
-		 { name: { tr: "8 Kek Çilekli", en: "8 Kek Strawberry" }, price: 15,image: "urunimg/8kekcilek.png" },
-		  { name: { tr: "8 Kek Çikolatalı", en: "8 Kek Chocolate" }, price: 15,image: "urunimg/8kekcikolatali.png" },
-		  { name: { tr: "Kekstra Jöle Bol", en: "Kekstra Jöle Plenty" }, price: 15,image: "urunimg/kekstrajolebol.png" },
-		
-        ]
-      },
-	
-    ]
-  },
-  {
-    title: { tr: "Kraker", en: "Cracker" },  // ← Ana başlık
-    subgroups: [                               // ← Alt başlıkları açar
-      
-      {
-        title: { tr: "Ülker", en: "Ülker" },
-        items: [
-		{ name: { tr: "Çubuk Kraker", en: "Crackers" }, price: 10,image: "urunimg/kraker.png" },
-         { name: { tr: "Susamlı Çubuk Kraker", en: "Sesame Crackers" }, price: 20,image: "urunimg/susamlikraker.png" },
-		 { name: { tr: "Krispi Acılı", en: "Krispi Hot" }, price: 20,image: "urunimg/krispiacili.png" },
-		  { name: { tr: "Krispi Baharatlı", en: "Krispi Spicy" }, price: 20,image: "urunimg/krispibaharatli.png" },
-		  { name: { tr: "Krispi Peynirli", en: "Krispi Cheese" }, price: 20,image: "urunimg/krispipeynirli.png" },
-		 
-		
-        ]
-      },
-	
-    ]
-  },
-]
-  },
+  
   sekerleme: {
-  title: { tr: "Şekerleme", en: "Şekerleme" },
-  groups: [
-    {
-      title: { tr: "Ülker Yupo Jelibon", en: "Ülker Yupo Jelly Bean" },
-      items: [
-        { name: { tr: "Ayıcık", en: "Teddy Bear" }, price: 50, image: "urunimg/yupoayicik.png" },
-		{ name: { tr: "Solucan", en: "Worm" }, price: 40, image: "urunimg/yuposolucan.png" },
-		{ name: { tr: "Meyve Bahçesi", en: "Orchard" }, price: 50, image: "urunimg/yupomeyvebahcesi.png" },
-		{ name: { tr: "Kola", en: "Cola" }, price: 40, image: "urunimg/yupokola.png" },
-		{ name: { tr: "Lokumcuk", en: "Turkish Delight" }, price: 50, image: "urunimg/lokum.png" },
-                
-      ]
-    },
-	{
-      title: { tr: "Ülker Yupo Çokojela", en: "Ülker Yupo Çokojela" },
-      items: [
-        { name: { tr: "Çokojela Portakallı", en: "Çokojela Orange" }, price: 20, image: "urunimg/yupojelapor.png" },
-        { name: { tr: "Çokojela Böğürtlen", en: "Çokojela Blackberry" }, price: 20 , image: "urunimg/yupojelabog.png" },     
-      ]
-    },
-	{
-      title: { tr: "Ülker Şeker", en: "Ülker Sugar" },
-      items: [
-        { name: { tr: "Yupo Lolipop", en: "Yupo Lollipop" }, price: 10, image: "urunimg/yupololi.png" },
-		{ name: { tr: "Bonbon Nanelim", en: "Bonbon MY Mint" }, price: 30, image: "urunimg/nanelim.png" },
-      ]
-    },
-	{
-      title: { tr: "Ülker Oneo", en: "Ülker Oneo" },
-      items: [
-        { name: { tr: "Portakal & Kivi", en: "Orange & Kiwi" }, price: 30, image: "urunimg/oneopor.png" },
-        { name: { tr: "Nane & Kivi", en: "Mint" }, price: 30, image: "urunimg/oneonane.png" },  
-		{ name: { tr: "Yeşil Nane", en: "Mint" }, price: 30, image: "urunimg/oneoyesilnane.png" },
-		{ name: { tr: "Karpuz", en: "Watermelon" }, price: 30, image: "urunimg/oneokarpuz.png" },
-		{ name: { tr: "Çilek", en: "Strawberry" }, price: 30, image: "urunimg/oneocilek.png" }, 			
-      ]
-    },
-	{
-      title: { tr: "Ülker Pastil", en: "Ülker Lozenge" },
-      items: [
-        { name: { tr: "Zencefil", en: "Ginger" }, price: 50, image: "urunimg/zencefil.png" },
-		{ name: { tr: "Karamürver", en: "Black Murver" }, price: 50, image: "urunimg/karamurver.png" },
-		{ name: { tr: "Okaliptus", en: "Eucalyptus" }, price: 50, image: "urunimg/okaliptus.png" },
-		{ name: { tr: "Ihlamur", en: "Linden" }, price: 50, image: "urunimg/ıhlamur.png" },
-      ]
-    },
-	{
-      title: { tr: "Rocco Şeker", en: "Rocco Sugar" },
-      items: [
-        { name: { tr: "Lolipop", en: "Lollipop" }, price: 10, image: "urunimg/roccololipop.png" },
-		{ name: { tr: "Sıkışeker Ahududu & Limon", en: "Sıkışeker Raspberry & Lemon" }, price: 35, image: "urunimg/roccoahududu.png" },
-		{ name: { tr: "Sıkışeker Mandalina & Karpuz", en: "Sıkışeker Tangerine & Watermelon" }, price: 35, image: "urunimg/roccomandalina.png" },
-		{ name: { tr: "Sıkışeker Nar & Çilek", en: "Sıkışeker Pomegranate and Strawberry" }, price: 35, image: "urunimg/rocconar.png" },
-      ]
-    },
-	{
-      title: { tr: "Jelly Jelibon", en: "Jelly Jelly Bean" },
-      items: [
-        { name: { tr: "Stick Fruit Garden", en: "Stick Fruit Garden" }, price: 25, image: "urunimg/jelly.png" },
-		
-      ]
-    },
-  ]
-},
- fastfood: {
-  title: { tr: "Fast Food", en: "Fast Food" },
-  groups: [
-    {
-      title: { tr: "Patso", en: "Patso" },
-      items: [
-        { name: { tr: "Patso Yeni", en: "Patso New" }, price: 70, image: "urunimg/patso.png" },
-        { name: { tr: "Sosisli Patso", en: "Hot Dog Patso" }, price: 90 , image: "urunimg/patsososisli.png" },
-        { name: { tr: "Patso Menü (Patso + Ş.Kola)", en: "Patso Menu(Patso + B. Cola" }, price: 80, image: "urunimg/patsomenu.png" },
-        
-      ]
-    },
-	{
-      title: { tr: "Tost", en: "Toast" },
-      items: [
-        { name: { tr: "Kaşarlı Tost", en: "Cheese Toast" }, price: 75, image: "urunimg/kasarlitost.png" },
-        { name: { tr: "Sucuklu Tost", en: "Sausage Toast" }, price: 80 , image: "urunimg/sucuklutost.png" },
-        { name: { tr: "Karışık Tost", en: "Mixed Toast" }, price: 90, image: "urunimg/karisiktost.png" },
-        
-      ]
-    }
-  ]
-},
-
-hamburger: {
-  title: { tr: "Mc Hamburger", en: "Mc Hamburger" },
-  groups: [
-    {
-      title: { tr: "Hamburger Menü", en: "Hamburger Menu" },
-      items: [
-        { name: { tr: "Hamburger", en: "Hamburger" }, price: 285, image: "urunimg/burger1.png" },
-		{ name: { tr: "Tavukburger", en: "Chicken Burger" }, price: 270, image: "urunimg/tavukburger.png" },
-		{ name: { tr: "Köfteburger", en: "Meatball Burger" }, price: 120, image: "urunimg/kofteburger.png" },
-        
-        
-      ]
-    },
-	
-	{
-      title: { tr: "Double Hamburger Menü", en: "Double Hamburger Menu" },
-      items: [
-        { name: { tr: "Double Köfteburger", en: "Double Meatball Burger" }, price: 335, image: "urunimg/doublekofteburger.png" },
-		{ name: { tr: "Double McChicken®", en: "Double McChicken®" }, price: 360, image: "urunimg/McChicken.png" },
-		{ name: { tr: "Quarter Pounder® with Cheese", en: "Quarter Pounder® with Cheese" }, price: 380, image: "urunimg/QuarterPounder.png" },
-        
-        
-      ]
-    },
-  ]
-},
-
-kofte: {
-  title: { tr: "Köfte", en: "Meatball" },
-  groups: [
-    {
-      title: { tr: "Sivas Köftesi", en: "Sivas Meatballs" },
-      items: [
-        { name: { tr: "Dürüm", en: "Situation" }, price: 170, image: "urunimg/durumkofte.png" },
-		{ name: { tr: "Porsiyon", en: "Portion" }, price: 340, image: "urunimg/porsiyon.png" }, 
-        
-      ]
-    },
-	
-	
-  ]
-},
-doner: {
-  title: { tr: "Döner", en: "Fast Doner" },
-  groups: [
-    {
-      title: { tr: "Tavuk Döner", en: "Chicken Doner" },
-      items: [
-        { name: { tr: "Tavuk Döner 70gr.", en: "Chicken Doner 70gr." }, price: 70, image: "urunimg/tavukdoner.png" },
-		{ name: { tr: "Tavuk Döner 90gr.", en: "Chicken Doner 90gr." }, price: 90, image: "urunimg/tavukdoner.png" },
-		{ name: { tr: "Tavuk Döner 120gr.", en: "Chicken Doner 120gr." }, price: 120, image: "urunimg/tavukdoner.png" },
-        
-        
-      ]
-    },
-	{
-      title: { tr: "Et Döner", en: "Meat Doner" },
-      items: [
-        { name: { tr: "Et Döner 70gr.", en: "Meat Doner 70gr." }, price: 90, image: "urunimg/etdoner.png" },
-		{ name: { tr: "Et Döner 90gr.", en: "Meat Doner 90gr." }, price: 110, image: "urunimg/etdoner.png" },
-		{ name: { tr: "Et Döner 120gr.", en: "Meat Doner 120gr." }, price: 150, image: "urunimg/etdoner.png" },
-        
-        
-      ]
-    },
-  ]
-},
+    title: { tr: "Şekerleme", en: "Candy" },
+    groups: [
+      {
+        title: { tr: "Ülker Yupo Jelibon", en: "Ülker Yupo Jelly Bean" },
+        items: [
+          { name: { tr: "Ayıcık", en: "Teddy Bear" }, price: 50, image: "urunimg/yupoayicik.png" },
+          { name: { tr: "Solucan", en: "Worm" }, price: 40, image: "urunimg/yuposolucan.png" },
+          { name: { tr: "Meyve Bahçesi", en: "Orchard" }, price: 50, image: "urunimg/yupomeyvebahcesi.png" },
+          { name: { tr: "Kola", en: "Cola" }, price: 40, image: "urunimg/yupokola.png" },
+          { name: { tr: "Lokumcuk", en: "Turkish Delight" }, price: 50, image: "urunimg/lokum.png" },
+        ]
+      },
+      {
+        title: { tr: "Ülker Yupo Çokojela", en: "Ülker Yupo Çokojela" },
+        items: [
+          { name: { tr: "Çokojela Portakallı", en: "Çokojela Orange" }, price: 20, image: "urunimg/yupojelapor.png" },
+          { name: { tr: "Çokojela Böğürtlen", en: "Çokojela Blackberry" }, price: 20 , image: "urunimg/yupojelabog.png" },
+        ]
+      },
+      {
+        title: { tr: "Ülker Şeker", en: "Ülker Sugar" },
+        items: [
+          { name: { tr: "Yupo Lolipop", en: "Yupo Lollipop" }, price: 10, image: "urunimg/yupololi.png" },
+          { name: { tr: "Bonbon Nanelim", en: "Bonbon MY Mint" }, price: 30, image: "urunimg/nanelim.png" },
+        ]
+      },
+      {
+        title: { tr: "Ülker Oneo", en: "Ülker Oneo" },
+        items: [
+          { name: { tr: "Portakal & Kivi", en: "Orange & Kiwi" }, price: 30, image: "urunimg/oneopor.png" },
+          { name: { tr: "Nane & Kivi", en: "Mint" }, price: 30, image: "urunimg/oneonane.png" },
+          { name: { tr: "Yeşil Nane", en: "Mint" }, price: 30, image: "urunimg/oneoyesilnane.png" },
+          { name: { tr: "Karpuz", en: "Watermelon" }, price: 30, image: "urunimg/oneokarpuz.png" },
+          { name: { tr: "Çilek", en: "Strawberry" }, price: 30, image: "urunimg/oneocilek.png" },
+        ]
+      },
+      {
+        title: { tr: "Ülker Pastil", en: "Ülker Lozenge" },
+        items: [
+          { name: { tr: "Zencefil", en: "Ginger" }, price: 50, image: "urunimg/zencefil.png" },
+          { name: { tr: "Karamürver", en: "Black Murver" }, price: 50, image: "urunimg/karamurver.png" },
+          { name: { tr: "Okaliptus", en: "Eucalyptus" }, price: 50, image: "urunimg/okaliptus.png" },
+          { name: { tr: "Ihlamur", en: "Linden" }, price: 50, image: "urunimg/ıhlamur.png" },
+        ]
+      },
+      {
+        title: { tr: "Rocco Şeker", en: "Rocco Sugar" },
+        items: [
+          { name: { tr: "Lolipop", en: "Lollipop" }, price: 10, image: "urunimg/roccololipop.png" },
+          { name: { tr: "Sıkışeker Ahududu & Limon", en: "Sıkışeker Raspberry & Lemon" }, price: 35, image: "urunimg/roccoahududu.png" },
+          { name: { tr: "Sıkışeker Mandalina & Karpuz", en: "Sıkışeker Tangerine & Watermelon" }, price: 35, image: "urunimg/roccomandalina.png" },
+          { name: { tr: "Sıkışeker Nar & Çilek", en: "Sıkışeker Pomegranate and Strawberry" }, price: 35, image: "urunimg/rocconar.png" },
+        ]
+      },
+      {
+        title: { tr: "Jelly Jelibon", en: "Jelly Jelly Bean" },
+        items: [
+          { name: { tr: "Stick Fruit Garden", en: "Stick Fruit Garden" }, price: 25, image: "urunimg/jelly.png" },
+        ]
+      },
+    ]
+  },
+  
+  fastfood: {
+    title: { tr: "Fast Food", en: "Fast Food" },
+    groups: [
+      {
+        title: { tr: "Patso", en: "Patso" },
+        items: [
+          { name: { tr: "Patso Yeni", en: "Patso New" }, price: 70, image: "urunimg/patso.png" },
+          { name: { tr: "Sosisli Patso", en: "Hot Dog Patso" }, price: 90 , image: "urunimg/patsososisli.png" },
+          { name: { tr: "Patso Menü (Patso + Ş.Kola)", en: "Patso Menu(Patso + B. Cola" }, price: 80, image: "urunimg/patsomenu.png" },
+        ]
+      },
+      {
+        title: { tr: "Tost", en: "Toast" },
+        items: [
+          { name: { tr: "Kaşarlı Tost", en: "Cheese Toast" }, price: 75, image: "urunimg/kasarlitost.png" },
+          { name: { tr: "Sucuklu Tost", en: "Sausage Toast" }, price: 80 , image: "urunimg/sucuklutost.png" },
+          { name: { tr: "Karışık Tost", en: "Mixed Toast" }, price: 90, image: "urunimg/karisiktost.png" },
+        ]
+      }
+    ]
+  },
+  
+  doner: {
+    title: { tr: "Döner", en: "Fast Doner" },
+    groups: [
+      {
+        title: { tr: "Tavuk Döner", en: "Chicken Doner" },
+        items: [
+          { name: { tr: "Tavuk Döner 70gr.", en: "Chicken Doner 70gr." }, price: 70, image: "urunimg/tavukdoner.png" },
+          { name: { tr: "Tavuk Döner 90gr.", en: "Chicken Doner 90gr." }, price: 90, image: "urunimg/tavukdoner.png" },
+          { name: { tr: "Tavuk Döner 120gr.", en: "Chicken Doner 120gr." }, price: 120, image: "urunimg/tavukdoner.png" },
+        ]
+      },
+      {
+        title: { tr: "Et Döner", en: "Meat Doner" },
+        items: [
+          { name: { tr: "Et Döner 70gr.", en: "Meat Doner 70gr." }, price: 90, image: "urunimg/etdoner.png" },
+          { name: { tr: "Et Döner 90gr.", en: "Meat Doner 90gr." }, price: 110, image: "urunimg/etdoner.png" },
+          { name: { tr: "Et Döner 120gr.", en: "Meat Doner 120gr." }, price: 150, image: "urunimg/etdoner.png" },
+        ]
+      },
+    ]
+  },
 
   dondurma: {
     title: { tr: "Dondurma", en: "Ice Cream" },
     groups: [
-  {
-    title: { tr: "Algida", en: "Algida" },  // ← Ana başlık
-    subgroups: [                               // ← Alt başlıkları açar
       {
-        title: { tr: "Cornetto", en: "Cornetto" },
-        items: [
-          { name: { tr: "Cornetto Disc Milka", en: "Cornetto Disc Milka" }, price: 75, image: "urunimg/cornettomilka.png" },
-          { name: { tr: "Cornetto Disc Oreo", en: "Cornetto Disc Oreo" }, price: 75, image: "urunimg/cornettooreo.png" },
-		  { name: { tr: "Cornetto Antep Fıstıklı", en: "Cornetto Antep Pistachio" }, price: 75, image: "urunimg/cornettoantep.png" },
-		  { name: { tr: "Cornetto Vanilya Karamel", en: "Cornetto Vanilla Caramel" }, price: 75, image: "urunimg/cornettovan.png" },
-		  { name: { tr: "Cornetto Maraş Usulü", en: "Cornetto Maraş Style" }, price: 75, image: "urunimg/cornettomarasusulu.png" },
-		   { name: { tr: "Cornetto Clas Çilek", en: "Cornetto Class Strawberry" }, price: 60, image: "urunimg/cornettoclascilek.png" },
-		   { name: { tr: "Cornetto Disc Max Mango", en: "Cornetto Disc Max Mango" }, price: 75, image: "urunimg/cornettodiskmax.png" },
-		   { name: { tr: "Cornetto Disc Max Çikolatalı", en: "Cornetto Disc Max Chocolate" }, price: 75, image: "urunimg/cornettodiscciko.png" },
-		   { name: { tr: "Cornetto Classico Çikolata", en: "Cornetto Classico Chocolate" }, price: 60, image: "urunimg/cornettoclassico.png" },
-		   { name: { tr: "Cornetto Classico Kaymak", en: "Cornetto Classico Cream" }, price: 60, image: "urunimg/cornettoclassicokaymak.png" },
-		    { name: { tr: "Cornetto Keyif", en: "Cornetto Keyif" }, price: 30, image: "urunimg/keyf.png" },
+        title: { tr: "Algida", en: "Algida" },
+        subgroups: [
+          {
+            title: { tr: "Cornetto", en: "Cornetto" },
+            items: [
+              { name: { tr: "Cornetto Disc Milka", en: "Cornetto Disc Milka" }, price: 75, image: "urunimg/cornettomilka.png" },
+              { name: { tr: "Cornetto Disc Oreo", en: "Cornetto Disc Oreo" }, price: 75, image: "urunimg/cornettooreo.png" },
+              { name: { tr: "Cornetto Antep Fıstıklı", en: "Cornetto Antep Pistachio" }, price: 75, image: "urunimg/cornettoantep.png" },
+              { name: { tr: "Cornetto Vanilya Karamel", en: "Cornetto Vanilla Caramel" }, price: 75, image: "urunimg/cornettovan.png" },
+              { name: { tr: "Cornetto Maraş Usulü", en: "Cornetto Maraş Style" }, price: 75, image: "urunimg/cornettomarasusulu.png" },
+              { name: { tr: "Cornetto Clas Çilek", en: "Cornetto Class Strawberry" }, price: 60, image: "urunimg/cornettoclascilek.png" },
+              { name: { tr: "Cornetto Disc Max Mango", en: "Cornetto Disc Max Mango" }, price: 75, image: "urunimg/cornettodiskmax.png" },
+              { name: { tr: "Cornetto Disc Max Çikolatalı", en: "Cornetto Disc Max Chocolate" }, price: 75, image: "urunimg/cornettodiscciko.png" },
+              { name: { tr: "Cornetto Classico Çikolata", en: "Cornetto Classico Chocolate" }, price: 60, image: "urunimg/cornettoclassico.png" },
+              { name: { tr: "Cornetto Classico Kaymak", en: "Cornetto Classico Cream" }, price: 60, image: "urunimg/cornettoclassicokaymak.png" },
+              { name: { tr: "Cornetto Keyif", en: "Cornetto Keyif" }, price: 30, image: "urunimg/keyf.png" },
+            ]
+          },
+          {
+            title: { tr: "Magnum", en: "Magnum" },
+            items: [
+              { name: { tr: "Utopia Ahududu", en: "Utopia Raspberry" }, price: 80, image: "urunimg/utopia.png" },
+              { name: { tr: "Utopia Karamel", en: "Utopia Caramel" }, price: 80, image: "urunimg/utopiakaramel.png" },
+              { name: { tr: "Classic", en: "Classic" }, price: 80, image: "urunimg/magnumclassic.png" },
+              { name: { tr: "Beyaz", en: "White" }, price: 80, image: "urunimg/magnumbeyaz.png" },
+              { name: { tr: "Badem", en: "Almond" }, price: 80, image: "urunimg/magnumbadem.png" },
+              { name: { tr: "Double Çikolata", en: "Double Chocolate" }, price: 80, image: "urunimg/magnumdouble.png" },
+              { name: { tr: "Double Karadut", en: "Double Black Mulberry" }, price: 80, image: "urunimg/magnumdoublekaradut.png" },
+              { name: { tr: "Cookie", en: "Cookie" }, price: 80, image: "urunimg/cookie.png" },
+            ]
+          },
+          {
+            title: {  tr: "Boom Boom", en: "Boom Boom" },
+            items: [
+              { name: { tr: "Boom Boom", en: "Boom Boom" }, price: 45, image: "urunimg/boomboom.png" },
+              { name: { tr: "Boom Boom Gold", en: "Boom Boom Gold" }, price: 50, image: "urunimg/boomboomgold.png" },
+            ]
+          },
+          {
+            title: {  tr: "Classics", en: "Classics" },
+            items: [
+              { name: { tr: "CL Frigola Bar PRM", en: "CL Frigola Bar PRM" }, price: 40, image: "urunimg/frigola.png" },
+              { name: { tr: "CL Classics Antep Fıstık", en: "Classics Antep Pistachio" }, price: 30, image: "urunimg/clfistik.png" },
+              { name: { tr: "CL Classics Kakao", en: "Classics Antep Cacao" }, price: 30, image: "urunimg/clkakao.png" },
+              { name: { tr: "Maraş Cup", en: "Maraş Cup" }, price: 40, image: "urunimg/cup.png" },
+              { name: { tr: "Nogger Sandwich", en: "Nogger Sandwich" }, price: 70, image: "urunimg/nogger.png" },
+            ]
+          },
+          {
+            title: {  tr: "Stick", en: "Stick" },
+            items: [
+              { name: { tr: "Milka Stick", en: "Milka Stick" }, price: 50, image: "urunimg/milkas.png" },
+              { name: { tr: "Vienetta Stick", en: "Vienetta Stick" }, price: 30, image: "urunimg/vienetta.png" },
+              { name: { tr: "Volcano Stick", en: "Volcano Stick" }, price: 60, image: "urunimg/volcanostick.png" },
+              { name: { tr: "Conboo Kakao", en: "Conboo Cacao" }, price: 20, image: "urunimg/conboo.png" },
+            ]
+          },
+          {
+            title: {  tr: "Max", en: "Max" },
+            items: [
+              { name: { tr: "Twister Forest", en: "Twister Forest" }, price: 20, image: "urunimg/forest.png" },
+              { name: { tr: "Twister Ocean", en: "Twister Ocean" }, price: 25, image: "urunimg/ocean.png" },
+              { name: { tr: "Twister Cool", en: "Twister Cool" }, price: 20, image: "urunimg/cool.png" },
+            ]
+          },
         ]
       },
-	  {
-        title: { tr: "Magnum", en: "Magnum" },
-        items: [
-          { name: { tr: "Utopia Ahududu", en: "Utopia Raspberry" }, price: 80, image: "urunimg/utopia.png" },
-		   { name: { tr: "Utopia Karamel", en: "Utopia Caramel" }, price: 80, image: "urunimg/utopiakaramel.png" },
-		   { name: { tr: "Classic", en: "Classic" }, price: 80, image: "urunimg/magnumclassic.png" },
-		   { name: { tr: "Beyaz", en: "White" }, price: 80, image: "urunimg/magnumbeyaz.png" },
-		   { name: { tr: "Badem", en: "Almond" }, price: 80, image: "urunimg/magnumbadem.png" },
-		   { name: { tr: "Double Çikolata", en: "Double Chocolate" }, price: 80, image: "urunimg/magnumdouble.png" },
-		   { name: { tr: "Double Karadut", en: "Double Black Mulberry" }, price: 80, image: "urunimg/magnumdoublekaradut.png" },
-		   { name: { tr: "Cookie", en: "Cookie" }, price: 80, image: "urunimg/cookie.png" },
-          
-        ]
-      },
-      {
-      title: {  tr: "Boom Boom", en: "Boom Boom" },
-      items: [
-        { name: { tr: "Boom Boom", en: "Boom Boom" }, price: 45, image: "urunimg/boomboom.png" },
-		{ name: { tr: "Boom Boom Gold", en: "Boom Boom Gold" }, price: 50, image: "urunimg/boomboomgold.png" },
-		
-			
-      ]
-    },
-	{
-      title: {  tr: "Classics", en: "Classics" },
-      items: [
-        { name: { tr: "CL Frigola Bar PRM", en: "CL Frigola Bar PRM" }, price: 40, image: "urunimg/frigola.png" },
-		 { name: { tr: "CL Classics Antep Fıstık", en: "Classics Antep Pistachio" }, price: 30, image: "urunimg/clfistik.png" },
-		 { name: { tr: "CL Classics Kakao", en: "Classics Antep Cacao" }, price: 30, image: "urunimg/clkakao.png" },
-		 { name: { tr: "Maraş Cup", en: "Maraş Cup" }, price: 40, image: "urunimg/cup.png" },
-		 { name: { tr: "Nogger Sandwich", en: "Nogger Sandwich" }, price: 70, image: "urunimg/nogger.png" },
-		
-		
-      ]
-    },
-	{
-      title: {  tr: "Stick", en: "Stick" },
-      items: [
-        { name: { tr: "Milka Stick", en: "Milka Stick" }, price: 50, image: "urunimg/milkas.png" },
-		 { name: { tr: "Vienetta Stick", en: "Vienetta Stick" }, price: 30, image: "urunimg/vienetta.png" },
-		 { name: { tr: "Volcano Stick", en: "Volcano Stick" }, price: 60, image: "urunimg/volcanostick.png" },
-		  { name: { tr: "Conboo Kakao", en: "Conboo Cacao" }, price: 20, image: "urunimg/conboo.png" },
-		
-		
-		
-      ]
-    },
-	{
-      title: {  tr: "Max", en: "Max" },
-      items: [
-        { name: { tr: "Twister Forest", en: "Twister Forest" }, price: 20, image: "urunimg/forest.png" },
-		{ name: { tr: "Twister Ocean", en: "Twister Ocean" }, price: 25, image: "urunimg/ocean.png" },
-		{ name: { tr: "Twister Cool", en: "Twister Cool" }, price: 20, image: "urunimg/cool.png" },
-		
-			
-      ]
-    },
-	
     ]
-  },
-  
-]
   }
-
 };
 
+// TEMA FONKSİYONU
+function toggleTheme() {
+    isDarkMode = !isDarkMode;
+    document.body.classList.toggle('light-mode');
+    
+    // Buton ikonunu değiştir
+    const btn = document.getElementById('themeBtn');
+    btn.innerHTML = isDarkMode ? '🌙' : '☀️';
+}
 
 function setLanguage(lang) {
   currentLang = lang;
   const t = translations[lang];
 
-  // Buton metinlerini güncelle
-  const callStaffBtn = document.getElementById("callStaffBtn");
-  const cancelBtn = document.getElementById("cancelBtn");
-
- if (callStaffBtn && cancelBtn) {
-  callStaffBtn.innerText = lang === 'tr' ? 'Görevliyi Çağır' : 'Call Staff';
-  cancelBtn.innerText = lang === 'tr' ? 'İptal' : 'Cancel';
-} else {
-  console.error("Buttons not found!");
-}
-
-  // Diğer dil metni güncellemeleri (varsa) devam eder...
-  document.getElementById('sliderTitle').innerText = translations[lang].sliderTitle;
   document.getElementById("headerTitle").innerText = t.header;
   document.getElementById("menuIcecekler").innerText = t.icecekler;
   document.getElementById("menuAtistirmalik").innerText = t.atistirmalik;
   document.getElementById("menuSekerleme").innerText = t.sekerleme;
   document.getElementById("menuFastfood").innerText = t.fastfood;
   document.getElementById("menuDondurma").innerText = t.dondurma;
-  document.getElementById("menuHamburger").innerText = t.hamburger;
   document.getElementById("menuDoner").innerText = t.doner;
-  document.getElementById("menuKofte").innerText = t.kofte;
-  document.getElementById("cartTitle").innerText = t.cart;
+
+  document.getElementById("cartTitle").innerHTML = `${t.cart} <button class="modal-close" onclick="toggleCart()" style="position:static; margin-left:auto; width:24px; height:24px; line-height:24px; font-size:16px;">×</button>`;
   document.getElementById("cartOrderBtn").innerText = t.order;
-  document.getElementById("callBtn").innerText = lang === 'tr' ? '🤵️ ' : '🤵️ ';
-  document.querySelector(".toggle-cart").innerHTML = `🛒 ${t.cart}<span id="cartBadge" class="cart-badge">0</span>`;
+  document.getElementById("cartText").innerText = t.cart;
   document.querySelector(".clear-cart").innerText = t.clearCart;
   
-  document.getElementById('popupMasa').placeholder = t.table;
-  document.getElementById('popupOda').placeholder = t.room;
-document.getElementById('popupMasa').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
+  document.getElementById('popupMasa').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
   document.getElementById('popupOda').placeholder = lang === 'tr' ? 'Oda No - ör: Vip Ps 2' : 'Room Number - e.g.: Vip Ps 2';
   
- document.getElementById('cartInputsWrapper').placeholder = t.table;
-  document.getElementById('odaInputCart').placeholder = t.room;
- document.getElementById('cartInputsWrapper').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
+  document.getElementById('masaInputCart').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
   document.getElementById('odaInputCart').placeholder = lang === 'tr' ? 'Oda No - ör: Vip Ps 2' : 'Room Number - e.g.: Vip Ps 2';
+  document.getElementById('sliderTitle').innerText = t.sliderTitle;
+  document.getElementById('customAlert').innerText = t.added;
   
-  const badge = document.getElementById('cartBadge');
-  badge.textContent = sepet.length;
-  badge.style.display = sepet.length > 0 ? 'inline-block' : 'none';
- 
-
   guncelleSepet();
-}
-
-
-
-function toggleTheme() {
-  document.body.classList.toggle('dark-theme');
 }
 
 function showMenu(id) {
@@ -1800,7 +1395,7 @@ function showMenu(id) {
   modalButtons.innerHTML = '';
 
   menu.groups.forEach(group => {
-    const groupBtn = document.createElement("button");
+    const groupBtn = document.createElement("div");
     groupBtn.className = "accordion-button";
     groupBtn.textContent = group.title[currentLang];
     groupBtn.onclick = function () {
@@ -1814,50 +1409,39 @@ function showMenu(id) {
     groupContent.className = "accordion-content";
 
     if (group.subgroups) {
-      // Eski yapı (subgroups varsa)
       group.subgroups.forEach(sub => {
-        const subBtn = document.createElement("button");
-        subBtn.classList.add("accordion-button", "accordion-sub-button");
-        subBtn.textContent = sub.title[currentLang];
-        subBtn.onclick = function () {
-          const content = this.nextElementSibling;
-          content.style.display = content.style.display === "block" ? "none" : "block";
-          this.classList.toggle("active");
-        };
-        groupContent.appendChild(subBtn);
-
-        const subContent = document.createElement("div");
-        subContent.classList.add("accordion-content", "accordion-sub-content");
+        const subTitle = document.createElement("div");
+        subTitle.style.color = isDarkMode ? "#ccc" : "#64748b"; // Light modda renk ayarı
+        subTitle.style.padding = "10px";
+        subTitle.style.fontWeight = "bold";
+        subTitle.textContent = sub.title[currentLang];
+        groupContent.appendChild(subTitle);
 
         sub.items.forEach(item => {
-          const btn = document.createElement("button");
-          btn.classList.add("menu-item-button");
+          const btn = document.createElement("div");
+          btn.className = "menu-item-button";
           btn.innerHTML = `
-            <img src="${item.image || 'default.png'}" alt="" style="height:20px; vertical-align:middle; margin-right:8px;">
-            ₺${item.price} - ${item.name[currentLang]}
+            <img src="${item.image || 'default.png'}" alt="">
+            <span>${item.name[currentLang]}<br><small style="color:#10b981">₺${item.price}</small></span>
           `;
           btn.onclick = () => {
             sepeteEkle(item.name[currentLang], item.price);
-          
+            customAlert(translations[currentLang].added + ": " + item.name[currentLang]);
           };
-          subContent.appendChild(btn);
+          groupContent.appendChild(btn);
         });
-
-        groupContent.appendChild(subContent);
       });
-
     } else if (group.items) {
-      // Yeni sade yapı
       group.items.forEach(item => {
-        const btn = document.createElement("button");
-        btn.classList.add("menu-item-button");
+        const btn = document.createElement("div");
+        btn.className = "menu-item-button";
         btn.innerHTML = `
-          <img src="${item.image || 'default.png'}" alt="" style="height:20px; vertical-align:middle; margin-right:8px;">
-          ₺${item.price} - ${item.name[currentLang]}
+          <img src="${item.image || 'default.png'}" alt="">
+          <span>${item.name[currentLang]}<br><small style="color:#10b981">₺${item.price}</small></span>
         `;
         btn.onclick = () => {
           sepeteEkle(item.name[currentLang], item.price);
-         
+          customAlert(translations[currentLang].added + ": " + item.name[currentLang]);
         };
         groupContent.appendChild(btn);
       });
@@ -1869,24 +1453,20 @@ function showMenu(id) {
   modal.style.display = 'flex';
 }
 
-
 function closeModal() {
   document.getElementById('menuModal').style.display = 'none';
 }
 
 function sepeteEkle(ad, fiyat) {
-  // normalize ad
-  const temizAd = ad.trim().toLowerCase();
-
-  const mevcut = sepet.find(item => item.ad.trim().toLowerCase() === temizAd);
+  const temizAd = ad.trim();
+  const mevcut = sepet.find(item => item.ad === temizAd);
   if (mevcut) {
     mevcut.adet += 1;
   } else {
-    sepet.push({ ad: temizAd, gosterim: ad, fiyat, adet: 1 });
+    sepet.push({ ad: temizAd, fiyat, adet: 1 });
   }
   guncelleSepet();
 }
-
 
 function sepettenCikar(index) {
   sepet.splice(index, 1);
@@ -1904,74 +1484,44 @@ function guncelleSepet() {
   const totalEl = document.getElementById('cart-total');
   const badge = document.getElementById('cartBadge');
   const btn = document.getElementById("cartOrderBtn");
-btn.innerText = translations[currentLang].order;
-btn.style.display = sepet.length > 0 ? "block" : "none";
 
-
+  btn.style.display = sepet.length > 0 ? "block" : "none";
   list.innerHTML = '';
   
   if (sepet.length === 0) {
     list.innerHTML = `<li class="empty">${t.empty}</li>`;
     totalEl.textContent = `${t.total}: ₺0`;
-	 badge.textContent = '0';
+    badge.textContent = '0';
     badge.style.display = 'none';
-	document.getElementById('cartOrderBtn').style.display = 'none';
-	document.getElementById("cartInputsWrapper").style.display = "none";
+    document.getElementById("cartInputsWrapper").style.display = "none";
     return;
-  }else {
-  document.getElementById("cartInputsWrapper").style.display = "block";
-}
+  } else {
+    document.getElementById("cartInputsWrapper").style.display = "block";
+  }
 
   let toplam = sepet.reduce((acc, item) => acc + item.fiyat * item.adet, 0);
 
   sepet.forEach((item, index) => {
-  const li = document.createElement("li");
-  li.style.display = "flex";
-li.style.alignItems = "center";
-li.style.justifyContent = "space-between"; // Bu li'nin içindekileri en sola ve en sağa sabitler
-
-li.innerHTML = `
-  <div style="flex: 1;">
-    <div style="font-weight: 500;">${toTitleCase(item.ad)}</div>
-    <div style="font-size: 13px; color: #666;">₺${item.fiyat}</div>
-  </div>
-  <div style="display: flex; align-items: center; gap: 6px;">
-    <span onclick="adetAzalt(${index})" style="font-size: 12px; cursor: pointer; user-select: none;">➖</span>
-    <span>${item.adet}</span>
-    <span onclick="adetArttir(${index})" style="font-size: 12px; cursor: pointer; user-select: none;">➕</span>
-  </div>
-`;
-
-
-
-function adetGuncelle(index, yeniDeger) {
-  const adet = parseInt(yeniDeger);
-  if (adet > 0) {
-    sepet[index].adet = adet;
-  } else {
-    sepet.splice(index, 1);
-  }
-  guncelleSepet();
-}
-function toTitleCase(str) {
-  return str
-    .toLowerCase()
-    .split(" ")
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
-
-  list.appendChild(li);
-});
-
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <div style="flex: 1;">
+        <div style="font-weight: 500; color:var(--text-main);">${item.ad}</div>
+        <div style="font-size: 13px; color: #10b981;">₺${item.fiyat}</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span onclick="adetAzalt(${index})" style="font-size: 16px; cursor: pointer; color:#ef4444; background:rgba(255,255,255,0.1); width:24px; height:24px; border-radius:50%; text-align:center;">-</span>
+        <span style="font-weight:bold">${item.adet}</span>
+        <span onclick="adetArttir(${index})" style="font-size: 16px; cursor: pointer; color:#10b981; background:rgba(255,255,255,0.1); width:24px; height:24px; border-radius:50%; text-align:center;">+</span>
+      </div>
+    `;
+    list.appendChild(li);
+  });
 
   totalEl.textContent = `${t.total}: ₺${toplam}`;
   badge.textContent = sepet.length;
   badge.style.display = 'inline-block';
-  document.getElementById('cartOrderBtn').style.display = 'block';
-
 }
+
 function adetArttir(index) {
   sepet[index].adet++;
   guncelleSepet();
@@ -1985,18 +1535,27 @@ function adetAzalt(index) {
   }
   guncelleSepet();
 }
+
 function toggleCart() {
   const cartBox = document.getElementById('cartBox');
-  cartBox.style.display = cartBox.style.display === 'block' ? 'none' : 'block';
+  if (cartBox.style.display === 'block') {
+    cartBox.style.display = 'none';
+  } else {
+    cartBox.style.display = 'block';
+  }
 }
 
 function customAlert(msg) {
   const alertBox = document.getElementById('customAlert');
   alertBox.textContent = msg;
+  // Animasyonu yeniden tetiklemek için class'ı silip tekrar ekle
+  alertBox.style.display = 'none';
+  alertBox.offsetHeight; /* trigger reflow */
   alertBox.style.display = 'block';
+  
   setTimeout(() => {
     alertBox.style.display = 'none';
-  }, 3000);
+  }, 2500);
 }
 
 async function siparisVer() {
@@ -2015,14 +1574,13 @@ async function siparisVer() {
     return;
   }
 
-  // Adet bilgisini dikkate alarak toplamı hesapla
-  const toplam = sepet.reduce((acc, item) => acc + (item.fiyat * (item.adet || 1)), 0);
+  const toplam = sepet.reduce((acc, item) => acc + (item.fiyat * item.adet), 0);
 
   try {
     await db.collection("siparisler").add({
       urunler: sepet.map(item => ({
-        ad: item.gosterim || item.ad,
-        adet: item.adet || 1,
+        ad: item.ad,
+        adet: item.adet,
         fiyat: item.fiyat
       })),
       masa: masa || null,
@@ -2034,18 +1592,13 @@ async function siparisVer() {
 
     customAlert("✅ Sipariş alındı!");
     sepetiTemizle();
-    closeModal();
+    toggleCart();
 
-    // 🔁 Inputları yeniden doldur
+    // Inputları tekrar doldur (hafızada kalsın)
     const storedMasa = localStorage.getItem("masaNo");
     const storedOda = localStorage.getItem("odaNo");
-
-    if (storedMasa) {
-      document.getElementById('masaInputCart').value = storedMasa;
-    }
-    if (storedOda) {
-      document.getElementById('odaInputCart').value = storedOda;
-    }
+    if (storedMasa) document.getElementById('masaInputCart').value = storedMasa;
+    if (storedOda) document.getElementById('odaInputCart').value = storedOda;
 
   } catch (error) {
     console.error("❌ Sipariş kaydı başarısız:", error);
@@ -2053,605 +1606,120 @@ async function siparisVer() {
   }
 }
 
+// SLIDER LOGIC - Sonsuz Döngü İçin Kopyalama
+document.addEventListener("DOMContentLoaded", function() {
+    const track = document.getElementById('sliderTrack');
+    // İçeriği kopyala
+    track.innerHTML += track.innerHTML;
 
-const sliderItems = document.querySelectorAll('.slider-item');
-
-sliderItems.forEach(item => {
-  item.addEventListener('click', function() {
-    const productName = item.getAttribute('data-name');
-    const productPrice = parseFloat(item.getAttribute('data-price'));
-    sepeteEkle(productName, productPrice); // Sepete ekle
-  });
+    // Slider tıklama olaylarını yeniden ata (kopyalananlar dahil)
+    const sliderItems = document.querySelectorAll('.slider-item');
+    sliderItems.forEach(item => {
+      item.addEventListener('click', function() {
+        const productName = item.getAttribute('data-name');
+        const productPrice = parseFloat(item.getAttribute('data-price'));
+        sepeteEkle(productName, productPrice);
+        customAlert(translations[currentLang].added + ": " + productName);
+      });
+    });
 });
 
-// To Title Case fonksiyonu (Baş harfleri büyütme)
-function toTitleCase(str) {
-  return str
-    .toLowerCase()
-    .split(" ")
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
+let secilenTip = "";
 
-let secilenTip = "";  // Seçilen görevin türü
-
-// Görevli çağırma modalını aç
 function openZilModal() {
   const modal = document.getElementById('zilModal');
   const taskTitle = document.getElementById('zilSoru');
-  const masaInput = document.getElementById('masaInputCart');
-  const odaInput = document.getElementById('odaInputCart');
   
-  
-  secilenTip = ""; // Seçilen görevi sıfırla
+  secilenTip = "";
 
-  // Dil değişimine göre başlık metnini güncelle
-  taskTitle.innerHTML = currentLang === 'tr'
-    ? "🔔 Görevliyi hangi amaçla çağırmak istiyorsunuz?" // Türkçe
-    : "🔔 What type of staff do you want to call?"; // İngilizce
-  
-  // Bilişim, Sipariş, ve İptal butonlarının metinlerini dil değişimine göre güncelle
-  const bilişimBtn = document.querySelector('button[onclick="secimiYap(\'bilişim\')"]');
-  bilişimBtn.innerText = currentLang === 'tr' ? 'Bilişim' : 'IT Support';
-  
-  const siparişBtn = document.querySelector('button[onclick="secimiYap(\'sipariş\')"]');
-  siparişBtn.innerText = currentLang === 'tr' ? 'Sipariş' : 'Order';
-
-  const iptalBtn = document.querySelector('button[onclick="closeZilModal()"]');
-  iptalBtn.innerText = currentLang === 'tr' ? 'İptal' : 'Cancel';
-  
-  document.getElementById("zilSecimButonlari").style.display = 'block'; // Seçim butonlarını göster
-  document.getElementById("zilForm").style.display = 'none';  // Formu gizle
-  
-  modal.style.display = 'flex';  // Modal'ı göster
+  taskTitle.innerHTML = currentLang === 'tr' ? "🔔 Görevliyi hangi amaçla çağırmak istiyorsunuz?" : "🔔 What type of staff do you want to call?";
+  document.getElementById("zilSecimButonlari").style.display = 'block';
+  document.getElementById("zilForm").style.display = 'none';
+  modal.style.display = 'flex';
 }
 
-
-// Modalı kapat
 function closeZilModal() {
-  const modal = document.getElementById('zilModal');
-  modal.style.display = 'none';  // Modal'ı kapat
+  document.getElementById('zilModal').style.display = 'none';
 }
 
-// Görev tipi seçimini yap
 function secimiYap(tip) {
-  secilenTip = tip; // Seçilen tipi kaydet
-  document.getElementById("zilSecimButonlari").style.display = 'none'; // Seçim butonlarını gizle
-  document.getElementById("zilSoru").innerText =
-    tip === "bilişim"
-      ? currentLang === 'tr'
-        ? "🧑‍💻 Bilişim için görevli çağrılacak. Masa ya da Oda giriniz:" 
-        : "🧑‍💻 IT support staff will be called. Enter Table/Room number:"
-      : currentLang === 'tr'
-        ? "🧾 Sipariş için görevli çağrılacak. Masa ya da Oda giriniz:" 
-        : "🧾 Order staff will be called. Enter Table/Room number:";  // Dil seçimlerine göre güncelleme
-  document.getElementById("zilForm").style.display = 'block';  // Formu göster
+  secilenTip = tip;
+  document.getElementById("zilSecimButonlari").style.display = 'none';
+  document.getElementById("zilForm").style.display = 'block';
 }
 
-// Görevli çağırma işlemini yap
 function callStaff() {
-  closeZilModal(); // Modalı kapat
-
+  closeZilModal();
   const masa = document.getElementById("popupMasa").value.trim();
   const oda = document.getElementById("popupOda").value.trim();
 
   if (!masa && !oda) {
-    showAlert(currentLang === 'tr' ? "⚠️ Masa veya Oda numarası girmelisiniz!" : "⚠️ You must enter Table or Room number!"); // Uyarı mesajı
+    customAlert(currentLang === 'tr' ? "⚠️ Masa veya Oda numarası girmelisiniz!" : "⚠️ You must enter Table or Room number!");
     return;
   }
 
-  const msg =
-    secilenTip === "bilişim"
-      ? currentLang === 'tr' 
-        ? "🧑‍💻 Bilişim desteği çağrıldı." 
-        : "🧑‍💻 IT support was called."
-      : currentLang === 'tr' 
-        ? "🧾 Sipariş görevlisi çağrıldı." 
-        : "🧾 Order staff was called.";
-  showAlert(msg);
+  const msg = secilenTip === "bilişim" ? (currentLang === 'tr' ? "🧑‍💻 Bilişim desteği çağrıldı." : "🧑‍💻 IT support called.") : (currentLang === 'tr' ? "🧾 Sipariş görevlisi çağrıldı." : "🧾 Order staff called.");
+  customAlert(msg);
 
-  db.collection("cagrilar")
-    .add({
-      tip: secilenTip,
-      masa,
-      oda,
-      zaman: new Date(),
-    })
-    .then(() => {
-      const ding = document.getElementById("dingSound");
-      if (ding) ding.play().catch(() => {});
-    });
-}
-
-// Uyarı mesajını göster
-function showAlert(msg) {
-  const alertBox = document.getElementById('customAlert');
-  alertBox.innerText = msg;
-  alertBox.style.display = 'block';
-  setTimeout(() => alertBox.style.display = 'none', 3000);  // 3 saniye sonra uyarıyı gizle
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  document.getElementById("cartInputsWrapper").style.display = "none";
-  guncelleSepet();
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const odaParam = urlParams.get('oda');
-  const masaParam = urlParams.get('masa');
-
-  const odaInput = document.getElementById("odaInputCart");
-  const masaInput = document.getElementById("masaInputCart");
-
-  // 1. URL parametresi varsa localStorage'a yaz
-  if (odaParam) localStorage.setItem("odaNo", odaParam);
-  if (masaParam) localStorage.setItem("masaNo", masaParam);
-
-  // 2. localStorage’dan oku
-  const storedOda = localStorage.getItem("odaNo");
-  const storedMasa = localStorage.getItem("masaNo");
-
-  // 3. Uygula
-  if (storedOda && odaInput) {
-    if (storedOda === "vip3") {
-      odaInput.value = currentLang === 'tr' ? "3. Kat - VIP Playstation" : "3rd Floor - VIP Playstation";
-    } else if (storedOda === "ps5") {
-      odaInput.value = currentLang === 'tr' ? "PS5 Odası" : "PS5 Room";
-    } else {
-      odaInput.value = storedOda;
-    }
-    odaInput.readOnly = true;
-
-    if (masaInput) {
-      masaInput.style.display = "none";
-    }
-  }
-
-  if (storedMasa && masaInput) {
-    masaInput.value = currentLang === 'tr' ? `Masa ${storedMasa}` : `Table ${storedMasa}`;
-    masaInput.readOnly = true;
-
-    if (odaInput) {
-      odaInput.style.display = "none";
-    }
-  }
-
-  // 4. Ek olarak popup inputlarını da doldur
-  const popupMasa = document.getElementById("popupMasa");
-  const popupOda = document.getElementById("popupOda");
-
-  if (storedMasa && popupMasa) popupMasa.value = storedMasa;
-  if (storedOda && popupOda) popupOda.value = storedOda;
-});
-
-
-function setMasaOda() {
-  // URL'deki 'masa' ve 'oda' parametrelerini al
-  const masa = new URLSearchParams(window.location.search).get('masa');
-  const oda = new URLSearchParams(window.location.search).get('oda');
-  
-  // Masa inputunu doldur
-  if (masa) {
-    const masaInput = document.getElementById('masaInputCart');
-    masaInput.value = masa;  // `masa` parametresini alıp inputa ekliyoruz
-  }
-  
-  // Oda inputunu doldur
-  if (oda) {
-    const odaInput = document.getElementById('odaInputCart');
-    odaInput.value = oda;  // `oda` parametresini alıp inputa ekliyoruz
-  }
-}
-
-// Sayfa yüklendiğinde setMasaOda fonksiyonunu çalıştır
-document.addEventListener("DOMContentLoaded", function() {
-  setMasaOda();  // Sayfa yüklendiğinde otomatik doldurma işlemi
-});
-
-// Görevli çağır butonuna tıklanması durumunda inputları güncelle
-document.getElementById("callBtn").addEventListener("click", function(event) {
-  event.preventDefault();  // Sayfanın yeniden yüklenmesini engelle
-  setMasaOda();           // Sadece masa ve oda inputlarını güncelle
-});
-// URL parametrelerinden oda ve masa bilgisini al
-function checkURLParams() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const oda = urlParams.get('oda');
-  const masa = urlParams.get('masa');
-
-  if (oda && document.getElementById('odaInput')) {
-    document.getElementById('odaInput').value = oda;
-  }
-  if (masa && document.getElementById('masaInput')) {
-    document.getElementById('masaInput').value = masa;
-  }
-}
-document.getElementById('callBtn').addEventListener('click', function() {
-  const oda = document.getElementById('odaInput').value;
-  const masa = document.getElementById('masaInput').value;
-  
-  if (!oda || !masa) {
-    alert("Lütfen oda ve masa numarası girin.");
-    return; // Eğer oda veya masa numarası eksikse işlem yapma
-  }
-
-  // Görevli çağırma işlemi
-  alert(`Görevli çağrıldı! Oda: ${oda}, Masa: ${masa}`);
-  
-  // Eğer başka bir işlem yapacaksan, burada yapabilirsin (örneğin, Firebase ile göndermek)
-});
-// URL parametrelerini almak için fonksiyon
-function getURLParameter(name) {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get(name);
-}
-
-// Sayfa yüklendiğinde inputları doldur
-window.onload = function() {
-  const oda = getURLParameter('oda');  // /?oda=Vip7
-  const masa = getURLParameter('masa');  // /?masa=Hüma5
-
-  // Oda ve masa parametreleri varsa sepet inputlarına atama yap
-  if (oda) {
-    document.getElementById('odaInputCart').value = oda;  // Sepet inputu
-    document.getElementById('popupOda').value = oda;     // Görevli çağırma popup inputu
-  }
-  if (masa) {
-    document.getElementById('masaInputCart').value = masa;  // Sepet inputu
-    document.getElementById('popupMasa').value = masa;      // Görevli çağırma popup inputu
-  }
-};
-document.addEventListener("DOMContentLoaded", function() {
-  // Sayfa yüklendikten sonra çalışacak işlemler
-  
-  // Slider için kaydırma işlemi
-  const slider = document.querySelector('.popular-slider'); // ID ya da class'ın doğru olduğuna emin olun
-  console.log(slider);
-
-  let scrollAmount = 0;
-  let autoScrollInterval;
-
-  function nextSlide() {
-    scrollAmount += slider.offsetWidth / 3; // Kaydırma hızı
-    if (scrollAmount >= slider.scrollWidth - slider.clientWidth) {
-      scrollAmount = 0; // Bittiğinde başa sar
-    }
-    slider.scrollLeft = scrollAmount;
-  }
-
-  function startAutoScroll() {
-    autoScrollInterval = setInterval(nextSlide, 3000);  // 3 saniyede bir kaydırma
-  }
-
-  function stopAutoScroll() {
-    clearInterval(autoScrollInterval);  // Kaydırmayı durdur
-  }
-
-  slider.addEventListener('mouseenter', stopAutoScroll);  // Fare slider'a geldiğinde durdur
-  slider.addEventListener('mouseleave', startAutoScroll);  // Fare slider'dan ayrıldığında başlat
-
-  // Sayfa yüklendiğinde kaydırmayı başlat
-  startAutoScroll();
-
-  // Dil değiştirme fonksiyonu
-  function setLanguage(lang) {
-    currentLang = lang;
-    const t = translations[lang];
-
-    // Buton metinlerini güncelle
-    const callStaffBtn = document.getElementById("callStaffBtn");
-    const cancelBtn = document.getElementById("cancelBtn");
-
-    if (callStaffBtn && cancelBtn) {
-      callStaffBtn.innerText = lang === 'tr' ? 'Görevliyi Çağır' : 'Call Staff';
-      cancelBtn.innerText = lang === 'tr' ? 'İptal' : 'Cancel';
-    } else {
-      console.error("Butonlar bulunamadı!");
-    }
-
-    // Diğer metin güncellemeleri
-    document.getElementById("headerTitle").innerText = t.header;
-    document.getElementById("menuIcecekler").innerText = t.icecekler;
-    document.getElementById("menuAtistirmalik").innerText = t.atistirmalik;
-    document.getElementById("menuSekerleme").innerText = t.sekerleme;
-    document.getElementById("menuFastfood").innerText = t.fastfood;
-    document.getElementById("menuDondurma").innerText = t.dondurma;
-    document.getElementById("menuDoner").innerText = t.doner;
-	document.getElementById("menuKofte").innerText = t.kofte;
-	document.getElementById("menuHamburger").innerText = t.hamburger;
-    document.getElementById("cartTitle").innerText = t.cart;
-    document.getElementById("cartOrderBtn").innerText = t.order;
-    document.getElementById("callBtn").innerText = lang === 'tr' ? '🤵️ ' : '🤵️ ';
-    document.querySelector(".toggle-cart").innerHTML = `🛒 ${t.cart}<span id="cartBadge" class="cart-badge">0</span>`;
-    document.querySelector(".clear-cart").innerText = t.clearCart;
-    
-    // Sepet ve input güncellemeleri
-    document.getElementById('popupMasa').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
-    document.getElementById('popupOda').placeholder = lang === 'tr' ? 'Oda No - ör: Vip Ps 2' : 'Room Number - e.g.: Vip Ps 2';
-    document.getElementById('masaInputCart').placeholder = lang === 'tr' ? 'Masa No - ör: Hüma 5' : 'Table No - e.g.: Huma 5';
-    document.getElementById('odaInputCart').placeholder = lang === 'tr' ? 'Oda No - ör: Vip Ps 2' : 'Room Number - e.g.: Vip Ps 2';
-    
-    // Sepet badge güncellenmesi
-    const badge = document.getElementById('cartBadge');
-    badge.textContent = sepet.length;
-    badge.style.display = sepet.length > 0 ? 'inline-block' : 'none';
-
-    guncelleSepet();
-  }
-
-  // Tema değişimi fonksiyonu
-  function toggleTheme() {
-    document.body.classList.toggle('dark-theme');
-  }
-
-  // Sepet işlemleri
-  function guncelleSepet() {
-    const t = translations[currentLang];
-    const list = document.getElementById('cart-list');
-    const totalEl = document.getElementById('cart-total');
-    const badge = document.getElementById('cartBadge');
-    const btn = document.getElementById("cartOrderBtn");
-
-    btn.innerText = translations[currentLang].order;
-    btn.style.display = sepet.length > 0 ? "block" : "none";
-
-    list.innerHTML = '';
-    
-    if (sepet.length === 0) {
-      list.innerHTML = `<li class="empty">${t.empty}</li>`;
-      totalEl.textContent = `${t.total}: ₺0`;
-      badge.textContent = '0';
-      badge.style.display = 'none';
-      document.getElementById('cartOrderBtn').style.display = 'none';
-      document.getElementById("cartInputsWrapper").style.display = "none";
-      return;
-    } else {
-      document.getElementById("cartInputsWrapper").style.display = "block";
-    }
-
-    let toplam = sepet.reduce((acc, item) => acc + item.fiyat * item.adet, 0);
-
-    sepet.forEach((item, index) => {
-      const li = document.createElement("li");
-      li.style.display = "flex";
-      li.style.alignItems = "center";
-      li.style.justifyContent = "space-between"; // En sola ve sağa sabitler
-
-      li.innerHTML = `
-        <div style="flex: 1;">
-          <div style="font-weight: 500;">${toTitleCase(item.ad)}</div>
-          <div style="font-size: 13px; color: #666;">₺${item.fiyat}</div>
-        </div>
-        <div style="display: flex; align-items: center; gap: 6px;">
-          <span onclick="adetAzalt(${index})" style="font-size: 12px; cursor: pointer; user-select: none;">➖</span>
-          <span>${item.adet}</span>
-          <span onclick="adetArttir(${index})" style="font-size: 12px; cursor: pointer; user-select: none;">➕</span>
-        </div>
-      `;
-
-      list.appendChild(li);
-    });
-
-    totalEl.textContent = `${t.total}: ₺${toplam}`;
-    badge.textContent = sepet.length;
-    badge.style.display = 'inline-block';
-    document.getElementById('cartOrderBtn').style.display = 'block';
-  }
-
-  // Sepet işlemleri için fonksiyonlar
-  function adetArttir(index) {
-    sepet[index].adet++;
-    guncelleSepet();
-  }
-
-  function adetAzalt(index) {
-    if (sepet[index].adet > 1) {
-      sepet[index].adet--;
-    } else {
-      sepet.splice(index, 1);
-    }
-    guncelleSepet();
-  }
-
-  // Dil seçimi ve diğer fonksiyonları da burada çalıştırabilirsiniz
-});
-
-
-const sliderContainer = document.querySelector('.popular-slider-container');
-let isDragging = false;
-let startX;
-let scrollLeft;
-
-// FARE SÜRÜKLEME
-sliderContainer.addEventListener('mousedown', (e) => {
-  isDragging = true;
-  sliderContainer.classList.add('dragging');
-  startX = e.pageX - sliderContainer.offsetLeft;
-  scrollLeft = sliderContainer.scrollLeft;
-});
-sliderContainer.addEventListener('mouseleave', () => {
-  isDragging = false;
-  sliderContainer.classList.remove('dragging');
-});
-sliderContainer.addEventListener('mouseup', () => {
-  isDragging = false;
-  sliderContainer.classList.remove('dragging');
-});
-sliderContainer.addEventListener('mousemove', (e) => {
-  if (!isDragging) return;
-  e.preventDefault();
-  const x = e.pageX - sliderContainer.offsetLeft;
-  const walk = (x - startX) * 1.5;
-  sliderContainer.scrollLeft = scrollLeft - walk;
-});
-
-// MOBİL DOKUNMA
-sliderContainer.addEventListener('touchstart', (e) => {
-  isDragging = true;
-  startX = e.touches[0].pageX - sliderContainer.offsetLeft;
-  scrollLeft = sliderContainer.scrollLeft;
-});
-sliderContainer.addEventListener('touchend', () => {
-  isDragging = false;
-});
-sliderContainer.addEventListener('touchmove', (e) => {
-  if (!isDragging) return;
-  const x = e.touches[0].pageX - sliderContainer.offsetLeft;
-  const walk = (x - startX) * 1.5;
-  sliderContainer.scrollLeft = scrollLeft - walk;
-});
-
-function getUrlParam(name) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(name);
-  }
-
-  // Sayfa yüklendiğinde çalışır
-  window.addEventListener('DOMContentLoaded', () => {
-    // URL'den parametreleri al
-    const masa = getUrlParam("masa");
-    const oda = getUrlParam("oda");
-
-    // Eğer varsa localStorage'a yaz
-    if (masa) {
-      localStorage.setItem("masaNo", masa);
-    }
-    if (oda) {
-      localStorage.setItem("odaNo", oda);
-    }
-
-    // localStorage'dan oku
-    const storedMasa = localStorage.getItem("masaNo");
-    const storedOda = localStorage.getItem("odaNo");
-
-    // Tüm inputlara yaz
-    const masaInputs = [
-      document.getElementById("masaInputCart"),
-      document.getElementById("popupMasa")
-    ];
-    const odaInputs = [
-      document.getElementById("odaInputCart"),
-      document.getElementById("popupOda")
-    ];
-
-    masaInputs.forEach(input => {
-      if (input && storedMasa) {
-        input.value = storedMasa;
-      }
-    });
-
-    odaInputs.forEach(input => {
-      if (input && storedOda) {
-        input.value = storedOda;
-      }
-    });
+  db.collection("cagrilar").add({
+    tip: secilenTip,
+    masa,
+    oda,
+    zaman: new Date(),
+  }).then(() => {
+    const ding = document.getElementById("dingSound");
+    if (ding) ding.play().catch(() => {});
   });
+}
 
+// URL PARAM & LOCALSTORAGE
+function setMasaOda() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const masa = urlParams.get('masa');
+  const oda = urlParams.get('oda');
+
+  if (masa) {
+      localStorage.setItem("masaNo", masa);
+      document.getElementById('masaInputCart').value = masa;
+      document.getElementById('popupMasa').value = masa;
+  }
+  if (oda) {
+      localStorage.setItem("odaNo", oda);
+      document.getElementById('odaInputCart').value = oda;
+      document.getElementById('popupOda').value = oda;
+  }
+  
+  const storedMasa = localStorage.getItem("masaNo");
+  const storedOda = localStorage.getItem("odaNo");
+  
+  if (!masa && storedMasa) {
+      document.getElementById('masaInputCart').value = storedMasa;
+      document.getElementById('popupMasa').value = storedMasa;
+  }
+  if (!oda && storedOda) {
+      document.getElementById('odaInputCart').value = storedOda;
+      document.getElementById('popupOda').value = storedOda;
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  setMasaOda();
+});
+
+// Timer reset
 let timeout;
 function resetTimer() {
   clearTimeout(timeout);
   timeout = setTimeout(() => {
     localStorage.removeItem("masaNo");
     localStorage.removeItem("odaNo");
-    location.reload(); // sayfayı tazeleyebilirsin
-  }, 10 * 60 * 1000); // 10 dakika
+    location.reload(); 
+  }, 10 * 60 * 1000); 
 }
-
 window.onload = resetTimer;
 document.onmousemove = resetTimer;
-document.onkeydown = resetTimer;
 document.ontouchstart = resetTimer;
 
-const allowedLat = 39.7493563;
-const allowedLng = 37.0211706;
-const maxDistanceMeters = 900;
-
-function toRad(x) {
-  return (x * Math.PI) / 180;
-}
-
-function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
-  const R = 6371000;
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-}
-
-function checkLocationPermission() {
-  // Eğer oturumda zaten onaylandıysa tekrar isteme
-  if (sessionStorage.getItem("locationVerified") === "true") {
-    document.getElementById("loader")?.remove();
-    return;
-  }
-
-  if (!navigator.geolocation) {
-    window.location.href = "unauthorized.html";
-    return;
-  }
-
- 
-}
-
-window.addEventListener("load", () => {
-  setTimeout(checkLocationPermission, 300);
-});
-
-
-
-
 </script>
-<footer>
-  <div class="footer-content">
-    <a href="https://altunga-website.github.io/altunga-site/admin/admin.html" target="_blank" class="admin-btn">Yönetici Girişi</a>
-  </div>
-</footer>
-
-<footer style="text-align:center; padding: 20px; font-size: 14px; color: var(--text-color); opacity: 0.6;">
-   Designed by - M.Emin TAÇLI © Copyright 2025 Altunga E Spor Merkezi - Tüm hakları saklıdır.
-</footer>
-<div class="modal-overlay" id="zilModal">
-  <div class="modal-content" style="text-align: center;">
-    <div style="font-size: 40px;">⚠️</div>
-    <p id="zilSoru" style="font-size: 18px; margin-top: 10px;">🔔 Görevliyi hangi amaçla çağırmak istiyorsunuz?</p>
-
-    <div id="zilSecimButonlari" style="margin-top: 20px;">
-      <button onclick="secimiYap('bilişim')" style="background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 6px; margin: 5px;">Bilişim</button>
-      <button onclick="secimiYap('sipariş')" style="background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 6px; margin: 5px;">Sipariş</button>
-	   <button onclick="closeZilModal()" style="background-color: #ccc; color: black; border: none; padding: 10px 24px; border-radius: 6px; margin: 5px;">İptal</button>
-    </div>
-
-    <div id="zilForm" style="margin-top: 15px; display: none;">
-  <input id="popupMasa" placeholder="Masa No" style="padding: 8px; margin: 4px; width: 120px;" />
-  <input id="popupOda" placeholder="Oda No" style="padding: 8px; margin: 4px; width: 120px;" />
-  <div style="margin-top: 15px;">
-    <button id="callStaffBtn" onclick="callStaff()" style="background-color: #d32f2f; color: white; border: none; padding: 10px 24px; border-radius: 6px; margin: 5px;">
-      Görevliyi Çağır
-    </button>
-    <button id="cancelBtn" onclick="closeZilModal()" style="background-color: #ccc; color: black; border: none; padding: 10px 24px; border-radius: 6px; margin: 5px;">
-      İptal
-    </button>
-  </div>
-</div>
-
-  </div>
-</div>
-
-
-
-
-<button class="rezervasyon-floating" onclick="window.location.href='rezervasyon.html'" title="Rezervasyon">
-  <img src="rezervasyon.svg" alt="Rezervasyon" />
-</button>
-
-
-
-
-
-
-
 </body>
 </html>
