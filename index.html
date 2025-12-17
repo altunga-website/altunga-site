@@ -72,6 +72,7 @@
       background-attachment: fixed;
       min-height: 100vh;
       transition: background-color 0.3s, color 0.3s;
+      overflow-x: hidden;
     }
 
     /* --- HEADER --- */
@@ -158,7 +159,7 @@
         color: #000;
     }
 
-    /* --- SLIDER --- */
+    /* --- SLIDER (GÜNCELLENDİ: DRAGGABLE) --- */
     .slider-title {
       padding-left: 20px;
       font-size: 1.1rem;
@@ -176,20 +177,19 @@
       overflow: hidden; 
       padding-bottom: 20px;
       position: relative;
+      cursor: grab; /* Tutulabilir imleci */
+    }
+    
+    .popular-slider-container:active {
+      cursor: grabbing; /* Tutarken ki imleç */
     }
 
     .popular-slider-track {
       display: flex;
       gap: 15px;
       width: max-content;
-      animation: smoothScroll 40s linear infinite; 
-    }
-    
-    .popular-slider-track:hover { animation-play-state: paused; }
-
-    @keyframes smoothScroll {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); } 
+      /* CSS Animasyonunu kaldırdık, JS ile yapacağız */
+      will-change: transform; /* Performans için */
     }
 
     .slider-item {
@@ -207,6 +207,9 @@
       flex-shrink: 0; 
       overflow: hidden;
       position: relative;
+      /* Seçilmeyi engelle */
+      user-select: none;
+      -webkit-user-drag: none;
     }
 
     .slider-item img {
@@ -215,6 +218,7 @@
       object-fit: cover;
       border-radius: var(--radius);
       display: block;
+      pointer-events: none; /* Resmin sürüklenmesini engelle */
     }
     
     /* --- MENÜ GRID --- */
@@ -339,7 +343,7 @@
 
     /* --- LIGHT MODE POPUP/MENÜ DÜZELTMELERİ --- */
     body.light-mode .accordion-button {
-        background: #f8fafc; /* Koyu gri yerine açık gri */
+        background: #f8fafc;
         border: 1px solid #e2e8f0;
         color: #1e293b;
     }
@@ -349,12 +353,12 @@
         color: var(--primary);
     }
     body.light-mode .accordion-content {
-        background: #f1f5f9; /* Koyu saydam yerine açık gri zemin */
+        background: #f1f5f9;
         border: 1px solid #e2e8f0;
         border-top: none;
     }
     body.light-mode .menu-item-button {
-        background: #ffffff; /* Beyaz kutucuk */
+        background: #ffffff;
         border: 1px solid #cbd5e1;
         color: #1e293b;
         box-shadow: 0 1px 2px rgba(0,0,0,0.05);
@@ -378,10 +382,9 @@
       box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
       cursor: pointer;
       display: flex; align-items: center; gap: 8px;
-      position: relative; /* Badge konumlandırması için */
+      position: relative; 
     }
 
-    /* GÜNCELLENMİŞ BADGE STİLİ */
     .cart-badge { 
       background: #ffd700; /* Sarı Renk */
       color: #000; /* Siyah Yazı */
@@ -392,10 +395,10 @@
       line-height: 20px; 
       text-align: center; 
       font-size: 11px;
-      position: absolute; /* Askıda durması için */
-      top: -8px; /* Yukarı as */
-      right: -5px; /* Sağa as */
-      border: 2px solid #fff; /* Ayrıştırıcı beyaz çerçeve */
+      position: absolute; 
+      top: -8px; 
+      right: -5px; 
+      border: 2px solid #fff;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
@@ -438,7 +441,6 @@
       padding: 10px; margin-bottom: 6px; border-radius: 8px;
       display: flex; justify-content: space-between; align-items: center;
     }
-    /* Light Mode Sepet İçi Liste */
     body.light-mode #cart-list li {
         background: #f1f5f9;
         color: #1e293b;
@@ -544,7 +546,7 @@
 
   <h2 class="slider-title" id="sliderTitle">Popüler Ürünler</h2>
   
-  <div class="popular-slider-container">
+  <div class="popular-slider-container" id="sliderContainer">
     <div class="popular-slider-track" id="sliderTrack">
       <div class="slider-item" data-name="Magnum Classic" data-price="80">
         <img src="populer/magnumclassicpopuler.png" alt="Ürün">
@@ -1606,22 +1608,126 @@ async function siparisVer() {
   }
 }
 
-// SLIDER LOGIC - Sonsuz Döngü İçin Kopyalama
-document.addEventListener("DOMContentLoaded", function() {
+// SLIDER LOGIC (DRAGGABLE + INFINITE LOOP)
+function initSlider() {
     const track = document.getElementById('sliderTrack');
-    // İçeriği kopyala
-    track.innerHTML += track.innerHTML;
+    const container = document.getElementById('sliderContainer');
+    
+    // Sonsuz döngü için içeriği kopyala
+    const originalContent = track.innerHTML;
+    track.innerHTML += originalContent;
 
-    // Slider tıklama olaylarını yeniden ata (kopyalananlar dahil)
+    // Slider değişkenleri
+    let isDragging = false;
+    let startPos = 0;
+    let currentTranslate = 0;
+    let prevTranslate = 0;
+    let animationID;
+    let sliderWidth = 0;
+    let itemWidth = 0; 
+    let autoScrollSpeed = 0.5; // Otomatik kayma hızı
+
+    // Slider tıklama olaylarını (Kopyalananlar dahil) yeniden ata
     const sliderItems = document.querySelectorAll('.slider-item');
     sliderItems.forEach(item => {
-      item.addEventListener('click', function() {
+      item.addEventListener('click', function(e) {
+        // Eğer sürükleme yapılıyorsa tıklamayı engelle
+        if (isDragging) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
         const productName = item.getAttribute('data-name');
         const productPrice = parseFloat(item.getAttribute('data-price'));
         sepeteEkle(productName, productPrice);
         customAlert(translations[currentLang].added + ": " + productName);
       });
     });
+
+    // Boyutları hesapla
+    function updateDimensions() {
+        sliderWidth = track.scrollWidth / 2; // Yarısı (orijinal genişlik)
+    }
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+
+    // Olay Dinleyicileri (Mouse ve Touch)
+    container.addEventListener('touchstart', touchStart);
+    container.addEventListener('touchend', touchEnd);
+    container.addEventListener('touchmove', touchMove);
+
+    container.addEventListener('mousedown', touchStart);
+    container.addEventListener('mouseup', touchEnd);
+    container.addEventListener('mouseleave', () => { if(isDragging) touchEnd() });
+    container.addEventListener('mousemove', touchMove);
+
+    // Animasyonu Başlat
+    requestAnimationFrame(animationLoop);
+
+    function touchStart(event) {
+        // Otomatik kaydırmayı durdurma (isteğe bağlı, şu an devam ediyor ama elle kontrol başlıyor)
+        isDragging = true;
+        startPos = getPositionX(event);
+        animationID = requestAnimationFrame(animationLoop);
+        container.style.cursor = 'grabbing';
+    }
+
+    function touchEnd() {
+        isDragging = false;
+        // Kaydırma bitince nerede kaldığını hatırla
+        prevTranslate = currentTranslate;
+        container.style.cursor = 'grab';
+        
+        // Yanlışlıkla tıklamayı engellemek için kısa bir timeout
+        setTimeout(() => { isDragging = false; }, 50); 
+    }
+
+    function touchMove(event) {
+        if (isDragging) {
+            const currentPosition = getPositionX(event);
+            const diff = currentPosition - startPos;
+            currentTranslate = prevTranslate + diff;
+            
+            // Sürükleme varsa bir flag koyalım ki click event'i çalışmasın
+            if (Math.abs(diff) > 5) {
+                isDragging = true; 
+            }
+        }
+    }
+
+    function getPositionX(event) {
+        return event.type.includes('mouse') ? event.pageX : event.touches[0].clientX;
+    }
+
+    function animationLoop() {
+        // Eğer sürüklemiyorsak otomatik kaydır
+        if (!isDragging) {
+            currentTranslate -= autoScrollSpeed;
+        }
+
+        // Sonsuz döngü mantığı
+        // Eğer çok sola gittiysek (yarısını geçtiysek), başa sar (0'a yakın bir yere değil, tam döngü noktasına)
+        if (currentTranslate <= -sliderWidth) {
+            currentTranslate = 0;
+            prevTranslate = 0;
+        }
+        // Eğer çok sağa gittiysek (başlangıcı geçtiysek), sona sar
+        if (currentTranslate > 0) {
+            currentTranslate = -sliderWidth;
+            prevTranslate = -sliderWidth;
+        }
+
+        // Transformu uygula
+        track.style.transform = `translateX(${currentTranslate}px)`;
+        
+        // Bir sonraki frame
+        requestAnimationFrame(animationLoop);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    initSlider();
+    setMasaOda();
 });
 
 let secilenTip = "";
@@ -1701,10 +1807,6 @@ function setMasaOda() {
       document.getElementById('popupOda').value = storedOda;
   }
 }
-
-document.addEventListener("DOMContentLoaded", function() {
-  setMasaOda();
-});
 
 // Timer reset
 let timeout;
