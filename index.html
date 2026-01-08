@@ -138,13 +138,12 @@
     .category-card img { width: 55px; height: 55px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
     .category-card h3 { margin: 0; font-size: 0.95rem; font-weight: 600; color: var(--text-main); text-align: center; }
 
-    /* --- MODAL (GÜNCELLENDİ: ORTALI) --- */
+    /* --- MODAL (ORTALI POPUP) --- */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
       z-index: 6000;
       display: none; 
-      /* Ortaya Hizalama */
       align-items: center; 
       justify-content: center;
     }
@@ -152,11 +151,10 @@
     .modal-content {
       background: var(--bg-card); 
       width: 90%; 
-      max-width: 450px; /* Genişlik sınırı */
-      max-height: 80vh; /* Yükseklik sınırı */
-      border-radius: 24px; /* Tüm köşeler yuvarlak */
+      max-width: 450px; 
+      max-height: 80vh; 
+      border-radius: 24px;
       display: flex; flex-direction: column;
-      /* Animasyon: Popup */
       animation: modalPop 0.3s ease-out; 
       box-shadow: 0 20px 50px rgba(0,0,0,0.4);
     }
@@ -247,7 +245,7 @@
     }
     @keyframes popIn { from{transform: scale(0);} to{transform: scale(1);} }
 
-    /* --- SEPET DRAWER (Z-Index: 99999) --- */
+    /* --- SEPET DRAWER (Z-INDEX: EN ÜST) --- */
     .cart-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.5); z-index: 99998; display: none;
@@ -278,14 +276,9 @@
     .cart-footer { border-top: 1px solid var(--border); padding-top: 15px; }
     .total-row { display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; color: var(--text-main); }
     
-    /* INPUT DÜZENLEMESİ */
-    .input-row { 
-        display: flex; gap: 10px; margin-bottom: 10px; 
-        flex-wrap: wrap; 
-    }
+    .input-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
     .cart-input { 
-      flex: 1 1 45%; 
-      padding: 12px; border: 1px solid var(--border); 
+      flex: 1 1 45%; padding: 12px; border: 1px solid var(--border); 
       border-radius: 12px; background: var(--bg-body); color: var(--text-main);
       font-family: inherit; font-size: 16px;
     }
@@ -387,12 +380,12 @@
         <button class="close-btn" onclick="closeZil()">×</button>
       </div>
       <div class="modal-body" style="display:grid; gap:10px; padding-top:20px;">
-        <button onclick="callType('Bilişim')" class="order-btn" style="background:var(--primary)">💻 Bilişim / Teknik</button>
-        <button onclick="callType('Sipariş')" class="order-btn" style="background:var(--accent)">🧾 Sipariş / Hesap</button>
+        <button onclick="callType('Bilişim')" class="order-btn" style="background:var(--primary)">💻 <span id="lblTech">Bilişim / Teknik</span></button>
+        <button onclick="callType('Sipariş')" class="order-btn" style="background:var(--accent)">🧾 <span id="lblOrderBill">Sipariş / Hesap</span></button>
         
         <div id="zilInputDiv" style="display:none; margin-top:10px;">
-          <input type="text" id="zilMasa" class="cart-input" placeholder="Masa Numaranız" style="width:100%; margin-bottom:10px;">
-          <button class="order-btn" style="background:var(--danger)" onclick="confirmCall()">Çağrı Gönder</button>
+          <input type="text" id="zilMasa" class="cart-input" placeholder="Masa No" style="width:100%; margin-bottom:10px;">
+          <button class="order-btn" style="background:var(--danger)" onclick="confirmCall()" id="btnSendCall">Çağrı Gönder</button>
         </div>
       </div>
     </div>
@@ -416,8 +409,10 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // --- DİL & STATE ---
-    const translations = {
+    // --- SÖZLÜKLER ---
+    let curLang = 'tr';
+    
+    const uiTranslations = {
       tr: {
         brand: "Altunga E Spor Merkezi",
         popular: "🔥 Popüler Ürünler",
@@ -433,6 +428,9 @@
         added: "Sepete Eklendi!",
         sent: "Sipariş Alındı!",
         callSent: "Görevli Geliyor!",
+        tech: "Bilişim / Teknik",
+        acc: "Sipariş / Hesap",
+        sendCall: "Çağrı Gönder",
         reqMasa: "Lütfen Masa veya Oda giriniz."
       },
       en: {
@@ -450,15 +448,44 @@
         added: "Added to Cart!",
         sent: "Order Received!",
         callSent: "Staff is coming!",
+        tech: "IT / Support",
+        acc: "Order / Bill",
+        sendCall: "Send Call",
         reqMasa: "Please enter Table or Room."
       }
     };
 
-    let curLang = 'tr';
-    let menuData = {};
-    let cart = [];
-    let callCategory = "";
+    // Kategori ve Grup İsimleri için Sözlük
+    const vocab = {
+      "İçecekler": { tr: "İçecekler", en: "Drinks" },
+      "Atıştırmalık": { tr: "Atıştırmalık", en: "Snacks" },
+      "Şekerleme": { tr: "Şekerleme", en: "Candy" },
+      "Fast Food": { tr: "Fast Food", en: "Fast Food" },
+      "Dondurma": { tr: "Dondurma", en: "Ice Cream" },
+      "Döner": { tr: "Döner", en: "Doner" },
+      "Tost": { tr: "Tost", en: "Toast" },
+      
+      // Alt Gruplar
+      "Su": { tr: "Su", en: "Water" },
+      "Gazlı İçecekler": { tr: "Gazlı İçecekler", en: "Fizzy Drinks" },
+      "Maden Suyu": { tr: "Maden Suyu", en: "Mineral Water" },
+      "Enerji İçeceği": { tr: "Enerji İçeceği", en: "Energy Drink" },
+      "Soğuk Çay": { tr: "Soğuk Çay", en: "Ice Tea" },
+      "Soğuk Kahve": { tr: "Soğuk Kahve", en: "Iced Coffee" },
+      "Meyve Suyu": { tr: "Meyve Suyu", en: "Fruit Juice" },
+      "Cips": { tr: "Cips", en: "Chips" },
+      "Bisküvi": { tr: "Bisküvi", en: "Biscuit" },
+      "Gofret & Çikolata": { tr: "Gofret & Çikolata", en: "Wafer & Chocolate" },
+      "Kek": { tr: "Kek", en: "Cake" },
+      "Kraker": { tr: "Kraker", en: "Cracker" },
+      "Patso": { tr: "Patso", en: "Patso" },
+      "Tavuk Döner": { tr: "Tavuk Döner", en: "Chicken Doner" },
+      "Et Döner": { tr: "Et Döner", en: "Meat Doner" },
+      // Varsayılan
+      "Diğer": { tr: "Diğer", en: "Other" }
+    };
 
+    // Görsel Eşleştirmesi (Veritabanındaki orijinal Türkçe isme göre)
     const catImages = {
       "İçecekler": "icecekler.png",
       "Atıştırmalık": "cips.png",
@@ -469,15 +496,30 @@
       "Tost": "tost.png"
     };
 
+    let menuData = {};
+    let cart = [];
+    let callCategory = "";
+
     document.addEventListener("DOMContentLoaded", () => {
       fetchMenu();
       checkParams();
       setupSlider();
     });
 
+    // --- YARDIMCI: ÇEVİRİ FONKSİYONU ---
+    function getTrans(key) {
+      if (vocab[key] && vocab[key][curLang]) {
+        return vocab[key][curLang];
+      }
+      return key; // Bulamazsa olduğu gibi döndür
+    }
+
     // --- SLIDER ---
     function setupSlider() {
       const track = document.getElementById("sliderTrack");
+      // İsimleri sözlükten de geçirebiliriz ama burada basit tutuyoruz
+      // Gerçekten dinamik olması için "product_tr" "product_en" lazım
+      // Şimdilik statik
       const items = [
         {name: "Magnum Classic", price: 80, img: "populer/magnumclassicpopuler.png"},
         {name: "Red Bull", price: 80, img: "populer/rebullpink.png"},
@@ -502,7 +544,7 @@
       track.innerHTML = html;
     }
 
-    // --- MENÜ ÇEKME ---
+    // --- MENÜ ÇEKME & İŞLEME ---
     async function fetchMenu() {
       try {
         const snapshot = await db.collection("menu_items").get();
@@ -510,13 +552,17 @@
         
         snapshot.forEach(doc => {
           const d = doc.data();
-          const catName = d.category.trim(); 
-          if(!menuData[catName]) menuData[catName] = { title: catName, groups: {} };
+          // Veritabanındaki kategori ismi (örn: "İçecekler")
+          const rawCat = d.category.trim(); 
           
-          const grp = d.group || "Diğer";
-          if(!menuData[catName].groups[grp]) menuData[catName].groups[grp] = [];
+          if(!menuData[rawCat]) {
+            menuData[rawCat] = { title: rawCat, groups: {} };
+          }
           
-          menuData[catName].groups[grp].push({
+          const rawGrp = d.group || "Diğer";
+          if(!menuData[rawCat].groups[rawGrp]) menuData[rawCat].groups[rawGrp] = [];
+          
+          menuData[rawCat].groups[rawGrp].push({
             name: d.name_tr,
             price: d.price,
             img: d.image
@@ -528,38 +574,45 @@
       } catch (e) { console.error(e); }
     }
 
+    // --- RENDER GRID (DİL DESTEKLİ) ---
     function renderGrid() {
       const grid = document.getElementById("menuGrid");
       grid.innerHTML = "";
       
-      Object.keys(menuData).forEach(catName => {
-        const cat = menuData[catName];
-        const imgPath = catImages[catName] || 'logo.png';
+      Object.keys(menuData).forEach(rawCat => {
+        const cat = menuData[rawCat];
+        const imgPath = catImages[rawCat] || 'logo.png';
+        
+        // Çeviriye bak
+        const displayTitle = getTrans(rawCat);
+
         const div = document.createElement("div");
         div.className = "category-card";
-        div.onclick = () => openCategory(catName);
+        div.onclick = () => openCategory(rawCat); // Orijinal anahtarı kullan
         div.innerHTML = `
           <img src="${imgPath}" onerror="this.src='logo.png'">
-          <h3>${cat.title}</h3>
+          <h3>${displayTitle}</h3>
         `;
         grid.appendChild(div);
       });
     }
 
-    // --- KATEGORİ MODAL ---
-    function openCategory(catName) {
-      const cat = menuData[catName];
-      document.getElementById("modalCatTitle").innerText = cat.title;
+    // --- KATEGORİ MODAL (DİL DESTEKLİ) ---
+    function openCategory(rawCat) {
+      const cat = menuData[rawCat];
+      // Başlığı çevir
+      document.getElementById("modalCatTitle").innerText = getTrans(cat.title);
       const list = document.getElementById("productList");
       list.innerHTML = "";
 
-      Object.keys(cat.groups).forEach((grpName) => {
+      Object.keys(cat.groups).forEach((rawGrp) => {
         const groupDiv = document.createElement("div");
         groupDiv.className = "accordion-group";
 
         const header = document.createElement("div");
         header.className = "accordion-header";
-        header.innerHTML = `${grpName}`;
+        // Grup ismini çevir
+        header.innerHTML = getTrans(rawGrp);
         header.onclick = function() {
             this.classList.toggle("active");
             const content = this.nextElementSibling;
@@ -569,7 +622,7 @@
         const content = document.createElement("div");
         content.className = "accordion-content";
 
-        cat.groups[grpName].forEach(p => {
+        cat.groups[rawGrp].forEach(p => {
           const row = document.createElement("div");
           row.className = "product-row";
           row.onclick = () => addToCart(p.name, p.price);
@@ -603,7 +656,7 @@
       else cart.push({name, price, qty:1});
       
       updateCartBadge();
-      showAlert(translations[curLang].added);
+      showAlert(uiTranslations[curLang].added);
     }
 
     function updateCartBadge() {
@@ -667,19 +720,14 @@
       document.getElementById("cartTotalValue").innerText = "₺" + total;
     }
 
-    // --- ADET GÜNCELLEME ---
     function changeQty(index, delta) {
         if (!cart[index]) return;
-
         cart[index].qty += delta;
-        if (cart[index].qty <= 0) {
-            cart.splice(index, 1);
-        }
+        if (cart[index].qty <= 0) cart.splice(index, 1);
         updateCartBadge();
         renderCartItems();
     }
 
-    // --- SEPETİ TEMİZLE ---
     function clearCart() {
       cart = [];
       updateCartBadge();
@@ -692,7 +740,7 @@
       const oda = document.getElementById("odaInput").value;
       
       if(!masa && !oda) {
-        showAlert(translations[curLang].reqMasa);
+        showAlert(uiTranslations[curLang].reqMasa);
         return;
       }
 
@@ -707,14 +755,12 @@
           tarih: new Date()
         });
         
-        showAlert(translations[curLang].sent);
+        showAlert(uiTranslations[curLang].sent);
         cart = [];
         updateCartBadge();
         closeCart();
-        
         localStorage.setItem("masa", masa);
         localStorage.setItem("oda", oda);
-
       } catch(e) { console.error(e); }
     }
 
@@ -733,14 +779,14 @@
 
     function confirmCall() {
       const masa = document.getElementById("zilMasa").value;
-      if(!masa) { showAlert(translations[curLang].reqMasa); return; }
+      if(!masa) { showAlert(uiTranslations[curLang].reqMasa); return; }
       
       db.collection("cagrilar").add({
         tip: callCategory,
         masa: masa,
         zaman: new Date()
       }).then(() => {
-        showAlert(translations[curLang].callSent);
+        showAlert(uiTranslations[curLang].callSent);
         closeZil();
         document.getElementById("dingSound").play().catch(()=>{});
       });
@@ -763,7 +809,6 @@
       if(p.get("oda")) {
         document.getElementById("odaInput").value = p.get("oda");
       }
-      
       const lm = localStorage.getItem("masa");
       if(lm) {
          const mInput = document.getElementById("masaInput");
@@ -777,9 +822,12 @@
       document.getElementById("themeIcon").innerText = isDark ? "☀️" : "🌙";
     }
 
+    // --- DİL DEĞİŞTİRME FONKSİYONU ---
     function changeLanguage(lang) {
       curLang = lang;
-      const t = translations[lang];
+      const t = uiTranslations[lang];
+
+      // Statik Alanları Güncelle
       document.getElementById("brandName").innerText = t.brand;
       document.getElementById("lblPopular").innerText = t.popular;
       document.getElementById("lblCart").innerText = t.cart;
@@ -791,6 +839,14 @@
       document.getElementById("lblCallStaff").innerText = t.call;
       document.getElementById("masaInput").placeholder = t.masaPh;
       document.getElementById("odaInput").placeholder = t.odaPh;
+      document.getElementById("lblTech").innerText = t.tech;
+      document.getElementById("lblOrderBill").innerText = t.acc;
+      document.getElementById("btnSendCall").innerText = t.sendCall;
+      document.getElementById("zilMasa").placeholder = t.masaPh;
+
+      // Dinamik İçeriği Yeniden Çiz (Önemli Kısım)
+      renderGrid(); 
+      setupSlider(); // Slider'da statik yazı varsa o da güncellenir
     }
   </script>
 </body>
