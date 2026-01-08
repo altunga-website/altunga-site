@@ -160,7 +160,8 @@
   </header>
 
   <h2 class="slider-title" id="lblPopular">🔥 Popüler Ürünler</h2>
-  <div class="slider-container" id="sliderTrack"></div>
+  <div class="slider-container" id="sliderTrack">
+    </div>
 
   <div id="loader">Menü Yükleniyor...</div>
   <div class="menu-grid" id="menuGrid"></div>
@@ -235,14 +236,13 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // --- SÖZLÜK (Translate) ---
+    // --- SÖZLÜK ---
     let curLang = 'tr';
     const uiTranslations = {
       tr: { brand: "Altunga E Spor Merkezi", popular: "🔥 Popüler Ürünler", cart: "Sepet", myCart: "Sepetim", empty: "Sepetiniz boş", total: "Toplam", order: "Sipariş Ver", clear: "Sepeti Temizle", call: "Görevli Çağır", masaPh: "Masa No", odaPh: "Oda No", added: "Sepete Eklendi!", sent: "Sipariş Alındı!", callSent: "Görevli Geliyor!", tech: "Bilişim / Teknik", acc: "Sipariş / Hesap", sendCall: "Çağrı Gönder", reqMasa: "Lütfen Masa veya Oda giriniz." },
       en: { brand: "Altunga E Sport Center", popular: "🔥 Popular Items", cart: "Cart", myCart: "My Cart", empty: "Cart is empty", total: "Total", order: "Place Order", clear: "Clear Cart", call: "Call Staff", masaPh: "Table No", odaPh: "Room No", added: "Added to Cart!", sent: "Order Received!", callSent: "Staff is coming!", tech: "IT / Support", acc: "Order / Bill", sendCall: "Send Call", reqMasa: "Please enter Table or Room." }
     };
 
-    // Kategori ve Grup Başlıkları Sözlüğü
     const vocab = {
       "İçecekler": { tr: "İçecekler", en: "Drinks" },
       "Atıştırmalık": { tr: "Atıştırmalık", en: "Snacks" },
@@ -282,13 +282,22 @@
     let cart = [];
     let callCategory = "";
 
+    // POPÜLER ÜRÜN İSİMLERİ (Buraya Tam Olarak TR İsimlerini Yazmalısın)
+    const popularItemNames = [
+        "Magnum Classic", 
+        "Red Bull 250ml.", // Tam isim önemli
+        "Patso Menü", 
+        "Doritos Tako Mega", 
+        "Nescafe Xpress L. Original 250ml.", 
+        "Nogger Sandwich"
+    ];
+
     document.addEventListener("DOMContentLoaded", () => {
       fetchMenu();
       checkParams();
-      setupSlider();
     });
 
-    // --- YARDIMCI FONKSİYONLAR ---
+    // --- YARDIMCI ---
     function getTrans(key) {
       if (!key) return "";
       const k = key.trim();
@@ -301,29 +310,39 @@
         return item.name_tr;
     }
 
+    function findProductInMenu(name) {
+        for(let cat in menuData) {
+            for(let grp in menuData[cat].groups) {
+                const found = menuData[cat].groups[grp].find(i => i.name_tr === name);
+                if(found) return found;
+            }
+        }
+        return null;
+    }
+
+    // --- SLIDER (DİNAMİK FİYATLI) ---
     function setupSlider() {
       const track = document.getElementById("sliderTrack");
-      // Slider Statik Örnek (Ürünlerin hem TR hem EN isimlerini burada manuel tanımlıyoruz örnek için)
-      const items = [
-        {name_tr: "Magnum Classic", name_en: "Magnum Classic", price: 80, img: "populer/magnumclassicpopuler.png"},
-        {name_tr: "Red Bull", name_en: "Red Bull", price: 80, img: "populer/rebullpink.png"},
-        {name_tr: "Patso Menü", name_en: "Patso Menu", price: 80, img: "populer/patsomenu.png"},
-        {name_tr: "Doritos Taco", name_en: "Doritos Taco", price: 100, img: "populer/doritostaco.png"},
-        {name_tr: "Nescafe Xpress", name_en: "Nescafe Xpress", price: 80, img: "populer/nescafex.png"},
-        {name_tr: "Nogger", name_en: "Nogger", price: 70, img: "populer/nogger.png"}
-      ];
-
       let html = "";
-      items.forEach(p => {
-        // Obje olarak sakla ki dile göre değişsin
-        // Ama slider items'ı array'de tutmadığımız için basitlik adına onclick'e ID veya obje yollamalıyız
-        // Burada basitçe o anki dilde render ediyoruz
-        const name = curLang === 'en' ? p.name_en : p.name_tr;
-        html += `
-          <div class="slider-item" onclick='addToCartObj(${JSON.stringify(p)})'>
-            <img src="${p.img}" onerror="this.src='logo.png'">
-            <div class="slider-info"><div>${name}</div><span>₺${p.price}</span></div>
-          </div>`;
+      
+      popularItemNames.forEach(name => {
+          const product = findProductInMenu(name);
+          if(product) {
+              const displayName = getProductDisplayName(product);
+              // Objeyi stringify ederken quote escape yapmak gerekir, 
+              // en temizi click handler'a ID veya referans vermek ama burada 
+              // basitçe objeyi atıyoruz (çift tırnak kaçışına dikkat)
+              const safeProduct = JSON.stringify(product).replace(/"/g, '&quot;');
+              
+              html += `
+                <div class="slider-item" onclick="addToCartObj(${safeProduct})">
+                    <img src="${product.img}" onerror="this.src='logo.png'">
+                    <div class="slider-info">
+                        <div>${displayName}</div>
+                        <span>₺${product.price}</span>
+                    </div>
+                </div>`;
+          }
       });
       track.innerHTML = html;
     }
@@ -345,13 +364,14 @@
           menuData[rawCat].groups[rawGrp].push({
             id: doc.id,
             name_tr: d.name_tr,
-            name_en: d.name_en || d.name_tr, // Fallback
+            name_en: d.name_en || d.name_tr,
             price: d.price,
             img: d.image
           });
         });
 
         renderGrid();
+        setupSlider(); // Veri geldikten sonra slider'ı kur
         document.getElementById("loader").style.display = "none";
       } catch (e) { console.error(e); }
     }
@@ -399,12 +419,14 @@
           const displayName = getProductDisplayName(p);
           const row = document.createElement("div");
           row.className = "product-row";
-          // Objeyi stringify edip gönderiyoruz ki tüm veriye erişebilelim
-          row.onclick = () => addToCartObj(p);
+          // Objeyi gönderiyoruz
+          const safeP = JSON.stringify(p).replace(/"/g, '&quot;');
           row.innerHTML = `
-            <img src="${p.img || 'logo.png'}" onerror="this.src='logo.png'">
-            <div class="p-info"><span class="p-name">${displayName}</span><span class="p-price">₺${p.price}</span></div>
-            <div class="add-btn">+</div>
+            <div style="display:flex; align-items:center; gap:15px; flex:1;" onclick="addToCartObj(${safeP})">
+                <img src="${p.img || 'logo.png'}" onerror="this.src='logo.png'">
+                <div class="p-info"><span class="p-name">${displayName}</span><span class="p-price">₺${p.price}</span></div>
+                <div class="add-btn">+</div>
+            </div>
           `;
           content.appendChild(row);
         });
@@ -419,10 +441,9 @@
 
     function closeProductModal() { document.getElementById("productModal").style.display = "none"; }
 
-    // --- SEPET İŞLEMLERİ (FULL OBJE SAKLAMA) ---
+    // --- SEPET İŞLEMLERİ ---
     function addToCartObj(product) {
-      // Sepette ID veya name_tr ile kontrol edelim (Benzersizlik için)
-      // product.name_tr benzersiz varsayıyoruz
+      // Sepette name_tr ile kontrol edelim (Benzersiz ID yerine isim kullanıyorduk)
       const exist = cart.find(x => x.name_tr === product.name_tr);
       if(exist) {
         exist.qty++;
@@ -466,7 +487,6 @@
       let total = 0;
       cart.forEach((item, idx) => {
         total += item.price * item.qty;
-        // Dile göre isim seç
         const dName = curLang === 'en' ? item.name_en : item.name_tr;
         
         const div = document.createElement("div");
@@ -518,8 +538,6 @@
       if(!masa && !oda) { showAlert(uiTranslations[curLang].reqMasa); return; }
       const total = cart.reduce((a,b)=>a+(b.price*b.qty),0);
       try {
-        // Siparişi kaydederken o anki dildeki ismini değil, TR ismini (veya her ikisini) kaydetmek daha güvenlidir.
-        // Ama basitlik için olduğu gibi cart'ı atıyoruz.
         await db.collection("siparisler").add({
           masa, oda, urunler: cart, toplam: total, durum: "Beklemede", tarih: new Date()
         });
@@ -580,8 +598,7 @@
       // Dinamik içeriği yenile
       renderGrid(); 
       setupSlider();
-      renderCartItems(); // Sepet açıkken dil değişirse isimler güncellensin
-      // Eğer modal açıksa onu da güncellemek gerekebilir ama basitlik için kapatıyoruz
+      renderCartItems(); 
       closeProductModal(); 
     }
   </script>
