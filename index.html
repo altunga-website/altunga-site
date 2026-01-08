@@ -1821,7 +1821,57 @@ function resetTimer() {
 window.onload = resetTimer;
 document.onmousemove = resetTimer;
 document.ontouchstart = resetTimer;
+  // --- FİYAT GÜNCELLEME MODÜLÜ ---
+async function fiyatlariVeritabanindanCek() {
+  console.log("Fiyatlar güncelleniyor...");
+  
+  // 1. Veritabanından güncel fiyatları al
+  const snapshot = await db.collection("menu_items").get();
+  const guncelFiyatlar = {};
+  
+  // 2. İsim ve Fiyat eşleşmesi yap
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    // Ürün ismini anahtar, fiyatı değer olarak kaydet
+    guncelFiyatlar[data.name_tr] = data.price;
+  });
+
+  // 3. Mevcut menuData içindeki fiyatları güncelle
+  Object.keys(menuData).forEach(catKey => {
+    const cat = menuData[catKey];
+    if (cat.groups) {
+      cat.groups.forEach(group => {
+        // Alt gruplar varsa (örn: İçecekler -> Gazlı -> Cola)
+        if (group.subgroups) {
+          group.subgroups.forEach(sub => {
+            sub.items.forEach(item => {
+              if (guncelFiyatlar[item.name.tr]) {
+                item.price = guncelFiyatlar[item.name.tr];
+              }
+            });
+          });
+        } 
+        // Alt grup yoksa direkt ürünler varsa (örn: Su)
+        else if (group.items) {
+          group.items.forEach(item => {
+            if (guncelFiyatlar[item.name.tr]) {
+              item.price = guncelFiyatlar[item.name.tr];
+            }
+          });
+        }
+      });
+    }
+  });
+
+  console.log("✅ Fiyatlar başarıyla güncellendi!");
+}
+
+// Sayfa açıldığında bu işlemi başlat
+document.addEventListener("DOMContentLoaded", function() {
+    fiyatlariVeritabanindanCek();
+});
 
 </script>
+  
 </body>
 </html>
