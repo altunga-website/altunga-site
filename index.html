@@ -14,10 +14,10 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <style>
-    /* --- MODERN LIGHT THEME (DEFAULT) --- */
+    /* --- MODERN LIGHT THEME --- */
     :root {
       --bg-body: #f8fafc;
-      --bg-header: rgba(255, 255, 255, 0.90);
+      --bg-header: rgba(255, 255, 255, 0.95);
       --bg-card: #ffffff;
       --text-main: #1e293b;
       --text-muted: #64748b;
@@ -33,7 +33,7 @@
     /* DARK MODE */
     body.dark-mode {
       --bg-body: #0f172a;
-      --bg-header: rgba(15, 23, 42, 0.90);
+      --bg-header: rgba(15, 23, 42, 0.95);
       --bg-card: #1e293b;
       --text-main: #f1f5f9;
       --text-muted: #94a3b8;
@@ -52,259 +52,95 @@
       overflow-x: hidden;
     }
 
-    /* --- SABİT HEADER --- */
+    /* --- HEADER --- */
     header {
-      position: fixed; top: 0; left: 0; right: 0;
-      height: 70px;
-      background: var(--bg-header);
-      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      position: fixed; top: 0; left: 0; right: 0; height: 70px;
+      background: var(--bg-header); backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 20px;
-      z-index: 5000;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      padding: 0 20px; z-index: 5000; box-shadow: 0 4px 20px rgba(0,0,0,0.05);
     }
-
     .brand { display: flex; align-items: center; gap: 10px; }
     .brand img { height: 40px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
-    .brand h1 {
-      font-size: 1rem; font-weight: 700; margin: 0;
-      text-transform: uppercase; letter-spacing: 0.5px;
-      color: var(--text-main);
-    }
-
+    .brand h1 { font-size: 1rem; font-weight: 700; margin: 0; text-transform: uppercase; color: var(--text-main); }
     .controls { display: flex; align-items: center; gap: 10px; }
-    .lang-select {
-      background: var(--bg-card); color: var(--text-main);
-      border: 1px solid var(--border); border-radius: 8px;
-      padding: 5px 10px; font-size: 0.8rem; font-weight: 600; cursor: pointer;
-    }
-    .theme-btn {
-      background: transparent; border: none; font-size: 1.2rem; cursor: pointer;
-      width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
-      border-radius: 50%; transition: 0.2s;
-    }
+    .lang-select { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px; font-weight: 600; cursor: pointer; }
+    .theme-btn { background: transparent; border: none; font-size: 1.2rem; cursor: pointer; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
 
     /* --- SLIDER --- */
-    .slider-title {
-      padding: 0 20px; margin-top: 10px; margin-bottom: 15px;
-      font-size: 1.1rem; font-weight: 700; color: var(--text-main);
-      display: flex; align-items: center; gap: 10px;
-    }
+    .slider-title { padding: 0 20px; margin: 10px 0 15px; font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
     .slider-title::before { content:''; width: 4px; height: 20px; background: var(--accent); border-radius: 2px; }
-
-    .slider-container {
-      display: flex; overflow-x: auto; gap: 15px;
-      padding: 0 20px 20px 20px;
-      scroll-behavior: smooth; cursor: grab;
-      scrollbar-width: none;
-    }
+    .slider-container { display: flex; overflow-x: auto; gap: 15px; padding: 0 20px 20px; scrollbar-width: none; cursor: grab; }
     .slider-container::-webkit-scrollbar { display: none; }
-    .slider-container:active { cursor: grabbing; }
-
-    .slider-item {
-      min-width: 140px; height: 180px;
-      background: var(--bg-card); border-radius: var(--radius);
-      border: 1px solid var(--border);
-      position: relative; flex-shrink: 0; cursor: pointer;
-      overflow: hidden; box-shadow: var(--shadow);
-      transition: transform 0.2s;
-    }
+    .slider-item { min-width: 140px; height: 180px; background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border); position: relative; overflow: hidden; box-shadow: var(--shadow); transition: transform 0.2s; cursor: pointer; }
     .slider-item:active { transform: scale(0.95); }
     .slider-item img { width: 100%; height: 100%; object-fit: cover; }
-    .slider-info {
-      position: absolute; bottom: 0; left: 0; width: 100%;
-      background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-      padding: 30px 10px 10px; color: white;
-    }
-    .slider-info div { font-size: 0.85rem; font-weight: 600; line-height: 1.2; text-shadow: 0 1px 2px black; }
+    .slider-info { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding: 30px 10px 10px; color: white; }
+    .slider-info div { font-size: 0.85rem; font-weight: 600; text-shadow: 0 1px 2px black; }
     .slider-info span { font-size: 0.9rem; color: #fbbf24; font-weight: 700; text-shadow: 0 1px 2px black; }
 
     /* --- GRID --- */
-    .menu-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px;
-    }
+    .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; }
     @media (min-width: 600px) { .menu-grid { grid-template-columns: repeat(3, 1fr); } }
-
-    .category-card {
-      background: var(--bg-card); border-radius: var(--radius);
-      height: 130px; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 10px;
-      border: 1px solid var(--border); box-shadow: var(--shadow);
-      cursor: pointer; transition: transform 0.2s;
-      position: relative; overflow: hidden;
-    }
+    .category-card { background: var(--bg-card); border-radius: var(--radius); height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; border: 1px solid var(--border); box-shadow: var(--shadow); cursor: pointer; transition: transform 0.2s; position: relative; overflow: hidden; }
     .category-card:active { transform: scale(0.96); border-color: var(--primary); }
     .category-card img { width: 55px; height: 55px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
     .category-card h3 { margin: 0; font-size: 0.95rem; font-weight: 600; color: var(--text-main); text-align: center; }
 
-    /* --- MODAL (ORTALI POPUP) --- */
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
-      z-index: 6000;
-      display: none; 
-      align-items: center; 
-      justify-content: center;
-    }
-
-    .modal-content {
-      background: var(--bg-card); 
-      width: 90%; 
-      max-width: 450px; 
-      max-height: 80vh; 
-      border-radius: 24px;
-      display: flex; flex-direction: column;
-      animation: modalPop 0.3s ease-out; 
-      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-    }
-
-    @keyframes modalPop { 
-      from { opacity: 0; transform: scale(0.9); } 
-      to { opacity: 1; transform: scale(1); } 
-    }
-
-    .modal-header {
-      padding: 20px; border-bottom: 1px solid var(--border);
-      display: flex; justify-content: space-between; align-items: center;
-    }
+    /* --- MODAL (ORTALI) --- */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 6000; display: none; align-items: center; justify-content: center; }
+    .modal-content { background: var(--bg-card); width: 90%; max-width: 450px; max-height: 80vh; border-radius: 24px; display: flex; flex-direction: column; animation: modalPop 0.3s ease-out; box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+    @keyframes modalPop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    .modal-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
     .modal-header h2 { margin: 0; font-size: 1.2rem; color: var(--primary); }
     .close-btn { background: none; border: none; font-size: 28px; color: var(--text-muted); cursor: pointer; padding: 0 10px;}
-
-    .modal-body { 
-        padding: 0 20px 20px; overflow-y: auto; 
-        scrollbar-width: none;
-    }
+    .modal-body { padding: 0 20px 20px; overflow-y: auto; scrollbar-width: none; }
     .modal-body::-webkit-scrollbar { display: none; }
 
+    /* Akordiyon */
     .accordion-group { border-bottom: 1px solid var(--border); }
-    .accordion-header {
-        padding: 15px 0; cursor: pointer; display: flex; 
-        justify-content: space-between; align-items: center;
-        font-weight: 600; color: var(--text-main); font-size: 0.95rem;
-    }
+    .accordion-header { padding: 15px 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--text-main); font-size: 0.95rem; }
     .accordion-header::after { content: '❯'; font-size: 12px; transition: transform 0.3s; color: var(--text-muted); }
     .accordion-header.active::after { transform: rotate(90deg); color: var(--primary); }
-    
     .accordion-content { display: none; padding-bottom: 15px; animation: fadeIn 0.3s; }
     .accordion-content.show { display: block; }
     @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
 
-    .product-row {
-      display: flex; align-items: center; gap: 15px;
-      padding: 10px; border-radius: 12px; margin-bottom: 5px;
-      background: rgba(0,0,0,0.02);
-      cursor: pointer; transition: 0.2s;
-    }
+    .product-row { display: flex; align-items: center; gap: 15px; padding: 10px; border-radius: 12px; margin-bottom: 5px; background: rgba(0,0,0,0.02); cursor: pointer; transition: 0.2s; }
     .product-row:active { background: rgba(59, 130, 246, 0.1); }
-    .product-row img { 
-      width: 45px; height: 45px; object-fit: contain; 
-      background: var(--bg-card); border-radius: 8px; padding: 2px;
-      border: 1px solid var(--border);
-    }
+    .product-row img { width: 45px; height: 45px; object-fit: contain; background: var(--bg-card); border-radius: 8px; padding: 2px; border: 1px solid var(--border); }
     .p-info { flex: 1; }
     .p-name { font-weight: 500; display: block; color: var(--text-main); font-size: 0.9rem; }
     .p-price { color: var(--accent); font-weight: 700; font-size: 0.9rem; }
-    .add-btn {
-      width: 28px; height: 28px; border-radius: 50%;
-      background: var(--primary); color: white; border: none;
-      display: flex; align-items: center; justify-content: center; font-size: 18px;
-    }
+    .add-btn { width: 28px; height: 28px; border-radius: 50%; background: var(--primary); color: white; border: none; display: flex; align-items: center; justify-content: center; font-size: 18px; }
 
-    /* --- FLOATING & SEPET --- */
-    .fab-container {
-      position: fixed; bottom: 25px; left: 20px; right: 20px;
-      display: flex; justify-content: space-between; pointer-events: none; z-index: 9000;
-    }
-    
-    .fab-btn {
-      pointer-events: auto;
-      height: 55px; border-radius: 28px; border: none;
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      font-family: var(--font-main); font-weight: 600; font-size: 1rem;
-      cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-      transition: transform 0.2s;
-    }
-    .fab-btn:active { transform: scale(0.95); }
-
-    .btn-zil { width: 55px; background: var(--bg-card); color: var(--primary); border: 2px solid var(--primary); font-size: 1.5rem; }
-    .btn-sepet { 
-      background: linear-gradient(135deg, var(--primary), #2563eb); 
-      color: white; padding: 0 25px; min-width: 140px; position: relative;
-    }
-
-    .cart-badge {
-      position: absolute; top: -8px; right: 0;
-      background: #ef4444; color: white;
-      font-size: 0.75rem; font-weight: 700;
-      min-width: 22px; height: 22px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      border: 2px solid var(--bg-body);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    @keyframes popIn { from{transform: scale(0);} to{transform: scale(1);} }
-
-    /* --- SEPET DRAWER (Z-INDEX: EN ÜST) --- */
-    .cart-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5); z-index: 99998; display: none;
-    }
-    .cart-drawer {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: var(--bg-card); border-radius: 24px 24px 0 0;
-      padding: 25px; z-index: 99999;
-      transform: translateY(110%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-      box-shadow: 0 -10px 50px rgba(0,0,0,0.3);
-      max-height: 90vh; display: flex; flex-direction: column;
-    }
+    /* --- SEPET DRAWER (Z-Index: 99999) --- */
+    .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 99998; display: none; }
+    .cart-drawer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card); border-radius: 24px 24px 0 0; padding: 25px; z-index: 99999; transform: translateY(110%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 -10px 50px rgba(0,0,0,0.3); max-height: 90vh; display: flex; flex-direction: column; }
     .cart-drawer.open { transform: translateY(0); }
-
-    .cart-items-container { 
-        flex: 1; overflow-y: auto; margin-bottom: 15px; 
-        scrollbar-width: none;
-    }
+    .cart-items-container { flex: 1; overflow-y: auto; margin-bottom: 15px; scrollbar-width: none; }
     .cart-items-container::-webkit-scrollbar { display: none; }
-
-    .cart-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 12px 0; border-bottom: 1px solid var(--border);
-    }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
     .qty-control { display: flex; align-items: center; gap: 10px; background: var(--bg-body); padding: 5px 10px; border-radius: 10px; }
     .qty-btn { width: 30px; height: 30px; background: transparent; border: none; font-weight: 700; color: var(--text-main); cursor: pointer; font-size: 1.2rem; display:flex; align-items:center; justify-content:center;}
-
     .cart-footer { border-top: 1px solid var(--border); padding-top: 15px; }
     .total-row { display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; color: var(--text-main); }
-    
     .input-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-    .cart-input { 
-      flex: 1 1 45%; padding: 12px; border: 1px solid var(--border); 
-      border-radius: 12px; background: var(--bg-body); color: var(--text-main);
-      font-family: inherit; font-size: 16px;
-    }
+    .cart-input { flex: 1 1 45%; padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-body); color: var(--text-main); font-family: inherit; font-size: 16px; }
+    .order-btn { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+    .clear-btn { width: 100%; background: transparent; border: none; color: var(--danger); margin-top: 10px; cursor: pointer; padding: 10px; font-size: 0.9rem; }
 
-    .order-btn {
-      width: 100%; padding: 14px; background: var(--accent); color: white;
-      border: none; border-radius: 12px; font-weight: 700; font-size: 1rem;
-      cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-    }
-
-    .clear-btn {
-        width: 100%; background: transparent; border: none; 
-        color: var(--danger); margin-top: 10px; cursor: pointer;
-        padding: 10px; font-size: 0.9rem;
-    }
-
+    /* --- FLOATING & ALERTS --- */
+    .fab-container { position: fixed; bottom: 25px; left: 20px; right: 20px; display: flex; justify-content: space-between; pointer-events: none; z-index: 9000; }
+    .fab-btn { pointer-events: auto; height: 55px; border-radius: 28px; border: none; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-main); font-weight: 600; font-size: 1rem; cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.15); transition: transform 0.2s; }
+    .fab-btn:active { transform: scale(0.95); }
+    .btn-zil { width: 55px; background: var(--bg-card); color: var(--primary); border: 2px solid var(--primary); font-size: 1.5rem; }
+    .btn-sepet { background: linear-gradient(135deg, var(--primary), #2563eb); color: white; padding: 0 25px; min-width: 140px; position: relative; }
+    .cart-badge { position: absolute; top: -8px; right: 0; background: #ef4444; color: white; font-size: 0.75rem; font-weight: 700; min-width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--bg-body); box-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    @keyframes popIn { from{transform: scale(0);} to{transform: scale(1);} }
     #loader { text-align: center; margin-top: 50px; color: var(--text-muted); }
-    .alert-box {
-      position: fixed; top: 90px; left: 50%; transform: translateX(-50%);
-      background: #1e293b; color: white; padding: 12px 24px;
-      border-radius: 30px; font-size: 0.9rem; z-index: 110000;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      opacity: 0; transition: 0.3s; pointer-events: none;
-    }
+    .alert-box { position: fixed; top: 90px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 24px; border-radius: 30px; font-size: 0.9rem; z-index: 110000; box-shadow: 0 5px 15px rgba(0,0,0,0.3); opacity: 0; transition: 0.3s; pointer-events: none; }
     .alert-box.show { opacity: 1; transform: translateX(-50%) translateY(5px); }
-
   </style>
 </head>
 <body>
@@ -324,8 +160,7 @@
   </header>
 
   <h2 class="slider-title" id="lblPopular">🔥 Popüler Ürünler</h2>
-  <div class="slider-container" id="sliderTrack">
-    </div>
+  <div class="slider-container" id="sliderTrack"></div>
 
   <div id="loader">Menü Yükleniyor...</div>
   <div class="menu-grid" id="menuGrid"></div>
@@ -354,16 +189,11 @@
       <span id="lblMyCart">Sepetim</span>
       <button onclick="closeCart()" style="position:absolute; right:0; top:-5px; background:none; border:none; font-size:24px; color:var(--text-muted); cursor:pointer;">×</button>
     </div>
-    
     <div class="cart-items-container" id="cartItems">
       <div style="text-align:center; color:var(--text-muted); margin-top:30px;" id="emptyCartMsg">Sepet boş</div>
     </div>
-
     <div class="cart-footer" id="cartFooter" style="display:none;">
-      <div class="total-row">
-        <span id="lblTotal">Toplam</span>
-        <span id="cartTotalValue" style="color:var(--accent);">₺0</span>
-      </div>
+      <div class="total-row"><span id="lblTotal">Toplam</span><span id="cartTotalValue" style="color:var(--accent);">₺0</span></div>
       <div class="input-row">
         <input type="text" id="masaInput" class="cart-input" placeholder="Masa No">
         <input type="text" id="odaInput" class="cart-input" placeholder="Oda No">
@@ -375,14 +205,10 @@
 
   <div class="modal-overlay" id="zilModal" onclick="if(event.target === this) closeZil()">
     <div class="modal-content" style="height:auto; padding-bottom:30px;">
-      <div class="modal-header">
-        <h2 id="lblCallStaff">Görevli Çağır</h2>
-        <button class="close-btn" onclick="closeZil()">×</button>
-      </div>
+      <div class="modal-header"><h2 id="lblCallStaff">Görevli Çağır</h2><button class="close-btn" onclick="closeZil()">×</button></div>
       <div class="modal-body" style="display:grid; gap:10px; padding-top:20px;">
         <button onclick="callType('Bilişim')" class="order-btn" style="background:var(--primary)">💻 <span id="lblTech">Bilişim / Teknik</span></button>
         <button onclick="callType('Sipariş')" class="order-btn" style="background:var(--accent)">🧾 <span id="lblOrderBill">Sipariş / Hesap</span></button>
-        
         <div id="zilInputDiv" style="display:none; margin-top:10px;">
           <input type="text" id="zilMasa" class="cart-input" placeholder="Masa No" style="width:100%; margin-bottom:10px;">
           <button class="order-btn" style="background:var(--danger)" onclick="confirmCall()" id="btnSendCall">Çağrı Gönder</button>
@@ -409,53 +235,14 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // --- SÖZLÜKLER ---
+    // --- SÖZLÜK (Translate) ---
     let curLang = 'tr';
-    
     const uiTranslations = {
-      tr: {
-        brand: "Altunga E Spor Merkezi",
-        popular: "🔥 Popüler Ürünler",
-        cart: "Sepet",
-        myCart: "Sepetim",
-        empty: "Sepetiniz boş",
-        total: "Toplam",
-        order: "Sipariş Ver",
-        clear: "Sepeti Temizle",
-        call: "Görevli Çağır",
-        masaPh: "Masa No",
-        odaPh: "Oda No",
-        added: "Sepete Eklendi!",
-        sent: "Sipariş Alındı!",
-        callSent: "Görevli Geliyor!",
-        tech: "Bilişim / Teknik",
-        acc: "Sipariş / Hesap",
-        sendCall: "Çağrı Gönder",
-        reqMasa: "Lütfen Masa veya Oda giriniz."
-      },
-      en: {
-        brand: "Altunga E Sport Center",
-        popular: "🔥 Popular Items",
-        cart: "Cart",
-        myCart: "My Cart",
-        empty: "Cart is empty",
-        total: "Total",
-        order: "Place Order",
-        clear: "Clear Cart",
-        call: "Call Staff",
-        masaPh: "Table No",
-        odaPh: "Room No",
-        added: "Added to Cart!",
-        sent: "Order Received!",
-        callSent: "Staff is coming!",
-        tech: "IT / Support",
-        acc: "Order / Bill",
-        sendCall: "Send Call",
-        reqMasa: "Please enter Table or Room."
-      }
+      tr: { brand: "Altunga E Spor Merkezi", popular: "🔥 Popüler Ürünler", cart: "Sepet", myCart: "Sepetim", empty: "Sepetiniz boş", total: "Toplam", order: "Sipariş Ver", clear: "Sepeti Temizle", call: "Görevli Çağır", masaPh: "Masa No", odaPh: "Oda No", added: "Sepete Eklendi!", sent: "Sipariş Alındı!", callSent: "Görevli Geliyor!", tech: "Bilişim / Teknik", acc: "Sipariş / Hesap", sendCall: "Çağrı Gönder", reqMasa: "Lütfen Masa veya Oda giriniz." },
+      en: { brand: "Altunga E Sport Center", popular: "🔥 Popular Items", cart: "Cart", myCart: "My Cart", empty: "Cart is empty", total: "Total", order: "Place Order", clear: "Clear Cart", call: "Call Staff", masaPh: "Table No", odaPh: "Room No", added: "Added to Cart!", sent: "Order Received!", callSent: "Staff is coming!", tech: "IT / Support", acc: "Order / Bill", sendCall: "Send Call", reqMasa: "Please enter Table or Room." }
     };
 
-    // Kategori ve Grup İsimleri için Sözlük
+    // Kategori ve Grup Başlıkları Sözlüğü
     const vocab = {
       "İçecekler": { tr: "İçecekler", en: "Drinks" },
       "Atıştırmalık": { tr: "Atıştırmalık", en: "Snacks" },
@@ -464,8 +251,6 @@
       "Dondurma": { tr: "Dondurma", en: "Ice Cream" },
       "Döner": { tr: "Döner", en: "Doner" },
       "Tost": { tr: "Tost", en: "Toast" },
-      
-      // Alt Gruplar
       "Su": { tr: "Su", en: "Water" },
       "Gazlı İçecekler": { tr: "Gazlı İçecekler", en: "Fizzy Drinks" },
       "Maden Suyu": { tr: "Maden Suyu", en: "Mineral Water" },
@@ -481,20 +266,17 @@
       "Patso": { tr: "Patso", en: "Patso" },
       "Tavuk Döner": { tr: "Tavuk Döner", en: "Chicken Doner" },
       "Et Döner": { tr: "Et Döner", en: "Meat Doner" },
-      // Varsayılan
+      "Algida": { tr: "Algida", en: "Algida" },
+      "Cornetto": { tr: "Cornetto", en: "Cornetto" },
+      "Magnum": { tr: "Magnum", en: "Magnum" },
+      "Boom Boom": { tr: "Boom Boom", en: "Boom Boom" },
+      "Classics": { tr: "Classics", en: "Classics" },
+      "Stick": { tr: "Stick", en: "Stick" },
+      "Max": { tr: "Max", en: "Max" },
       "Diğer": { tr: "Diğer", en: "Other" }
     };
 
-    // Görsel Eşleştirmesi (Veritabanındaki orijinal Türkçe isme göre)
-    const catImages = {
-      "İçecekler": "icecekler.png",
-      "Atıştırmalık": "cips.png",
-      "Şekerleme": "jelibon.png",
-      "Fast Food": "patso.png",
-      "Dondurma": "dondurma.png",
-      "Döner": "doner.png",
-      "Tost": "tost.png"
-    };
+    const catImages = { "İçecekler": "icecekler.png", "Atıştırmalık": "cips.png", "Şekerleme": "jelibon.png", "Fast Food": "patso.png", "Dondurma": "dondurma.png", "Döner": "doner.png", "Tost": "tost.png" };
 
     let menuData = {};
     let cart = [];
@@ -506,45 +288,47 @@
       setupSlider();
     });
 
-    // --- YARDIMCI: ÇEVİRİ FONKSİYONU ---
+    // --- YARDIMCI FONKSİYONLAR ---
     function getTrans(key) {
-      if (vocab[key] && vocab[key][curLang]) {
-        return vocab[key][curLang];
-      }
-      return key; // Bulamazsa olduğu gibi döndür
+      if (!key) return "";
+      const k = key.trim();
+      if (vocab[k] && vocab[k][curLang]) return vocab[k][curLang];
+      return k;
     }
 
-    // --- SLIDER ---
+    function getProductDisplayName(item) {
+        if(curLang === 'en' && item.name_en) return item.name_en;
+        return item.name_tr;
+    }
+
     function setupSlider() {
       const track = document.getElementById("sliderTrack");
-      // İsimleri sözlükten de geçirebiliriz ama burada basit tutuyoruz
-      // Gerçekten dinamik olması için "product_tr" "product_en" lazım
-      // Şimdilik statik
+      // Slider Statik Örnek (Ürünlerin hem TR hem EN isimlerini burada manuel tanımlıyoruz örnek için)
       const items = [
-        {name: "Magnum Classic", price: 80, img: "populer/magnumclassicpopuler.png"},
-        {name: "Red Bull", price: 80, img: "populer/rebullpink.png"},
-        {name: "Patso Menü", price: 80, img: "populer/patsomenu.png"},
-        {name: "Doritos Taco", price: 100, img: "populer/doritostaco.png"},
-        {name: "Nescafe Xpress", price: 80, img: "populer/nescafex.png"},
-        {name: "Nogger", price: 70, img: "populer/nogger.png"}
+        {name_tr: "Magnum Classic", name_en: "Magnum Classic", price: 80, img: "populer/magnumclassicpopuler.png"},
+        {name_tr: "Red Bull", name_en: "Red Bull", price: 80, img: "populer/rebullpink.png"},
+        {name_tr: "Patso Menü", name_en: "Patso Menu", price: 80, img: "populer/patsomenu.png"},
+        {name_tr: "Doritos Taco", name_en: "Doritos Taco", price: 100, img: "populer/doritostaco.png"},
+        {name_tr: "Nescafe Xpress", name_en: "Nescafe Xpress", price: 80, img: "populer/nescafex.png"},
+        {name_tr: "Nogger", name_en: "Nogger", price: 70, img: "populer/nogger.png"}
       ];
 
       let html = "";
       items.forEach(p => {
+        // Obje olarak sakla ki dile göre değişsin
+        // Ama slider items'ı array'de tutmadığımız için basitlik adına onclick'e ID veya obje yollamalıyız
+        // Burada basitçe o anki dilde render ediyoruz
+        const name = curLang === 'en' ? p.name_en : p.name_tr;
         html += `
-          <div class="slider-item" onclick="addToCart('${p.name}', ${p.price})">
+          <div class="slider-item" onclick='addToCartObj(${JSON.stringify(p)})'>
             <img src="${p.img}" onerror="this.src='logo.png'">
-            <div class="slider-info">
-              <div>${p.name}</div>
-              <span>₺${p.price}</span>
-            </div>
-          </div>
-        `;
+            <div class="slider-info"><div>${name}</div><span>₺${p.price}</span></div>
+          </div>`;
       });
       track.innerHTML = html;
     }
 
-    // --- MENÜ ÇEKME & İŞLEME ---
+    // --- MENÜ ÇEKME ---
     async function fetchMenu() {
       try {
         const snapshot = await db.collection("menu_items").get();
@@ -552,18 +336,16 @@
         
         snapshot.forEach(doc => {
           const d = doc.data();
-          // Veritabanındaki kategori ismi (örn: "İçecekler")
           const rawCat = d.category.trim(); 
+          if(!menuData[rawCat]) menuData[rawCat] = { title: rawCat, groups: {} };
           
-          if(!menuData[rawCat]) {
-            menuData[rawCat] = { title: rawCat, groups: {} };
-          }
-          
-          const rawGrp = d.group || "Diğer";
+          const rawGrp = (d.group || "Diğer").trim();
           if(!menuData[rawCat].groups[rawGrp]) menuData[rawCat].groups[rawGrp] = [];
           
           menuData[rawCat].groups[rawGrp].push({
-            name: d.name_tr,
+            id: doc.id,
+            name_tr: d.name_tr,
+            name_en: d.name_en || d.name_tr, // Fallback
             price: d.price,
             img: d.image
           });
@@ -574,7 +356,6 @@
       } catch (e) { console.error(e); }
     }
 
-    // --- RENDER GRID (DİL DESTEKLİ) ---
     function renderGrid() {
       const grid = document.getElementById("menuGrid");
       grid.innerHTML = "";
@@ -582,25 +363,18 @@
       Object.keys(menuData).forEach(rawCat => {
         const cat = menuData[rawCat];
         const imgPath = catImages[rawCat] || 'logo.png';
-        
-        // Çeviriye bak
         const displayTitle = getTrans(rawCat);
 
         const div = document.createElement("div");
         div.className = "category-card";
-        div.onclick = () => openCategory(rawCat); // Orijinal anahtarı kullan
-        div.innerHTML = `
-          <img src="${imgPath}" onerror="this.src='logo.png'">
-          <h3>${displayTitle}</h3>
-        `;
+        div.onclick = () => openCategory(rawCat);
+        div.innerHTML = `<img src="${imgPath}" onerror="this.src='logo.png'"><h3>${displayTitle}</h3>`;
         grid.appendChild(div);
       });
     }
 
-    // --- KATEGORİ MODAL (DİL DESTEKLİ) ---
     function openCategory(rawCat) {
       const cat = menuData[rawCat];
-      // Başlığı çevir
       document.getElementById("modalCatTitle").innerText = getTrans(cat.title);
       const list = document.getElementById("productList");
       list.innerHTML = "";
@@ -611,7 +385,6 @@
 
         const header = document.createElement("div");
         header.className = "accordion-header";
-        // Grup ismini çevir
         header.innerHTML = getTrans(rawGrp);
         header.onclick = function() {
             this.classList.toggle("active");
@@ -623,15 +396,14 @@
         content.className = "accordion-content";
 
         cat.groups[rawGrp].forEach(p => {
+          const displayName = getProductDisplayName(p);
           const row = document.createElement("div");
           row.className = "product-row";
-          row.onclick = () => addToCart(p.name, p.price);
+          // Objeyi stringify edip gönderiyoruz ki tüm veriye erişebilelim
+          row.onclick = () => addToCartObj(p);
           row.innerHTML = `
             <img src="${p.img || 'logo.png'}" onerror="this.src='logo.png'">
-            <div class="p-info">
-              <span class="p-name">${p.name}</span>
-              <span class="p-price">₺${p.price}</span>
-            </div>
+            <div class="p-info"><span class="p-name">${displayName}</span><span class="p-price">₺${p.price}</span></div>
             <div class="add-btn">+</div>
           `;
           content.appendChild(row);
@@ -645,16 +417,23 @@
       document.getElementById("productModal").style.display = "flex";
     }
 
-    function closeProductModal() {
-      document.getElementById("productModal").style.display = "none";
-    }
+    function closeProductModal() { document.getElementById("productModal").style.display = "none"; }
 
-    // --- SEPET FONKSİYONLARI ---
-    function addToCart(name, price) {
-      const exist = cart.find(x => x.name === name);
-      if(exist) exist.qty++;
-      else cart.push({name, price, qty:1});
-      
+    // --- SEPET İŞLEMLERİ (FULL OBJE SAKLAMA) ---
+    function addToCartObj(product) {
+      // Sepette ID veya name_tr ile kontrol edelim (Benzersizlik için)
+      // product.name_tr benzersiz varsayıyoruz
+      const exist = cart.find(x => x.name_tr === product.name_tr);
+      if(exist) {
+        exist.qty++;
+      } else {
+        cart.push({
+            name_tr: product.name_tr,
+            name_en: product.name_en || product.name_tr,
+            price: product.price,
+            qty: 1
+        });
+      }
       updateCartBadge();
       showAlert(uiTranslations[curLang].added);
     }
@@ -664,49 +443,37 @@
       const badge = document.getElementById("cartBadge");
       badge.innerText = count;
       badge.style.display = count > 0 ? "flex" : "none";
-      
       badge.style.animation = 'none';
       badge.offsetHeight; 
       badge.style.animation = 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-    }
-
-    function openCart() {
-      renderCartItems();
-      document.getElementById("cartOverlay").style.display = "block";
-      setTimeout(() => document.getElementById("cartDrawer").classList.add("open"), 10);
-    }
-
-    function closeCart() {
-      document.getElementById("cartDrawer").classList.remove("open");
-      setTimeout(() => document.getElementById("cartOverlay").style.display = "none", 300);
     }
 
     function renderCartItems() {
       const container = document.getElementById("cartItems");
       const footer = document.getElementById("cartFooter");
       const emptyMsg = document.getElementById("emptyCartMsg");
-
       if (!container) return;
 
       container.innerHTML = "";
-      
       if(cart.length === 0) {
         if(emptyMsg) emptyMsg.style.display = "block";
         if(footer) footer.style.display = "none";
         return;
       }
-
       if(emptyMsg) emptyMsg.style.display = "none";
       if(footer) footer.style.display = "block";
 
       let total = 0;
       cart.forEach((item, idx) => {
         total += item.price * item.qty;
+        // Dile göre isim seç
+        const dName = curLang === 'en' ? item.name_en : item.name_tr;
+        
         const div = document.createElement("div");
         div.className = "cart-item";
         div.innerHTML = `
           <div>
-            <div style="font-weight:600; color:var(--text-main)">${item.name}</div>
+            <div style="font-weight:600; color:var(--text-main)">${dName}</div>
             <div style="font-size:0.85rem; color:var(--accent)">₺${item.price}</div>
           </div>
           <div class="qty-control">
@@ -734,100 +501,66 @@
       renderCartItems();
     }
 
+    function openCart() {
+      renderCartItems();
+      document.getElementById("cartOverlay").style.display = "block";
+      setTimeout(() => document.getElementById("cartDrawer").classList.add("open"), 10);
+    }
+    function closeCart() {
+      document.getElementById("cartDrawer").classList.remove("open");
+      setTimeout(() => document.getElementById("cartOverlay").style.display = "none", 300);
+    }
+
     // --- SİPARİŞ & ZİL ---
     async function sendOrder() {
       const masa = document.getElementById("masaInput").value;
       const oda = document.getElementById("odaInput").value;
-      
-      if(!masa && !oda) {
-        showAlert(uiTranslations[curLang].reqMasa);
-        return;
-      }
-
+      if(!masa && !oda) { showAlert(uiTranslations[curLang].reqMasa); return; }
       const total = cart.reduce((a,b)=>a+(b.price*b.qty),0);
-      
       try {
+        // Siparişi kaydederken o anki dildeki ismini değil, TR ismini (veya her ikisini) kaydetmek daha güvenlidir.
+        // Ama basitlik için olduğu gibi cart'ı atıyoruz.
         await db.collection("siparisler").add({
-          masa, oda,
-          urunler: cart,
-          toplam: total,
-          durum: "Beklemede",
-          tarih: new Date()
+          masa, oda, urunler: cart, toplam: total, durum: "Beklemede", tarih: new Date()
         });
-        
         showAlert(uiTranslations[curLang].sent);
-        cart = [];
-        updateCartBadge();
-        closeCart();
-        localStorage.setItem("masa", masa);
-        localStorage.setItem("oda", oda);
+        clearCart(); closeCart();
+        localStorage.setItem("masa", masa); localStorage.setItem("oda", oda);
       } catch(e) { console.error(e); }
     }
 
-    function openZil() {
-      document.getElementById("zilModal").style.display = "flex";
-      document.getElementById("zilInputDiv").style.display = "none";
-    }
+    function openZil() { document.getElementById("zilModal").style.display = "flex"; document.getElementById("zilInputDiv").style.display = "none"; }
     function closeZil() { document.getElementById("zilModal").style.display = "none"; }
-    
-    function callType(type) {
-      callCategory = type;
-      const storedMasa = localStorage.getItem("masa");
-      if(storedMasa) document.getElementById("zilMasa").value = storedMasa;
-      document.getElementById("zilInputDiv").style.display = "block";
-    }
-
+    function callType(type) { callCategory = type; const m = localStorage.getItem("masa"); if(m) document.getElementById("zilMasa").value = m; document.getElementById("zilInputDiv").style.display = "block"; }
     function confirmCall() {
       const masa = document.getElementById("zilMasa").value;
       if(!masa) { showAlert(uiTranslations[curLang].reqMasa); return; }
-      
-      db.collection("cagrilar").add({
-        tip: callCategory,
-        masa: masa,
-        zaman: new Date()
-      }).then(() => {
-        showAlert(uiTranslations[curLang].callSent);
-        closeZil();
-        document.getElementById("dingSound").play().catch(()=>{});
+      db.collection("cagrilar").add({ tip: callCategory, masa: masa, zaman: new Date() }).then(() => {
+        showAlert(uiTranslations[curLang].callSent); closeZil(); document.getElementById("dingSound").play().catch(()=>{});
       });
     }
 
     // --- YARDIMCI ---
     function showAlert(msg) {
       const box = document.getElementById("customAlert");
-      box.innerText = msg;
-      box.classList.add("show");
+      box.innerText = msg; box.classList.add("show");
       setTimeout(() => box.classList.remove("show"), 2500);
     }
-
     function checkParams() {
       const p = new URLSearchParams(window.location.search);
-      if(p.get("masa")) {
-        document.getElementById("masaInput").value = p.get("masa");
-        localStorage.setItem("masa", p.get("masa"));
-      }
-      if(p.get("oda")) {
-        document.getElementById("odaInput").value = p.get("oda");
-      }
+      if(p.get("masa")) { document.getElementById("masaInput").value = p.get("masa"); localStorage.setItem("masa", p.get("masa")); }
+      if(p.get("oda")) { document.getElementById("odaInput").value = p.get("oda"); }
       const lm = localStorage.getItem("masa");
-      if(lm) {
-         const mInput = document.getElementById("masaInput");
-         if(mInput && !mInput.value) mInput.value = lm;
-      }
+      if(lm) { const m = document.getElementById("masaInput"); if(m && !m.value) m.value = lm; }
     }
-
     function toggleTheme() {
       document.body.classList.toggle("dark-mode");
       const isDark = document.body.classList.contains("dark-mode");
       document.getElementById("themeIcon").innerText = isDark ? "☀️" : "🌙";
     }
-
-    // --- DİL DEĞİŞTİRME FONKSİYONU ---
     function changeLanguage(lang) {
       curLang = lang;
       const t = uiTranslations[lang];
-
-      // Statik Alanları Güncelle
       document.getElementById("brandName").innerText = t.brand;
       document.getElementById("lblPopular").innerText = t.popular;
       document.getElementById("lblCart").innerText = t.cart;
@@ -844,9 +577,12 @@
       document.getElementById("btnSendCall").innerText = t.sendCall;
       document.getElementById("zilMasa").placeholder = t.masaPh;
 
-      // Dinamik İçeriği Yeniden Çiz (Önemli Kısım)
+      // Dinamik içeriği yenile
       renderGrid(); 
-      setupSlider(); // Slider'da statik yazı varsa o da güncellenir
+      setupSlider();
+      renderCartItems(); // Sepet açıkken dil değişirse isimler güncellensin
+      // Eğer modal açıksa onu da güncellemek gerekebilir ama basitlik için kapatıyoruz
+      closeProductModal(); 
     }
   </script>
 </body>
