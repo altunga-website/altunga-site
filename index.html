@@ -17,7 +17,7 @@
     /* --- MODERN LIGHT THEME (DEFAULT) --- */
     :root {
       --bg-body: #f8fafc;
-      --bg-header: rgba(255, 255, 255, 0.95);
+      --bg-header: rgba(255, 255, 255, 0.90);
       --bg-card: #ffffff;
       --text-main: #1e293b;
       --text-muted: #64748b;
@@ -33,7 +33,7 @@
     /* DARK MODE */
     body.dark-mode {
       --bg-body: #0f172a;
-      --bg-header: rgba(15, 23, 42, 0.95);
+      --bg-header: rgba(15, 23, 42, 0.90);
       --bg-card: #1e293b;
       --text-main: #f1f5f9;
       --text-muted: #94a3b8;
@@ -52,7 +52,7 @@
       overflow-x: hidden;
     }
 
-    /* --- HEADER --- */
+    /* --- SABİT HEADER --- */
     header {
       position: fixed; top: 0; left: 0; right: 0;
       height: 70px;
@@ -138,22 +138,33 @@
     .category-card img { width: 55px; height: 55px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
     .category-card h3 { margin: 0; font-size: 0.95rem; font-weight: 600; color: var(--text-main); text-align: center; }
 
-    /* --- MODAL --- */
+    /* --- MODAL (GÜNCELLENDİ: ORTALI) --- */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
-      z-index: 6000; display: none; align-items: flex-end; justify-content: center;
+      z-index: 6000;
+      display: none; 
+      /* Ortaya Hizalama */
+      align-items: center; 
+      justify-content: center;
     }
-    @media(min-width: 768px) { .modal-overlay { align-items: center; } }
 
     .modal-content {
-      background: var(--bg-card); width: 100%; max-height: 85vh;
-      border-radius: 24px 24px 0 0; display: flex; flex-direction: column;
-      animation: slideUp 0.3s ease-out; box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+      background: var(--bg-card); 
+      width: 90%; 
+      max-width: 450px; /* Genişlik sınırı */
+      max-height: 80vh; /* Yükseklik sınırı */
+      border-radius: 24px; /* Tüm köşeler yuvarlak */
+      display: flex; flex-direction: column;
+      /* Animasyon: Popup */
+      animation: modalPop 0.3s ease-out; 
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
     }
-    @media(min-width: 768px) { .modal-content { width: 500px; border-radius: 24px; } }
 
-    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    @keyframes modalPop { 
+      from { opacity: 0; transform: scale(0.9); } 
+      to { opacity: 1; transform: scale(1); } 
+    }
 
     .modal-header {
       padding: 20px; border-bottom: 1px solid var(--border);
@@ -267,16 +278,16 @@
     .cart-footer { border-top: 1px solid var(--border); padding-top: 15px; }
     .total-row { display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; color: var(--text-main); }
     
-    /* INPUT DÜZENLEMESİ (Mobilde Sığması İçin) */
+    /* INPUT DÜZENLEMESİ */
     .input-row { 
         display: flex; gap: 10px; margin-bottom: 10px; 
-        flex-wrap: wrap; /* Sığmazsa aşağı geçsin */
+        flex-wrap: wrap; 
     }
     .cart-input { 
-      flex: 1 1 45%; /* Yarısı kadar */
+      flex: 1 1 45%; 
       padding: 12px; border: 1px solid var(--border); 
       border-radius: 12px; background: var(--bg-body); color: var(--text-main);
-      font-family: inherit; font-size: 16px; /* iOS zoom engelleme */
+      font-family: inherit; font-size: 16px;
     }
 
     .order-btn {
@@ -617,7 +628,6 @@
       setTimeout(() => document.getElementById("cartOverlay").style.display = "none", 300);
     }
 
-    // --- RENDER CART (HATA GİDERİLDİ) ---
     function renderCartItems() {
       const container = document.getElementById("cartItems");
       const footer = document.getElementById("cartFooter");
@@ -657,9 +667,8 @@
       document.getElementById("cartTotalValue").innerText = "₺" + total;
     }
 
-    // --- ADET GÜNCELLEME (HATA GİDERİLDİ) ---
+    // --- ADET GÜNCELLEME ---
     function changeQty(index, delta) {
-        // Sepet boşsa veya index geçersizse dur
         if (!cart[index]) return;
 
         cart[index].qty += delta;
@@ -670,7 +679,7 @@
         renderCartItems();
     }
 
-    // --- SEPETİ TEMİZLE (SCOPE FIX) ---
+    // --- SEPETİ TEMİZLE ---
     function clearCart() {
       cart = [];
       updateCartBadge();
