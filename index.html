@@ -3,370 +3,383 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-  <title>Altunga E-Spor & Cafe</title>
+  <title>Altunga E Spor Merkezi</title>
   <link rel="icon" type="image/png" href="logo.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <style>
-    /* --- MODERN GAMER THEME V2 --- */
+    /* --- MODERN LIGHT THEME (DEFAULT) --- */
     :root {
-      --bg-dark: #0b0e14;
-      --bg-panel: #151a23;
-      --primary: #3b82f6; /* Mavi */
-      --accent: #10b981;  /* Yeşil */
+      --bg-body: #f8fafc;
+      --bg-header: rgba(255, 255, 255, 0.95);
+      --bg-card: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --primary: #3b82f6;
+      --accent: #10b981;
       --danger: #ef4444;
-      --text-main: #ffffff;
-      --text-muted: #94a3b8;
-      --glass: rgba(21, 26, 35, 0.8);
-      --border: rgba(255, 255, 255, 0.08);
-      --glow: 0 0 20px rgba(59, 130, 246, 0.15);
-      --font-body: 'Inter', sans-serif;
-      --font-heading: 'Rajdhani', sans-serif;
+      --border: #e2e8f0;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --radius: 16px;
+      --font-main: 'Poppins', sans-serif;
     }
 
-    /* Light Mode Değişkenleri */
-    body.light-mode {
-      --bg-dark: #f0f2f5;
-      --bg-panel: #ffffff;
-      --text-main: #111827;
-      --text-muted: #6b7280;
-      --glass: rgba(255, 255, 255, 0.8);
-      --border: rgba(0, 0, 0, 0.05);
-      --glow: 0 4px 20px rgba(0,0,0,0.05);
+    /* DARK MODE */
+    body.dark-mode {
+      --bg-body: #0f172a;
+      --bg-header: rgba(15, 23, 42, 0.95);
+      --bg-card: #1e293b;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: rgba(255, 255, 255, 0.08);
+      --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
 
     body {
-      background-color: var(--bg-dark);
+      background-color: var(--bg-body);
       color: var(--text-main);
-      font-family: var(--font-body);
-      margin: 0; padding-bottom: 100px;
+      font-family: var(--font-main);
+      margin: 0; padding-top: 80px; padding-bottom: 100px; /* Header ve Footer payı */
+      transition: background 0.3s, color 0.3s;
       overflow-x: hidden;
-      transition: background 0.3s ease;
-      background-image: 
-        radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.08) 0%, transparent 50%);
-      background-attachment: fixed;
     }
 
-    /* --- HEADER --- */
+    /* --- SABİT HEADER --- */
     header {
-      background: var(--glass);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      padding: 15px 20px;
-      position: sticky; top: 0; z-index: 100;
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 70px;
+      background: var(--bg-header);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px;
+      z-index: 5000; /* Çok yüksek, her şeyin üstünde */
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      transition: background 0.3s;
     }
 
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .brand img { height: 40px; width: auto; filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.4)); }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand img { height: 40px; }
     .brand h1 {
-      font-family: var(--font-heading);
-      font-size: 1.4rem; font-weight: 700; margin: 0;
-      text-transform: uppercase; letter-spacing: 1px;
-      background: linear-gradient(to right, #fff, #94a3b8);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-    body.light-mode .brand h1 { background: linear-gradient(to right, #111, #555); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-    .header-actions { display: flex; gap: 10px; }
-    .icon-btn {
-      background: var(--bg-panel); border: 1px solid var(--border);
-      color: var(--text-main); width: 40px; height: 40px;
-      border-radius: 12px; display: flex; align-items: center; justify-content: center;
-      cursor: pointer; font-size: 1.2rem; transition: 0.2s;
-    }
-    .icon-btn:active { transform: scale(0.95); }
-
-    /* --- HERO SLIDER --- */
-    .section-title {
-      font-family: var(--font-heading);
-      font-size: 1.2rem; color: var(--text-muted);
-      margin: 25px 20px 15px; padding-left: 15px;
-      border-left: 3px solid var(--accent);
-      text-transform: uppercase; letter-spacing: 1px;
+      font-size: 1rem; font-weight: 700; margin: 0;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      color: var(--text-main);
     }
 
-    .slider-wrapper {
-      overflow-x: auto; padding: 0 20px 20px;
-      display: flex; gap: 15px;
-      scrollbar-width: none;
+    .controls { display: flex; align-items: center; gap: 10px; }
+    
+    .lang-select {
+      background: var(--bg-card); color: var(--text-main);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 5px 10px; font-size: 0.8rem; font-weight: 600;
+      cursor: pointer;
     }
-    .slider-wrapper::-webkit-scrollbar { display: none; }
 
-    .slider-card {
-      min-width: 150px; height: 200px;
-      background: var(--bg-panel);
-      border-radius: 16px; border: 1px solid var(--border);
-      position: relative; overflow: hidden;
-      box-shadow: var(--glow); cursor: pointer;
+    .theme-btn {
+      background: transparent; border: none; font-size: 1.2rem; cursor: pointer;
+      width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+      border-radius: 50%; transition: 0.2s;
     }
-    .slider-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+    .theme-btn:active { transform: scale(0.9); background: rgba(0,0,0,0.05); }
+
+    /* --- SONSUZ SLIDER (MARQUEE) --- */
+    .slider-title {
+      padding: 0 20px; margin-top: 20px; margin-bottom: 15px;
+      font-size: 1.1rem; font-weight: 700; color: var(--text-main);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .slider-title::before { content:''; width: 4px; height: 20px; background: var(--accent); border-radius: 2px; }
+
+    .slider-container {
+      width: 100%; overflow: hidden; position: relative;
+      padding-bottom: 20px;
+    }
+    
+    .slider-track {
+      display: flex; gap: 15px; width: max-content;
+      animation: scroll 20s linear infinite; /* Sonsuz döngü animasyonu */
+    }
+    
+    /* Mouse üzerine gelince dursun istersen bu satırı aç: */
+    /* .slider-track:hover { animation-play-state: paused; } */
+
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); } /* İçerik 2 katına çıkacağı için %50 kaydırma tam tur olur */
+    }
+
+    .slider-item {
+      width: 150px; height: 200px;
+      background: var(--bg-card); border-radius: var(--radius);
+      border: 1px solid var(--border);
+      position: relative; flex-shrink: 0; cursor: pointer;
+      overflow: hidden; box-shadow: var(--shadow);
+    }
+    .slider-item img { width: 100%; height: 100%; object-fit: cover; }
     .slider-info {
       position: absolute; bottom: 0; left: 0; width: 100%;
-      background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-      padding: 20px 10px 10px; color: white;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      padding: 30px 10px 10px; color: white;
     }
-    .slider-info h3 { margin: 0; font-size: 0.9rem; font-weight: 600; }
-    .slider-info span { color: var(--accent); font-weight: 700; font-size: 0.85rem; }
+    .slider-info div { font-size: 0.9rem; font-weight: 600; text-shadow: 0 1px 2px black; }
+    .slider-info span { font-size: 0.85rem; color: #fbbf24; font-weight: 700; text-shadow: 0 1px 2px black; }
 
-    /* --- ANA MENÜ GRID --- */
-    #menuGrid {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 20px;
+    /* --- MENÜ GRID --- */
+    .menu-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px;
     }
-    @media (min-width: 768px) { #menuGrid { grid-template-columns: repeat(4, 1fr); } }
+    @media (min-width: 600px) { .menu-grid { grid-template-columns: repeat(3, 1fr); } }
 
     .category-card {
-      background: var(--bg-panel); border: 1px solid var(--border);
-      border-radius: 20px; padding: 20px;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
-      height: 140px; cursor: pointer; transition: 0.3s;
-      position: relative; overflow: hidden;
+      background: var(--bg-card); border-radius: var(--radius);
+      height: 120px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 10px;
+      border: 1px solid var(--border); box-shadow: var(--shadow);
+      cursor: pointer; transition: transform 0.2s;
     }
-    .category-card:active { transform: scale(0.98); border-color: var(--primary); }
-    .category-card::before {
-      content: ''; position: absolute; inset: 0;
-      background: radial-gradient(circle at 50% 100%, rgba(59,130,246,0.1), transparent);
-      opacity: 0; transition: 0.3s;
-    }
-    .category-card:hover::before { opacity: 1; }
-    
-    .category-card img { width: 50px; height: 50px; object-fit: contain; z-index: 1; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3)); }
-    .category-card h3 { 
-      margin: 0; font-size: 1rem; font-weight: 600; z-index: 1; 
-      font-family: var(--font-heading); text-align: center;
-    }
+    .category-card:active { transform: scale(0.96); }
+    .category-card img { width: 50px; height: 50px; object-fit: contain; }
+    .category-card h3 { margin: 0; font-size: 0.95rem; font-weight: 600; color: var(--text-main); text-align: center; }
 
-    /* --- MODAL (MENÜ DETAY) --- */
-    .modal {
-      position: fixed; inset: 0; z-index: 2000;
-      background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
-      display: none; align-items: flex-end; /* Mobilde alttan gelsin */
+    /* --- MODAL (KATEGORİ DETAY) --- */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+      z-index: 6000; /* Header'dan yüksek */
+      display: none; align-items: flex-end; /* Alttan açılır panel stili */
     }
-    .modal.active { display: flex; animation: fadeIn 0.2s; }
-    @media (min-width: 768px) { .modal { align-items: center; justify-content: center; } }
+    @media(min-width: 768px) { .modal-overlay { align-items: center; justify-content: center; } }
 
-    .modal-box {
-      background: var(--bg-dark); width: 100%; max-height: 85vh;
-      border-radius: 24px 24px 0 0; 
-      display: flex; flex-direction: column;
-      box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-      animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    .modal-content {
+      background: var(--bg-card); width: 100%; max-height: 85vh;
+      border-radius: 24px 24px 0 0; display: flex; flex-direction: column;
+      animation: slideUp 0.3s ease-out; box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
     }
-    @media (min-width: 768px) { 
-      .modal-box { width: 500px; border-radius: 24px; max-height: 80vh; } 
-    }
+    @media(min-width: 768px) { .modal-content { width: 500px; border-radius: 24px; } }
+
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
     .modal-header {
       padding: 20px; border-bottom: 1px solid var(--border);
       display: flex; justify-content: space-between; align-items: center;
     }
-    .modal-title { margin: 0; font-family: var(--font-heading); font-size: 1.5rem; color: var(--primary); }
-    .close-btn { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+    .modal-header h2 { margin: 0; font-size: 1.2rem; color: var(--primary); }
+    .close-btn { background: none; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer; }
 
-    .modal-body { overflow-y: auto; padding: 20px; flex: 1; }
+    .modal-body { padding: 0 20px 20px; overflow-y: auto; }
 
-    /* Akordiyon Yapı */
     .group-title {
-      font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted);
-      margin: 20px 0 10px; font-weight: 700; letter-spacing: 1px;
-      display: flex; align-items: center; gap: 10px;
+      margin: 20px 0 10px; font-size: 0.85rem; text-transform: uppercase;
+      color: var(--text-muted); font-weight: 700; letter-spacing: 1px;
+      border-bottom: 1px solid var(--border); padding-bottom: 5px;
     }
-    .group-title::after { content:''; height: 1px; flex: 1; background: var(--border); }
 
-    .product-list { display: flex; flex-direction: column; gap: 10px; }
-    
-    .product-item {
+    .product-row {
       display: flex; align-items: center; gap: 15px;
-      background: var(--bg-panel); padding: 12px; border-radius: 12px;
-      border: 1px solid var(--border); cursor: pointer; transition: 0.2s;
+      padding: 12px 0; border-bottom: 1px solid var(--border);
+      cursor: pointer;
     }
-    .product-item:active { background: rgba(59, 130, 246, 0.1); border-color: var(--primary); }
-    
-    .p-img { width: 50px; height: 50px; object-fit: contain; background: white; border-radius: 8px; padding: 2px; }
-    .p-details { flex: 1; }
-    .p-name { font-weight: 600; font-size: 0.95rem; display: block; }
+    .product-row:last-child { border-bottom: none; }
+    .product-row img { 
+      width: 50px; height: 50px; object-fit: contain; 
+      background: rgba(0,0,0,0.03); border-radius: 8px; padding: 5px;
+    }
+    .p-info { flex: 1; }
+    .p-name { font-weight: 600; display: block; color: var(--text-main); }
     .p-price { color: var(--accent); font-weight: 700; font-size: 0.9rem; }
-    .add-icon { 
-      width: 32px; height: 32px; background: var(--border); border-radius: 50%; 
-      display: flex; align-items: center; justify-content: center; color: var(--primary);
+    .add-btn {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--primary); color: white; border: none;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
     }
 
-    /* --- SEPET & FLOATING --- */
+    /* --- SEPET & ZİL (FLOATING) --- */
     .fab-container {
-      position: fixed; bottom: 20px; left: 20px; right: 20px;
-      display: flex; justify-content: space-between; pointer-events: none; z-index: 900;
+      position: fixed; bottom: 25px; left: 20px; right: 20px;
+      display: flex; justify-content: space-between; pointer-events: none; z-index: 5000;
     }
+    
     .fab-btn {
       pointer-events: auto;
-      height: 50px; border-radius: 25px; border: none;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      font-family: var(--font-heading); font-weight: 700; font-size: 1rem;
-      cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-      transition: 0.2s;
+      height: 55px; border-radius: 28px; border: none;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      font-family: var(--font-main); font-weight: 600; font-size: 1rem;
+      cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      transition: transform 0.2s;
     }
-    .fab-call { width: 50px; background: var(--primary); color: white; border-radius: 50%; animation: pulse 2s infinite; }
-    .fab-cart { 
-      background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; 
-      padding: 0 25px;
-    }
+    .fab-btn:active { transform: scale(0.95); }
+
+    .btn-zil { width: 55px; background: var(--bg-card); color: var(--primary); border: 2px solid var(--primary); font-size: 1.5rem; }
     
-    /* Sepet Badge */
-    .badge { 
-      background: #ffd700; color: #000; font-size: 0.75rem; 
-      padding: 2px 6px; border-radius: 10px; margin-left: 5px; 
+    .btn-sepet { 
+      background: linear-gradient(135deg, var(--primary), #2563eb); 
+      color: white; padding: 0 25px; min-width: 140px;
+      position: relative;
     }
 
-    /* Sepet Modal (Bottom Sheet gibi) */
+    /* ASKI BADGE (Sepet Sayısı) */
+    .cart-badge {
+      position: absolute; top: -10px; right: -5px;
+      background: #ef4444; color: white;
+      font-size: 0.75rem; font-weight: 700;
+      min-width: 24px; height: 24px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid var(--bg-body);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popIn { from{transform: scale(0);} to{transform: scale(1);} }
+
+    /* --- SEPET DRAWER (Z-INDEX FIX) --- */
+    .cart-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); z-index: 9998; display: none;
+    }
     .cart-drawer {
       position: fixed; bottom: 0; left: 0; right: 0;
-      background: var(--bg-panel); border-radius: 24px 24px 0 0;
-      padding: 20px; z-index: 2100; transform: translateY(110%);
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      border-top: 1px solid var(--border);
-      box-shadow: 0 -10px 50px rgba(0,0,0,0.5);
+      background: var(--bg-card); border-radius: 24px 24px 0 0;
+      padding: 25px; z-index: 9999; /* EN ÜSTTE */
+      transform: translateY(110%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      box-shadow: 0 -10px 50px rgba(0,0,0,0.3);
+      max-height: 80vh; display: flex; flex-direction: column;
     }
     .cart-drawer.open { transform: translateY(0); }
 
+    .cart-items-container { flex: 1; overflow-y: auto; margin-bottom: 15px; }
     .cart-item {
       display: flex; justify-content: space-between; align-items: center;
       padding: 10px 0; border-bottom: 1px solid var(--border);
     }
-    .qty-btn { width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--border); background: transparent; color: var(--text-main); cursor: pointer; }
+    .qty-control { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.05); padding: 4px; border-radius: 8px; }
+    .qty-btn { width: 24px; height: 24px; background: var(--bg-card); border: none; border-radius: 6px; cursor: pointer; font-weight: 700; color: var(--text-main); }
 
-    .cart-input {
-      width: 100%; padding: 12px; margin-top: 10px;
-      background: var(--bg-dark); border: 1px solid var(--border);
-      border-radius: 12px; color: var(--text-main); text-align: center;
+    .cart-footer { border-top: 1px solid var(--border); padding-top: 15px; }
+    .total-row { display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; color: var(--text-main); }
+    
+    .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
+    .cart-input { 
+      flex: 1; padding: 12px; border: 1px solid var(--border); 
+      border-radius: 12px; background: var(--bg-body); color: var(--text-main);
+      font-family: inherit;
     }
 
     .order-btn {
-      width: 100%; padding: 15px; margin-top: 15px;
-      background: var(--accent); color: white; border: none;
-      border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer;
+      width: 100%; padding: 14px; background: var(--accent); color: white;
+      border: none; border-radius: 12px; font-weight: 700; font-size: 1rem;
+      cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
     }
 
-    /* Animasyonlar */
-    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
     /* Loader */
-    #loader { text-align: center; padding: 50px; color: var(--text-muted); }
+    #loader { text-align: center; margin-top: 50px; color: var(--text-muted); }
+
+    /* Alert */
+    .alert-box {
+      position: fixed; top: 90px; left: 50%; transform: translateX(-50%);
+      background: #1e293b; color: white; padding: 10px 20px;
+      border-radius: 30px; font-size: 0.9rem; z-index: 10000;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      opacity: 0; transition: 0.3s; pointer-events: none;
+    }
+    .alert-box.show { opacity: 1; transform: translateX(-50%) translateY(5px); }
+
   </style>
 </head>
 <body>
 
   <header>
     <div class="brand">
-      <img src="logo.png" alt="Altunga" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3210/3210036.png'">
-      <h1>Altunga</h1>
+      <img src="logo.png" alt="Logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3062/3062634.png'">
+      <h1 id="brandName">Altunga E Spor Merkezi</h1>
     </div>
-    <div class="header-actions">
-      <button class="icon-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
-      <button class="icon-btn" onclick="window.location.href='rezervasyon.html'">📅</button>
+    <div class="controls">
+      <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
+        <option value="tr">TR</option>
+        <option value="en">EN</option>
+      </select>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeIcon">🌙</button>
     </div>
   </header>
 
-  <h2 class="section-title">🔥 Popüler Ürünler</h2>
-  <div class="slider-wrapper" id="sliderWrapper">
-    <div class="slider-card" onclick="sepeteEkle('Magnum Classic', 80)">
-      <img src="populer/magnumclassicpopuler.png" onerror="this.src='https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?auto=format&fit=crop&q=80&w=300'">
-      <div class="slider-info">
-        <h3>Magnum Classic</h3>
-        <span>₺80</span>
+  <h2 class="slider-title" id="lblPopular">🔥 Popüler Ürünler</h2>
+  <div class="slider-container">
+    <div class="slider-track" id="sliderTrack">
       </div>
-    </div>
-    <div class="slider-card" onclick="sepeteEkle('Red Bull', 80)">
-      <img src="populer/rebullpink.png" onerror="this.src='https://images.unsplash.com/photo-1626127117075-81768843a859?auto=format&fit=crop&q=80&w=300'">
-      <div class="slider-info">
-        <h3>Red Bull</h3>
-        <span>₺80</span>
-      </div>
-    </div>
-     <div class="slider-card" onclick="sepeteEkle('Patso Menü', 80)">
-      <img src="populer/patsomenu.png" onerror="this.src='https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&q=80&w=300'">
-      <div class="slider-info">
-        <h3>Patso Menü</h3>
-        <span>₺80</span>
-      </div>
-    </div>
   </div>
 
-  <h2 class="section-title">🍔 Menü</h2>
   <div id="loader">Menü Yükleniyor...</div>
-  <div id="menuGrid">
-    </div>
+  <div class="menu-grid" id="menuGrid"></div>
 
   <div class="fab-container">
-    <button class="fab-btn fab-call" onclick="openZilModal()">🔔</button>
-    <button class="fab-btn fab-cart" onclick="toggleCart()">
-      Sepet <span id="cartCount" class="badge">0</span>
+    <button class="fab-btn btn-zil" onclick="openZil()">🔔</button>
+    <button class="fab-btn btn-sepet" onclick="openCart()">
+      <span id="lblCart">Sepet</span>
+      <div class="cart-badge" id="cartBadge" style="display:none">0</div>
     </button>
   </div>
 
-  <div id="categoryModal" class="modal" onclick="if(event.target === this) closeMenu()">
-    <div class="modal-box">
+  <div class="modal-overlay" id="productModal" onclick="if(event.target === this) closeProductModal()">
+    <div class="modal-content">
       <div class="modal-header">
-        <h2 id="modalTitle" class="modal-title">Kategori</h2>
-        <button class="close-btn" onclick="closeMenu()">×</button>
+        <h2 id="modalCatTitle">Kategori</h2>
+        <button class="close-btn" onclick="closeProductModal()">×</button>
       </div>
-      <div class="modal-body" id="modalBody">
-        </div>
+      <div class="modal-body" id="productList"></div>
     </div>
   </div>
 
-  <div id="cartDrawer" class="cart-drawer">
-    <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-      <h2 style="margin:0;">Sepetim</h2>
-      <button onclick="toggleCart()" style="background:none; border:none; color:var(--danger); font-weight:bold;">Kapat</button>
+  <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+  <div class="cart-drawer" id="cartDrawer">
+    <div style="text-align: center; margin-bottom: 15px; font-weight: 700; font-size: 1.1rem; color:var(--text-main);">
+      <span id="lblMyCart">Sepetim</span>
+      <button onclick="closeCart()" style="position:absolute; right:20px; top:20px; background:none; border:none; font-size:20px; color:var(--text-muted); cursor:pointer;">×</button>
     </div>
-    <div id="cartItems" style="max-height: 40vh; overflow-y: auto;"></div>
     
-    <div style="margin-top:15px; border-top:1px solid var(--border); padding-top:10px;">
-      <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.1rem;">
-        <span>Toplam:</span>
-        <span id="cartTotal" style="color:var(--accent)">₺0</span>
+    <div class="cart-items-container" id="cartItems">
+      <div style="text-align:center; color:var(--text-muted); margin-top:30px;" id="emptyCartMsg">Sepet boş</div>
+    </div>
+
+    <div class="cart-footer" id="cartFooter" style="display:none;">
+      <div class="total-row">
+        <span id="lblTotal">Toplam</span>
+        <span id="cartTotalValue" style="color:var(--accent);">₺0</span>
       </div>
-      
-      <div id="cartInputs" style="display:none;">
-        <input type="text" id="masaInput" class="cart-input" placeholder="Masa No (Örn: Hüma 5)">
-        <input type="text" id="odaInput" class="cart-input" placeholder="Oda No (Örn: Vip 2)">
-        <button class="order-btn" onclick="siparisVer()">Siparişi Tamamla</button>
+      <div class="input-row">
+        <input type="text" id="masaInput" class="cart-input" placeholder="Masa No (Örn: 5)">
+        <input type="text" id="odaInput" class="cart-input" placeholder="Oda No (Örn: Vip 1)">
       </div>
-      <div id="emptyMsg" style="text-align:center; color:var(--text-muted); margin-top:10px;">Sepetiniz boş</div>
+      <button class="order-btn" onclick="sendOrder()" id="btnOrder">Siparişi Onayla</button>
+      <button onclick="clearCart()" style="width:100%; background:transparent; border:none; color:var(--danger); margin-top:10px; cursor:pointer;" id="btnClear">Sepeti Temizle</button>
     </div>
   </div>
 
-  <div id="zilModal" class="modal" onclick="if(event.target === this) closeZilModal()">
-    <div class="modal-box" style="height:auto; padding-bottom:30px;">
+  <div class="modal-overlay" id="zilModal" onclick="if(event.target === this) closeZil()">
+    <div class="modal-content" style="height:auto; padding-bottom:30px;">
       <div class="modal-header">
-        <h2 class="modal-title">Görevli Çağır</h2>
-        <button class="close-btn" onclick="closeZilModal()">×</button>
+        <h2 id="lblCallStaff">Görevli Çağır</h2>
+        <button class="close-btn" onclick="closeZil()">×</button>
       </div>
-      <div style="padding:20px; display:grid; gap:10px;">
-        <p style="text-align:center; color:var(--text-muted);">Hangi konuda destek istiyorsunuz?</p>
-        <button onclick="sendCall('Bilişim')" class="order-btn" style="background:var(--primary)">💻 Bilişim / Teknik</button>
-        <button onclick="sendCall('Sipariş')" class="order-btn" style="background:var(--accent)">🧾 Sipariş / Hesap</button>
+      <div class="modal-body" style="display:grid; gap:10px; padding-top:20px;">
+        <button onclick="callType('Bilişim')" class="order-btn" style="background:var(--primary)">💻 Bilişim / Teknik</button>
+        <button onclick="callType('Sipariş')" class="order-btn" style="background:var(--accent)">🧾 Sipariş / Hesap</button>
         
-        <div id="zilInputs" style="display:none; margin-top:10px;">
-           <input type="text" id="zilMasa" class="cart-input" placeholder="Masa No Giriniz">
-           <button class="order-btn" style="background:var(--danger)" onclick="confirmCall()">Çağrı Gönder</button>
+        <div id="zilInputDiv" style="display:none; margin-top:10px;">
+          <input type="text" id="zilMasa" class="cart-input" placeholder="Masa Numaranız" style="width:100%; margin-bottom:10px;">
+          <button class="order-btn" style="background:var(--danger)" onclick="confirmCall()">Çağrı Gönder</button>
         </div>
       </div>
     </div>
   </div>
 
-  <audio id="dingSound" src="ding.mp3" preload="auto"></audio>
+  <div class="alert-box" id="customAlert">Sepete Eklendi!</div>
+  <audio id="dingSound" src="ding.mp3"></audio>
 
   <script>
     // --- FIREBASE AYARLARI ---
@@ -383,76 +396,134 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // --- STATE & DATA ---
-    let menuData = {}; 
+    // --- DİL ÇEVİRİLERİ ---
+    const translations = {
+      tr: {
+        brand: "Altunga E Spor Merkezi",
+        popular: "🔥 Popüler Ürünler",
+        cart: "Sepet",
+        myCart: "Sepetim",
+        empty: "Sepetiniz boş",
+        total: "Toplam",
+        order: "Sipariş Ver",
+        clear: "Sepeti Temizle",
+        call: "Görevli Çağır",
+        masaPh: "Masa No",
+        odaPh: "Oda No",
+        added: "Sepete Eklendi!",
+        sent: "Sipariş Alındı!",
+        callSent: "Görevli Geliyor!",
+        tech: "Bilişim / Teknik",
+        acc: "Sipariş / Hesap",
+        reqMasa: "Lütfen Masa veya Oda giriniz."
+      },
+      en: {
+        brand: "Altunga E Sport Center",
+        popular: "🔥 Popular Items",
+        cart: "Cart",
+        myCart: "My Cart",
+        empty: "Cart is empty",
+        total: "Total",
+        order: "Place Order",
+        clear: "Clear Cart",
+        call: "Call Staff",
+        masaPh: "Table No",
+        odaPh: "Room No",
+        added: "Added to Cart!",
+        sent: "Order Received!",
+        callSent: "Staff is coming!",
+        tech: "IT / Support",
+        acc: "Order / Bill",
+        reqMasa: "Please enter Table or Room."
+      }
+    };
+
+    let curLang = 'tr';
+    let menuData = {};
     let cart = [];
-    let currentCallType = "";
+    let callCategory = "";
 
     // --- INIT ---
     document.addEventListener("DOMContentLoaded", () => {
       fetchMenu();
-      checkUrlParams();
+      checkParams();
+      setupSlider();
     });
 
-    // --- 1. VERİ ÇEKME & İŞLEME (DİNAMİK YAPI) ---
+    // --- SLIDER (STATİK ÖRNEK + CSS MARQUEE) ---
+    // Gerçekte burayı da DB'den çekebiliriz ama şimdilik manuel örnekler koyuyorum
+    function setupSlider() {
+      const track = document.getElementById("sliderTrack");
+      // Örnek Ürünler
+      const items = [
+        {name: "Magnum Classic", price: 80, img: "populer/magnumclassicpopuler.png"},
+        {name: "Red Bull", price: 80, img: "populer/rebullpink.png"},
+        {name: "Patso Menü", price: 80, img: "populer/patsomenu.png"},
+        {name: "Doritos Taco", price: 100, img: "populer/doritostaco.png"},
+        {name: "Nescafe Xpress", price: 80, img: "populer/nescafex.png"},
+        {name: "Nogger", price: 70, img: "populer/nogger.png"}
+      ];
+
+      // Sonsuz döngü için items dizisini 2-3 kere arka arkaya ekleyelim
+      let html = "";
+      const loopCount = 3; 
+      
+      for(let i=0; i<loopCount; i++) {
+        items.forEach(p => {
+          html += `
+            <div class="slider-item" onclick="addToCart('${p.name}', ${p.price})">
+              <img src="${p.img}" onerror="this.src='logo.png'">
+              <div class="slider-info">
+                <div>${p.name}</div>
+                <span>₺${p.price}</span>
+              </div>
+            </div>
+          `;
+        });
+      }
+      track.innerHTML = html;
+    }
+
+    // --- VERİ ÇEKME ---
     async function fetchMenu() {
       try {
         const snapshot = await db.collection("menu_items").get();
-        const grid = document.getElementById("menuGrid");
-        document.getElementById("loader").style.display = "none";
-        
-        // Veriyi sıfırla
         menuData = {};
         
         snapshot.forEach(doc => {
-          const item = doc.data();
-          const catName = item.category.trim(); // "İçecekler"
-          const catKey = sanitizeKey(catName);  // "icecekler" (ID için)
-
-          // Eğer bu kategori nesnede yoksa oluştur
-          if (!menuData[catKey]) {
-            menuData[catKey] = {
-              title: catName,
-              groups: {} // Grupları tutacak (Örn: Gazlı İçecekler)
-            };
-          }
-
-          // Grubu al
-          const groupName = item.group || "Diğer";
+          const d = doc.data();
+          // Basit ID oluşturma
+          const catKey = d.category.replace(/\s+/g, '').toLowerCase();
           
-          if (!menuData[catKey].groups[groupName]) {
-            menuData[catKey].groups[groupName] = [];
+          if(!menuData[catKey]) {
+            menuData[catKey] = { title: d.category, groups: {} };
           }
-
-          // Ürünü listeye ekle
-          menuData[catKey].groups[groupName].push({
-            name: item.name_tr,
-            price: item.price,
-            image: item.image
+          
+          const grp = d.group || "Diğer";
+          if(!menuData[catKey].groups[grp]) menuData[catKey].groups[grp] = [];
+          
+          menuData[catKey].groups[grp].push({
+            name: d.name_tr,
+            price: d.price,
+            img: d.image
           });
         });
 
-        // Grid'i Oluştur (Kategori Kutuları)
         renderGrid();
+        document.getElementById("loader").style.display = "none";
 
-      } catch (error) {
-        console.error("Hata:", error);
-        document.getElementById("loader").innerText = "Menü yüklenemedi!";
+      } catch (e) {
+        console.error(e);
+        document.getElementById("loader").innerText = "Menü Yüklenemedi";
       }
     }
 
-    function sanitizeKey(str) {
-      // Türkçe karakterleri ve boşlukları temizleyip ID yapar
-      const map = { 'İ': 'i', 'I': 'i', 'Ş': 's', 'Ğ': 'g', 'Ü': 'u', 'Ö': 'o', 'Ç': 'c', 'ı': 'i', 'ş': 's', 'ğ': 'g', 'ü': 'u', 'ö': 'o', 'ç': 'c' };
-      return str.replace(/[İIŞĞÜÖÇışğüöç]/g, (s) => map[s]).toLowerCase().replace(/[^a-z0-9]/g, '');
-    }
-
-    // --- 2. RENDER (GÖRÜNTÜLEME) ---
+    // --- RENDER ---
     function renderGrid() {
       const grid = document.getElementById("menuGrid");
       grid.innerHTML = "";
-
-      // Kategori Resimleri (Sabit veya İkon)
+      
+      // Kategori Resimleri (Statik Eşleşme)
       const catImages = {
         'icecekler': 'icecekler.png',
         'atistirmalik': 'cips.png',
@@ -465,206 +536,254 @@
 
       Object.keys(menuData).forEach(key => {
         const cat = menuData[key];
-        const img = catImages[key] || 'logo.png'; // Resim yoksa logo koy
+        const img = catImages[key.replace(/[ışğüöç]/g, '')] || 'logo.png'; // Basit regex ile türkçe karakter temizliği deneniyor
 
-        const card = document.createElement("div");
-        card.className = "category-card";
-        card.onclick = () => openMenu(key);
-        card.innerHTML = `
-          <img src="${img}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/706/706164.png'">
+        // Eşleşme bulamazsa logo.png
+        // Not: key 'İçecekler' -> 'icecekler' olarak geliyor fetchMenu içinde.
+        // Ancak map'te 'icecekler' var.
+        let finalImg = 'logo.png';
+        for (const [k, v] of Object.entries(catImages)) {
+            if (key.includes(k)) finalImg = v;
+        }
+
+        const div = document.createElement("div");
+        div.className = "category-card";
+        div.onclick = () => openCategory(key);
+        div.innerHTML = `
+          <img src="${finalImg}" onerror="this.src='logo.png'">
           <h3>${cat.title}</h3>
         `;
-        grid.appendChild(card);
+        grid.appendChild(div);
       });
     }
 
-    function openMenu(key) {
+    function openCategory(key) {
       const cat = menuData[key];
-      if (!cat) return;
-
-      document.getElementById("modalTitle").innerText = cat.title;
-      const body = document.getElementById("modalBody");
-      body.innerHTML = "";
-
-      // Grupları dön
-      Object.keys(cat.groups).forEach(groupName => {
-        // Grup Başlığı
-        const title = document.createElement("div");
-        title.className = "group-title";
-        title.innerText = groupName;
-        body.appendChild(title);
-
-        // Ürün Listesi
-        const listDiv = document.createElement("div");
-        listDiv.className = "product-list";
-
-        cat.groups[groupName].forEach(item => {
-          const itemDiv = document.createElement("div");
-          itemDiv.className = "product-item";
-          itemDiv.onclick = () => sepeteEkle(item.name, item.price);
-          itemDiv.innerHTML = `
-            <img src="${item.image || 'default.png'}" class="p-img" onerror="this.style.opacity=0">
-            <div class="p-details">
-              <span class="p-name">${item.name}</span>
-              <span class="p-price">₺${item.price}</span>
-            </div>
-            <div class="add-icon">+</div>
-          `;
-          listDiv.appendChild(itemDiv);
-        });
-        body.appendChild(listDiv);
-      });
-
-      document.getElementById("categoryModal").classList.add("active");
-    }
-
-    function closeMenu() {
-      document.getElementById("categoryModal").classList.remove("active");
-    }
-
-    // --- 3. SEPET İŞLEMLERİ ---
-    function sepeteEkle(name, price) {
-      const existing = cart.find(i => i.name === name);
-      if (existing) {
-        existing.qty++;
-      } else {
-        cart.push({ name, price, qty: 1 });
-      }
-      // Ufak bildirim
-      const btn = document.querySelector(".fab-cart");
-      btn.style.transform = "scale(1.1)";
-      setTimeout(() => btn.style.transform = "scale(1)", 200);
-      
-      updateCartUI();
-    }
-
-    function updateCartUI() {
-      const count = cart.reduce((a, b) => a + b.qty, 0);
-      const total = cart.reduce((a, b) => a + (b.price * b.qty), 0);
-      
-      document.getElementById("cartCount").innerText = count;
-      document.getElementById("cartTotal").innerText = "₺" + total;
-
-      const list = document.getElementById("cartItems");
+      document.getElementById("modalCatTitle").innerText = cat.title;
+      const list = document.getElementById("productList");
       list.innerHTML = "";
 
-      if (cart.length === 0) {
-        document.getElementById("emptyMsg").style.display = "block";
-        document.getElementById("cartInputs").style.display = "none";
-      } else {
-        document.getElementById("emptyMsg").style.display = "none";
-        document.getElementById("cartInputs").style.display = "block";
+      Object.keys(cat.groups).forEach(grpName => {
+        const title = document.createElement("div");
+        title.className = "group-title";
+        title.innerText = grpName;
+        list.appendChild(title);
 
-        cart.forEach((item, idx) => {
-          const div = document.createElement("div");
-          div.className = "cart-item";
-          div.innerHTML = `
-            <div>
-              <div style="font-weight:600">${item.name}</div>
-              <div style="font-size:0.85rem; color:var(--accent)">₺${item.price}</div>
+        cat.groups[grpName].forEach(p => {
+          const row = document.createElement("div");
+          row.className = "product-row";
+          row.onclick = () => addToCart(p.name, p.price);
+          row.innerHTML = `
+            <img src="${p.img || 'logo.png'}" onerror="this.src='logo.png'">
+            <div class="p-info">
+              <span class="p-name">${p.name}</span>
+              <span class="p-price">₺${p.price}</span>
             </div>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <button class="qty-btn" onclick="updateQty(${idx}, -1)">-</button>
-              <span>${item.qty}</span>
-              <button class="qty-btn" onclick="updateQty(${idx}, 1)">+</button>
-            </div>
+            <button class="add-btn">+</button>
           `;
-          list.appendChild(div);
+          list.appendChild(row);
         });
-      }
+      });
+
+      document.getElementById("productModal").style.display = "flex";
     }
 
-    function updateQty(idx, change) {
-      cart[idx].qty += change;
-      if (cart[idx].qty <= 0) cart.splice(idx, 1);
-      updateCartUI();
+    function closeProductModal() {
+      document.getElementById("productModal").style.display = "none";
     }
 
-    function toggleCart() {
-      document.getElementById("cartDrawer").classList.toggle("open");
+    // --- SEPET İŞLEMLERİ ---
+    function addToCart(name, price) {
+      const exist = cart.find(x => x.name === name);
+      if(exist) exist.qty++;
+      else cart.push({name, price, qty:1});
+      
+      updateCartBadge();
+      showAlert(translations[curLang].added);
     }
 
-    // --- 4. SİPARİŞ & ZİL ---
-    async function siparisVer() {
-      const masa = document.getElementById("masaInput").value.trim();
-      const oda = document.getElementById("odaInput").value.trim();
+    function updateCartBadge() {
+      const count = cart.reduce((a,b) => a+b.qty, 0);
+      const badge = document.getElementById("cartBadge");
+      badge.innerText = count;
+      badge.style.display = count > 0 ? "flex" : "none";
+      
+      // Badge Animasyonu Reset
+      badge.style.animation = 'none';
+      badge.offsetHeight; /* trigger reflow */
+      badge.style.animation = 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+    }
 
-      if (!masa && !oda) {
-        alert("Lütfen Masa veya Oda numaranızı giriniz!");
+    function openCart() {
+      renderCartItems();
+      document.getElementById("cartOverlay").style.display = "block";
+      setTimeout(() => document.getElementById("cartDrawer").classList.add("open"), 10);
+    }
+
+    function closeCart() {
+      document.getElementById("cartDrawer").classList.remove("open");
+      setTimeout(() => document.getElementById("cartOverlay").style.display = "none", 300);
+    }
+
+    function renderCartItems() {
+      const container = document.getElementById("cartItems");
+      container.innerHTML = "";
+      
+      if(cart.length === 0) {
+        document.getElementById("emptyCartMsg").style.display = "block";
+        document.getElementById("cartFooter").style.display = "none";
         return;
       }
 
-      const orderData = {
-        masa, oda,
-        items: cart,
-        total: cart.reduce((a, b) => a + (b.price * b.qty), 0),
-        status: "Beklemede",
-        timestamp: new Date()
-      };
+      document.getElementById("emptyCartMsg").style.display = "none";
+      document.getElementById("cartFooter").style.display = "block";
 
-      try {
-        await db.collection("siparisler").add(orderData);
-        alert("✅ Siparişiniz Alındı! Afiyet olsun.");
-        cart = [];
-        updateCartUI();
-        toggleCart();
-        // Masa bilgisini hatırla
-        localStorage.setItem("masaNo", masa);
-        localStorage.setItem("odaNo", oda);
-      } catch (e) {
-        alert("Hata oluştu: " + e.message);
+      let total = 0;
+      cart.forEach((item, idx) => {
+        total += item.price * item.qty;
+        const div = document.createElement("div");
+        div.className = "cart-item";
+        div.innerHTML = `
+          <div>
+            <div style="font-weight:600; color:var(--text-main)">${item.name}</div>
+            <div style="font-size:0.85rem; color:var(--accent)">₺${item.price}</div>
+          </div>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="changeQty(${idx}, -1)">-</button>
+            <span style="font-weight:600; min-width:20px; text-align:center; color:var(--text-main)">${item.qty}</span>
+            <button class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+      document.getElementById("cartTotalValue").innerText = "₺" + total;
+    }
+
+    function changeQty(idx, delta) {
+      cart[idx].qty += delta;
+      if(cart[idx].qty <= 0) cart.splice(idx, 1);
+      updateCartBadge();
+      renderCartItems();
+    }
+
+    function clearCart() {
+      cart = [];
+      updateCartBadge();
+      renderCartItems();
+    }
+
+    // --- SİPARİŞ & ZİL ---
+    async function sendOrder() {
+      const masa = document.getElementById("masaInput").value;
+      const oda = document.getElementById("odaInput").value;
+      
+      if(!masa && !oda) {
+        showAlert(translations[curLang].reqMasa);
+        return;
       }
+
+      const total = cart.reduce((a,b)=>a+(b.price*b.qty),0);
+      
+      try {
+        await db.collection("siparisler").add({
+          masa, oda,
+          urunler: cart,
+          toplam: total,
+          durum: "Beklemede",
+          tarih: new Date()
+        });
+        
+        showAlert(translations[curLang].sent);
+        cart = [];
+        updateCartBadge();
+        closeCart();
+        
+        localStorage.setItem("masa", masa);
+        localStorage.setItem("oda", oda);
+
+      } catch(e) { console.error(e); }
     }
 
-    function openZilModal() {
-      document.getElementById("zilModal").classList.add("active");
-      document.getElementById("zilInputs").style.display = "none";
+    function openZil() {
+      document.getElementById("zilModal").style.display = "flex";
+      document.getElementById("zilInputDiv").style.display = "none";
     }
-    function closeZilModal() {
-      document.getElementById("zilModal").classList.remove("active");
-    }
+    function closeZil() { document.getElementById("zilModal").style.display = "none"; }
     
-    function sendCall(type) {
-        currentCallType = type;
-        const storedMasa = localStorage.getItem("masaNo");
-        if(storedMasa) {
-            document.getElementById("zilMasa").value = storedMasa;
-        }
-        document.getElementById("zilInputs").style.display = "block";
+    function callType(type) {
+      callCategory = type;
+      const storedMasa = localStorage.getItem("masa");
+      if(storedMasa) document.getElementById("zilMasa").value = storedMasa;
+      document.getElementById("zilInputDiv").style.display = "block";
     }
 
     function confirmCall() {
-        const masa = document.getElementById("zilMasa").value;
-        if(!masa) { alert("Masa no giriniz"); return; }
-        
-        db.collection("cagrilar").add({
-            tip: currentCallType,
-            masa: masa,
-            zaman: new Date()
-        }).then(() => {
-            alert(currentCallType + " görevlisi çağrıldı!");
-            closeZilModal();
-            document.getElementById("dingSound").play().catch(e=>{});
-        });
+      const masa = document.getElementById("zilMasa").value;
+      if(!masa) { showAlert(translations[curLang].reqMasa); return; }
+      
+      db.collection("cagrilar").add({
+        tip: callCategory,
+        masa: masa,
+        zaman: new Date()
+      }).then(() => {
+        showAlert(translations[curLang].callSent);
+        closeZil();
+        document.getElementById("dingSound").play().catch(()=>{});
+      });
     }
 
     // --- YARDIMCI ---
-    function checkUrlParams() {
+    function showAlert(msg) {
+      const box = document.getElementById("customAlert");
+      box.innerText = msg;
+      box.classList.add("show");
+      setTimeout(() => box.classList.remove("show"), 2500);
+    }
+
+    function checkParams() {
       const p = new URLSearchParams(window.location.search);
-      const m = p.get('masa');
-      const o = p.get('oda');
-      if (m) { document.getElementById("masaInput").value = m; localStorage.setItem("masaNo", m); }
-      if (o) { document.getElementById("odaInput").value = o; localStorage.setItem("odaNo", o); }
+      if(p.get("masa")) {
+        document.getElementById("masaInput").value = p.get("masa");
+        document.getElementById("zilMasa").value = p.get("masa");
+        localStorage.setItem("masa", p.get("masa"));
+      }
+      if(p.get("oda")) {
+        document.getElementById("odaInput").value = p.get("oda");
+        localStorage.setItem("oda", p.get("oda"));
+      }
       
-      const storedM = localStorage.getItem("masaNo");
-      if(storedM) {
-          document.getElementById("masaInput").value = storedM;
-          document.getElementById("zilMasa").value = storedM;
+      // LocalStorage kontrolü
+      const lm = localStorage.getItem("masa");
+      if(lm && !document.getElementById("masaInput").value) {
+         document.getElementById("masaInput").value = lm;
+         document.getElementById("zilMasa").value = lm;
       }
     }
 
+    // --- DİL & TEMA ---
     function toggleTheme() {
-      document.body.classList.toggle("light-mode");
+      document.body.classList.toggle("dark-mode");
+      const isDark = document.body.classList.contains("dark-mode");
+      document.getElementById("themeIcon").innerText = isDark ? "☀️" : "🌙";
+    }
+
+    function changeLanguage(lang) {
+      curLang = lang;
+      const t = translations[lang];
+      document.getElementById("brandName").innerText = t.brand;
+      document.getElementById("lblPopular").innerText = t.popular;
+      document.getElementById("lblCart").innerText = t.cart;
+      document.getElementById("lblMyCart").innerText = t.myCart;
+      document.getElementById("emptyCartMsg").innerText = t.empty;
+      document.getElementById("lblTotal").innerText = t.total;
+      document.getElementById("btnOrder").innerText = t.order;
+      document.getElementById("btnClear").innerText = t.clear;
+      document.getElementById("lblCallStaff").innerText = t.call;
+      document.getElementById("masaInput").placeholder = t.masaPh;
+      document.getElementById("odaInput").placeholder = t.odaPh;
+      
+      // Menüyü de tekrar render etmek gerekir aslında ama basit tutuyoruz
+      // Sadece statik textleri değiştirdik.
     }
   </script>
 </body>
