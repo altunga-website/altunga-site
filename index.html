@@ -14,7 +14,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <style>
-    /* --- MODERN LIGHT THEME --- */
+    /* --- TEMALAR --- */
     :root {
       --bg-body: #f8fafc;
       --bg-header: rgba(255, 255, 255, 0.95);
@@ -30,7 +30,6 @@
       --font-main: 'Poppins', sans-serif;
     }
 
-    /* DARK MODE */
     body.dark-mode {
       --bg-body: #0f172a;
       --bg-header: rgba(15, 23, 42, 0.95);
@@ -76,7 +75,7 @@
     .slider-item:active { transform: scale(0.95); }
     .slider-item img { width: 100%; height: 100%; object-fit: cover; }
     .slider-info { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding: 30px 10px 10px; color: white; }
-    .slider-info div { font-size: 0.85rem; font-weight: 600; text-shadow: 0 1px 2px black; }
+    .slider-info div { font-size: 0.85rem; font-weight: 600; text-shadow: 0 1px 2px black; line-height: 1.2; }
     .slider-info span { font-size: 0.9rem; color: #fbbf24; font-weight: 700; text-shadow: 0 1px 2px black; }
 
     /* --- GRID --- */
@@ -87,7 +86,7 @@
     .category-card img { width: 55px; height: 55px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
     .category-card h3 { margin: 0; font-size: 0.95rem; font-weight: 600; color: var(--text-main); text-align: center; }
 
-    /* --- MODAL (ORTALI) --- */
+    /* --- MODAL --- */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 6000; display: none; align-items: center; justify-content: center; }
     .modal-content { background: var(--bg-card); width: 90%; max-width: 450px; max-height: 80vh; border-radius: 24px; display: flex; flex-direction: column; animation: modalPop 0.3s ease-out; box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
     @keyframes modalPop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
@@ -114,7 +113,7 @@
     .p-price { color: var(--accent); font-weight: 700; font-size: 0.9rem; }
     .add-btn { width: 28px; height: 28px; border-radius: 50%; background: var(--primary); color: white; border: none; display: flex; align-items: center; justify-content: center; font-size: 18px; }
 
-    /* --- SEPET DRAWER (Z-Index: 99999) --- */
+    /* --- SEPET --- */
     .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 99998; display: none; }
     .cart-drawer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card); border-radius: 24px 24px 0 0; padding: 25px; z-index: 99999; transform: translateY(110%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 -10px 50px rgba(0,0,0,0.3); max-height: 90vh; display: flex; flex-direction: column; }
     .cart-drawer.open { transform: translateY(0); }
@@ -130,7 +129,7 @@
     .order-btn { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
     .clear-btn { width: 100%; background: transparent; border: none; color: var(--danger); margin-top: 10px; cursor: pointer; padding: 10px; font-size: 0.9rem; }
 
-    /* --- FLOATING & ALERTS --- */
+    /* --- FLOATING --- */
     .fab-container { position: fixed; bottom: 25px; left: 20px; right: 20px; display: flex; justify-content: space-between; pointer-events: none; z-index: 9000; }
     .fab-btn { pointer-events: auto; height: 55px; border-radius: 28px; border: none; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-main); font-weight: 600; font-size: 1rem; cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.15); transition: transform 0.2s; }
     .fab-btn:active { transform: scale(0.95); }
@@ -160,8 +159,7 @@
   </header>
 
   <h2 class="slider-title" id="lblPopular">🔥 Popüler Ürünler</h2>
-  <div class="slider-container" id="sliderTrack">
-    </div>
+  <div class="slider-container" id="sliderTrack"></div>
 
   <div id="loader">Menü Yükleniyor...</div>
   <div class="menu-grid" id="menuGrid"></div>
@@ -222,7 +220,6 @@
   <audio id="dingSound" src="ding.mp3"></audio>
 
   <script>
-    // --- FIREBASE AYARLARI ---
     const firebaseConfig = {
       apiKey: "AIzaSyC2kYwYuv7drDw0zViXYN4DqpppbtP_coY",
       authDomain: "altunga-siparis.firebaseapp.com",
@@ -236,7 +233,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // --- SÖZLÜK ---
     let curLang = 'tr';
     const uiTranslations = {
       tr: { brand: "Altunga E Spor Merkezi", popular: "🔥 Popüler Ürünler", cart: "Sepet", myCart: "Sepetim", empty: "Sepetiniz boş", total: "Toplam", order: "Sipariş Ver", clear: "Sepeti Temizle", call: "Görevli Çağır", masaPh: "Masa No", odaPh: "Oda No", added: "Sepete Eklendi!", sent: "Sipariş Alındı!", callSent: "Görevli Geliyor!", tech: "Bilişim / Teknik", acc: "Sipariş / Hesap", sendCall: "Çağrı Gönder", reqMasa: "Lütfen Masa veya Oda giriniz." },
@@ -244,36 +240,7 @@
     };
 
     const vocab = {
-      "İçecekler": { tr: "İçecekler", en: "Drinks" },
-      "Atıştırmalık": { tr: "Atıştırmalık", en: "Snacks" },
-      "Şekerleme": { tr: "Şekerleme", en: "Candy" },
-      "Fast Food": { tr: "Fast Food", en: "Fast Food" },
-      "Dondurma": { tr: "Dondurma", en: "Ice Cream" },
-      "Döner": { tr: "Döner", en: "Doner" },
-      "Tost": { tr: "Tost", en: "Toast" },
-      "Su": { tr: "Su", en: "Water" },
-      "Gazlı İçecekler": { tr: "Gazlı İçecekler", en: "Fizzy Drinks" },
-      "Maden Suyu": { tr: "Maden Suyu", en: "Mineral Water" },
-      "Enerji İçeceği": { tr: "Enerji İçeceği", en: "Energy Drink" },
-      "Soğuk Çay": { tr: "Soğuk Çay", en: "Ice Tea" },
-      "Soğuk Kahve": { tr: "Soğuk Kahve", en: "Iced Coffee" },
-      "Meyve Suyu": { tr: "Meyve Suyu", en: "Fruit Juice" },
-      "Cips": { tr: "Cips", en: "Chips" },
-      "Bisküvi": { tr: "Bisküvi", en: "Biscuit" },
-      "Gofret & Çikolata": { tr: "Gofret & Çikolata", en: "Wafer & Chocolate" },
-      "Kek": { tr: "Kek", en: "Cake" },
-      "Kraker": { tr: "Kraker", en: "Cracker" },
-      "Patso": { tr: "Patso", en: "Patso" },
-      "Tavuk Döner": { tr: "Tavuk Döner", en: "Chicken Doner" },
-      "Et Döner": { tr: "Et Döner", en: "Meat Doner" },
-      "Algida": { tr: "Algida", en: "Algida" },
-      "Cornetto": { tr: "Cornetto", en: "Cornetto" },
-      "Magnum": { tr: "Magnum", en: "Magnum" },
-      "Boom Boom": { tr: "Boom Boom", en: "Boom Boom" },
-      "Classics": { tr: "Classics", en: "Classics" },
-      "Stick": { tr: "Stick", en: "Stick" },
-      "Max": { tr: "Max", en: "Max" },
-      "Diğer": { tr: "Diğer", en: "Other" }
+      "İçecekler": { tr: "İçecekler", en: "Drinks" }, "Atıştırmalık": { tr: "Atıştırmalık", en: "Snacks" }, "Şekerleme": { tr: "Şekerleme", en: "Candy" }, "Fast Food": { tr: "Fast Food", en: "Fast Food" }, "Dondurma": { tr: "Dondurma", en: "Ice Cream" }, "Döner": { tr: "Döner", en: "Doner" }, "Tost": { tr: "Tost", en: "Toast" }, "Su": { tr: "Su", en: "Water" }, "Gazlı İçecekler": { tr: "Gazlı İçecekler", en: "Fizzy Drinks" }, "Maden Suyu": { tr: "Maden Suyu", en: "Mineral Water" }, "Enerji İçeceği": { tr: "Enerji İçeceği", en: "Energy Drink" }, "Soğuk Çay": { tr: "Soğuk Çay", en: "Ice Tea" }, "Soğuk Kahve": { tr: "Soğuk Kahve", en: "Iced Coffee" }, "Meyve Suyu": { tr: "Meyve Suyu", en: "Fruit Juice" }, "Cips": { tr: "Cips", en: "Chips" }, "Bisküvi": { tr: "Bisküvi", en: "Biscuit" }, "Gofret & Çikolata": { tr: "Gofret & Çikolata", en: "Wafer & Chocolate" }, "Kek": { tr: "Kek", en: "Cake" }, "Kraker": { tr: "Kraker", en: "Cracker" }, "Patso": { tr: "Patso", en: "Patso" }, "Tavuk Döner": { tr: "Tavuk Döner", en: "Chicken Doner" }, "Et Döner": { tr: "Et Döner", en: "Meat Doner" }, "Algida": { tr: "Algida", en: "Algida" }, "Cornetto": { tr: "Cornetto", en: "Cornetto" }, "Magnum": { tr: "Magnum", en: "Magnum" }, "Boom Boom": { tr: "Boom Boom", en: "Boom Boom" }, "Classics": { tr: "Classics", en: "Classics" }, "Stick": { tr: "Stick", en: "Stick" }, "Max": { tr: "Max", en: "Max" }, "Diğer": { tr: "Diğer", en: "Other" }
     };
 
     const catImages = { "İçecekler": "icecekler.png", "Atıştırmalık": "cips.png", "Şekerleme": "jelibon.png", "Fast Food": "patso.png", "Dondurma": "dondurma.png", "Döner": "doner.png", "Tost": "tost.png" };
@@ -282,12 +249,12 @@
     let cart = [];
     let callCategory = "";
 
-    // POPÜLER ÜRÜN İSİMLERİ (Buraya Tam Olarak TR İsimlerini Yazmalısın)
+    // GÜNCELLENMİŞ POPÜLER LİSTESİ (DB'deki isimlerle eşleşmeli)
     const popularItemNames = [
         "Magnum Classic", 
-        "Red Bull 250ml.", // Tam isim önemli
-        "Patso Menü", 
-        "Doritos Tako Mega", 
+        "Red Bull Pink E. 250ml.", 
+        "Patso Menü (Patso + Ş.Kola)", // Tam isim
+        "Doritos Tako Mega Boy 193gr.", 
         "Nescafe Xpress L. Original 250ml.", 
         "Nogger Sandwich"
     ];
@@ -298,53 +265,23 @@
     });
 
     // --- YARDIMCI ---
+    function setText(id, text) {
+        const el = document.getElementById(id);
+        if(el) el.innerText = text;
+    }
+    function setPlaceholder(id, text) {
+        const el = document.getElementById(id);
+        if(el) el.placeholder = text;
+    }
     function getTrans(key) {
       if (!key) return "";
       const k = key.trim();
       if (vocab[k] && vocab[k][curLang]) return vocab[k][curLang];
       return k;
     }
-
     function getProductDisplayName(item) {
         if(curLang === 'en' && item.name_en) return item.name_en;
         return item.name_tr;
-    }
-
-    function findProductInMenu(name) {
-        for(let cat in menuData) {
-            for(let grp in menuData[cat].groups) {
-                const found = menuData[cat].groups[grp].find(i => i.name_tr === name);
-                if(found) return found;
-            }
-        }
-        return null;
-    }
-
-    // --- SLIDER (DİNAMİK FİYATLI) ---
-    function setupSlider() {
-      const track = document.getElementById("sliderTrack");
-      let html = "";
-      
-      popularItemNames.forEach(name => {
-          const product = findProductInMenu(name);
-          if(product) {
-              const displayName = getProductDisplayName(product);
-              // Objeyi stringify ederken quote escape yapmak gerekir, 
-              // en temizi click handler'a ID veya referans vermek ama burada 
-              // basitçe objeyi atıyoruz (çift tırnak kaçışına dikkat)
-              const safeProduct = JSON.stringify(product).replace(/"/g, '&quot;');
-              
-              html += `
-                <div class="slider-item" onclick="addToCartObj(${safeProduct})">
-                    <img src="${product.img}" onerror="this.src='logo.png'">
-                    <div class="slider-info">
-                        <div>${displayName}</div>
-                        <span>₺${product.price}</span>
-                    </div>
-                </div>`;
-          }
-      });
-      track.innerHTML = html;
     }
 
     // --- MENÜ ÇEKME ---
@@ -352,6 +289,7 @@
       try {
         const snapshot = await db.collection("menu_items").get();
         menuData = {};
+        const allProducts = []; // Slider yedeği için
         
         snapshot.forEach(doc => {
           const d = doc.data();
@@ -361,30 +299,71 @@
           const rawGrp = (d.group || "Diğer").trim();
           if(!menuData[rawCat].groups[rawGrp]) menuData[rawCat].groups[rawGrp] = [];
           
-          menuData[rawCat].groups[rawGrp].push({
+          const product = {
             id: doc.id,
             name_tr: d.name_tr,
             name_en: d.name_en || d.name_tr,
             price: d.price,
             img: d.image
-          });
+          };
+          menuData[rawCat].groups[rawGrp].push(product);
+          allProducts.push(product);
         });
 
         renderGrid();
-        setupSlider(); // Veri geldikten sonra slider'ı kur
+        setupSlider(allProducts);
         document.getElementById("loader").style.display = "none";
       } catch (e) { console.error(e); }
+    }
+
+    // --- SLIDER (AKILLI DOLUM) ---
+    function setupSlider(allProducts) {
+      const track = document.getElementById("sliderTrack");
+      if(!track) return;
+      
+      let html = "";
+      let foundCount = 0;
+
+      // 1. Önce listedeki popüler ürünleri bul
+      popularItemNames.forEach(name => {
+          // İsim içerenleri bul (Tam eşleşme yerine 'includes' daha güvenli)
+          const product = allProducts.find(p => p.name_tr.includes(name));
+          if(product) {
+              html += createSliderItem(product);
+              foundCount++;
+          }
+      });
+
+      // 2. Eğer 6'dan az ürün varsa, rastgele ürün ekle
+      if(foundCount < 6) {
+          for(let i=0; i < (6 - foundCount); i++) {
+              if(allProducts[i]) html += createSliderItem(allProducts[i]);
+          }
+      }
+
+      track.innerHTML = html;
+    }
+
+    function createSliderItem(product) {
+        const displayName = getProductDisplayName(product);
+        const safeProduct = JSON.stringify(product).replace(/"/g, '&quot;');
+        return `
+            <div class="slider-item" onclick="addToCartObj(${safeProduct})">
+                <img src="${product.img}" onerror="this.src='logo.png'">
+                <div class="slider-info">
+                    <div>${displayName}</div>
+                    <span>₺${product.price}</span>
+                </div>
+            </div>`;
     }
 
     function renderGrid() {
       const grid = document.getElementById("menuGrid");
       grid.innerHTML = "";
-      
       Object.keys(menuData).forEach(rawCat => {
         const cat = menuData[rawCat];
         const imgPath = catImages[rawCat] || 'logo.png';
         const displayTitle = getTrans(rawCat);
-
         const div = document.createElement("div");
         div.className = "category-card";
         div.onclick = () => openCategory(rawCat);
@@ -395,14 +374,13 @@
 
     function openCategory(rawCat) {
       const cat = menuData[rawCat];
-      document.getElementById("modalCatTitle").innerText = getTrans(cat.title);
+      setText("modalCatTitle", getTrans(cat.title));
       const list = document.getElementById("productList");
       list.innerHTML = "";
 
       Object.keys(cat.groups).forEach((rawGrp) => {
         const groupDiv = document.createElement("div");
         groupDiv.className = "accordion-group";
-
         const header = document.createElement("div");
         header.className = "accordion-header";
         header.innerHTML = getTrans(rawGrp);
@@ -411,7 +389,6 @@
             const content = this.nextElementSibling;
             content.classList.toggle("show");
         };
-
         const content = document.createElement("div");
         content.className = "accordion-content";
 
@@ -419,23 +396,19 @@
           const displayName = getProductDisplayName(p);
           const row = document.createElement("div");
           row.className = "product-row";
-          // Objeyi gönderiyoruz
           const safeP = JSON.stringify(p).replace(/"/g, '&quot;');
+          row.onclick = () => addToCartObj(p);
           row.innerHTML = `
-            <div style="display:flex; align-items:center; gap:15px; flex:1;" onclick="addToCartObj(${safeP})">
-                <img src="${p.img || 'logo.png'}" onerror="this.src='logo.png'">
-                <div class="p-info"><span class="p-name">${displayName}</span><span class="p-price">₺${p.price}</span></div>
-                <div class="add-btn">+</div>
-            </div>
+            <img src="${p.img || 'logo.png'}" onerror="this.src='logo.png'">
+            <div class="p-info"><span class="p-name">${displayName}</span><span class="p-price">₺${p.price}</span></div>
+            <div class="add-btn">+</div>
           `;
           content.appendChild(row);
         });
-
         groupDiv.appendChild(header);
         groupDiv.appendChild(content);
         list.appendChild(groupDiv);
       });
-
       document.getElementById("productModal").style.display = "flex";
     }
 
@@ -443,11 +416,9 @@
 
     // --- SEPET İŞLEMLERİ ---
     function addToCartObj(product) {
-      // Sepette name_tr ile kontrol edelim (Benzersiz ID yerine isim kullanıyorduk)
       const exist = cart.find(x => x.name_tr === product.name_tr);
-      if(exist) {
-        exist.qty++;
-      } else {
+      if(exist) { exist.qty++; } 
+      else {
         cart.push({
             name_tr: product.name_tr,
             name_en: product.name_en || product.name_tr,
@@ -461,12 +432,14 @@
 
     function updateCartBadge() {
       const count = cart.reduce((a,b) => a+b.qty, 0);
+      setText("cartBadge", count);
       const badge = document.getElementById("cartBadge");
-      badge.innerText = count;
-      badge.style.display = count > 0 ? "flex" : "none";
-      badge.style.animation = 'none';
-      badge.offsetHeight; 
-      badge.style.animation = 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+      if(badge) {
+          badge.style.display = count > 0 ? "flex" : "none";
+          badge.style.animation = 'none';
+          badge.offsetHeight; 
+          badge.style.animation = 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+      }
     }
 
     function renderCartItems() {
@@ -488,14 +461,10 @@
       cart.forEach((item, idx) => {
         total += item.price * item.qty;
         const dName = curLang === 'en' ? item.name_en : item.name_tr;
-        
         const div = document.createElement("div");
         div.className = "cart-item";
         div.innerHTML = `
-          <div>
-            <div style="font-weight:600; color:var(--text-main)">${dName}</div>
-            <div style="font-size:0.85rem; color:var(--accent)">₺${item.price}</div>
-          </div>
+          <div><div style="font-weight:600; color:var(--text-main)">${dName}</div><div style="font-size:0.85rem; color:var(--accent)">₺${item.price}</div></div>
           <div class="qty-control">
             <button class="qty-btn" onclick="changeQty(${idx}, -1)">-</button>
             <span style="font-weight:600; min-width:20px; text-align:center; color:var(--text-main)">${item.qty}</span>
@@ -504,7 +473,7 @@
         `;
         container.appendChild(div);
       });
-      document.getElementById("cartTotalValue").innerText = "₺" + total;
+      setText("cartTotalValue", "₺" + total);
     }
 
     function changeQty(index, delta) {
@@ -531,7 +500,6 @@
       setTimeout(() => document.getElementById("cartOverlay").style.display = "none", 300);
     }
 
-    // --- SİPARİŞ & ZİL ---
     async function sendOrder() {
       const masa = document.getElementById("masaInput").value;
       const oda = document.getElementById("odaInput").value;
@@ -558,11 +526,12 @@
       });
     }
 
-    // --- YARDIMCI ---
     function showAlert(msg) {
       const box = document.getElementById("customAlert");
-      box.innerText = msg; box.classList.add("show");
-      setTimeout(() => box.classList.remove("show"), 2500);
+      if(box) {
+          box.innerText = msg; box.classList.add("show");
+          setTimeout(() => box.classList.remove("show"), 2500);
+      }
     }
     function checkParams() {
       const p = new URLSearchParams(window.location.search);
@@ -574,31 +543,32 @@
     function toggleTheme() {
       document.body.classList.toggle("dark-mode");
       const isDark = document.body.classList.contains("dark-mode");
-      document.getElementById("themeIcon").innerText = isDark ? "☀️" : "🌙";
+      setText("themeIcon", isDark ? "☀️" : "🌙");
     }
+
     function changeLanguage(lang) {
       curLang = lang;
       const t = uiTranslations[lang];
-      document.getElementById("brandName").innerText = t.brand;
-      document.getElementById("lblPopular").innerText = t.popular;
-      document.getElementById("lblCart").innerText = t.cart;
-      document.getElementById("lblMyCart").innerText = t.myCart;
-      document.getElementById("emptyCartMsg").innerText = t.empty;
-      document.getElementById("lblTotal").innerText = t.total;
-      document.getElementById("btnOrder").innerText = t.order;
-      document.getElementById("btnClear").innerText = t.clear;
-      document.getElementById("lblCallStaff").innerText = t.call;
-      document.getElementById("masaInput").placeholder = t.masaPh;
-      document.getElementById("odaInput").placeholder = t.odaPh;
-      document.getElementById("lblTech").innerText = t.tech;
-      document.getElementById("lblOrderBill").innerText = t.acc;
-      document.getElementById("btnSendCall").innerText = t.sendCall;
-      document.getElementById("zilMasa").placeholder = t.masaPh;
+      // Güvenli Seçim (Hata vermez)
+      setText("brandName", t.brand);
+      setText("lblPopular", t.popular);
+      setText("lblCart", t.cart);
+      setText("lblMyCart", t.myCart);
+      setText("emptyCartMsg", t.empty);
+      setText("lblTotal", t.total);
+      setText("btnOrder", t.order);
+      setText("btnClear", t.clear);
+      setText("lblCallStaff", t.call);
+      setPlaceholder("masaInput", t.masaPh);
+      setPlaceholder("odaInput", t.odaPh);
+      setText("lblTech", t.tech);
+      setText("lblOrderBill", t.acc);
+      setText("btnSendCall", t.sendCall);
+      setPlaceholder("zilMasa", t.masaPh);
 
-      // Dinamik içeriği yenile
-      renderGrid(); 
-      setupSlider();
-      renderCartItems(); 
+      // İçeriği Yenile
+      fetchMenu(); // Menü ve Slider'ı yeniden çeker ve dile göre yazar
+      renderCartItems(); // Sepet açıksa orayı da güncelle
       closeProductModal(); 
     }
   </script>
