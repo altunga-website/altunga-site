@@ -9,11 +9,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
   <style>
     :root {
       --bg-body: #f1f5f9; --bg-card: #ffffff; --text-main: #1e293b; --text-muted: #64748b;
@@ -31,7 +27,8 @@
     /* Header & Controls */
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
     .header h1 { margin: 0; font-size: 1.5rem; }
-    .controls button { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: 0.2s; }
+    .controls { display: flex; gap: 10px; }
+    .controls button, .controls select { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: 0.2s; font-family: inherit;}
     .controls button:hover { background: var(--border); }
 
     /* Login Screen */
@@ -41,53 +38,58 @@
     .admin-btn { background: var(--primary); }
     .kasiyer-btn { background: var(--text-muted); }
     
-    /* Pin Pad */
     #sifreBox { display: none; margin-top: 20px; }
     #sifreInput { width: 100%; padding: 10px; font-size: 1.5rem; text-align: center; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); }
     #pinPad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
     #pinPad button { padding: 15px; font-size: 1.2rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); cursor: pointer; }
-    #pinPad button:hover { background: var(--primary); color: white; border-color: var(--primary); }
     .pin-clear { background: var(--danger) !important; color: white !important; }
 
-    /* Orders Grid */
+    /* --- IZGARA YAPISI (Grid) --- */
+    .section-title { font-size: 1.2rem; font-weight: 600; margin: 30px 0 15px 0; border-bottom: 2px solid var(--border); padding-bottom: 10px; display:flex; align-items:center; gap:10px; }
     .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-    .order-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); position: relative; overflow: hidden; animation: slideIn 0.3s ease; }
+    
+    /* Sipariş Kartı */
+    .order-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); position: relative; animation: slideIn 0.3s ease; }
     @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     
     .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px; }
     .masa-badge { background: var(--primary); color: white; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.9rem; }
     .time-badge { font-size: 0.8rem; color: var(--text-muted); }
     
-    .product-list { margin-bottom: 15px; font-size: 0.95rem; }
-    .product-item { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding: 4px 0; }
+    .product-list { margin-bottom: 15px; font-size: 0.95rem; max-height: 200px; overflow-y: auto; }
+    .product-item { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding: 6px 0; }
     
-    .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+    .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 10px; border-top: 1px solid var(--border); }
     .total-price { font-size: 1.2rem; font-weight: 700; color: var(--success); }
     
-    .actions { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; }
-    .btn-action { flex: 1; padding: 8px; border: none; border-radius: 6px; color: white; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
+    .actions { display: flex; gap: 5px; margin-top: 15px; }
+    .btn-action { flex: 1; padding: 10px; border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
     .btn-prep { background: var(--warning); }
     .btn-done { background: var(--success); }
-    .btn-cancel { background: var(--text-muted); }
-    .btn-del { background: var(--danger); }
+    .btn-cancel { background: var(--text-muted); flex:0.4; }
+    .btn-del { background: var(--danger); flex:0.4; }
 
-    /* Calls List */
-    .calls-section { margin-top: 40px; }
-    .call-card { display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 5px solid var(--danger); box-shadow: var(--shadow); }
-    .call-info { display: flex; gap: 15px; align-items: center; }
-    .call-icon { font-size: 1.5rem; }
+    /* Çağrı Kartı (YENİ) */
+    .call-card { 
+        background: var(--bg-card); border: 1px solid var(--danger); border-left: 5px solid var(--danger);
+        border-radius: var(--radius); padding: 15px; box-shadow: var(--shadow);
+        display: flex; align-items: center; justify-content: space-between;
+        animation: pulse 2s infinite; 
+    }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+
+    .call-info { display: flex; align-items: center; gap: 15px; }
+    .call-icon { font-size: 2rem; }
+    .call-details h3 { margin: 0; font-size: 1rem; color: var(--text-main); }
+    .call-details p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
 
     /* Alert */
     .custom-alert { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 24px; border-radius: 30px; z-index: 11000; opacity: 0; pointer-events: none; transition: 0.3s; }
     .custom-alert.show { opacity: 1; top: 30px; }
-    .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; color: white; }
-    .status-Beklemede { background: var(--warning); }
-    .status-Hazirlaniyor { background: var(--primary); }
-    .status-Teslim { background: var(--success); }
 
     @media (max-width: 600px) {
-        .header { flex-direction: column; align-items: flex-start; }
-        .controls { width: 100%; display: flex; gap: 5px; overflow-x: auto; padding-bottom: 5px; }
+        .header { flex-direction: column; align-items: stretch; }
+        .controls { overflow-x: auto; padding-bottom: 5px; }
     }
   </style>
 </head>
@@ -121,10 +123,10 @@
       <h1>Sipariş Yönetimi</h1>
       <div id="aktifKullanici" style="font-size:0.9rem; color:var(--text-muted)"></div>
     </div>
-    <div class="controls" id="kontrolButonlar">
+    <div class="controls">
       <button onclick="toggleDarkMode()">🌙 Tema</button>
-      <select id="durumFiltre" onchange="listeleSiparisler()" style="padding:8px; border-radius:8px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-main)">
-        <option value="Tümü">Tüm Siparişler</option>
+      <select id="durumFiltre" onchange="listeleSiparisler()">
+        <option value="Tümü">Tümü</option>
         <option value="Beklemede">Beklemede</option>
         <option value="Hazirlaniyor">Hazırlanıyor</option>
       </select>
@@ -133,16 +135,17 @@
     </div>
   </div>
 
+  <div id="callsSection" style="display:none">
+      <div class="section-title">🔔 Garson Çağrıları</div>
+      <div class="grid-container" id="cagriListesi"></div>
+  </div>
+
+  <div class="section-title">📝 Siparişler</div>
   <div class="grid-container" id="siparisListesi">
     </div>
 
-  <div class="calls-section">
-    <h2>🔔 Garson Çağrıları</h2>
-    <div id="cagriListesi"></div>
-  </div>
-
 <script>
-// --- FIREBASE AYARLARI ---
+// --- FIREBASE ---
 const firebaseConfig = {
   apiKey: "AIzaSyC2kYwYuv7drDw0zViXYN4DqpppbtP_coY",
   authDomain: "altunga-siparis.firebaseapp.com",
@@ -157,7 +160,7 @@ const db = firebase.firestore();
 const ding = document.getElementById("ding");
 let aktifRol = "";
 
-// --- GİRİŞ İŞLEMLERİ ---
+// --- GİRİŞ ---
 function hazirla(rol) {
   aktifRol = rol;
   document.querySelectorAll('.giris-btn').forEach(b => b.style.display='none');
@@ -174,17 +177,13 @@ function pinSil() { document.getElementById("sifreInput").value = ""; }
 async function girisYap() {
   const sifre = document.getElementById("sifreInput").value;
   if (!sifre) return alert("Şifre giriniz");
-
   try {
     const doc = await db.collection("kullanicilar").doc(aktifRol).get();
     if (doc.exists && doc.data().sifre === sifre) {
       localStorage.setItem("adminGiris", "evet");
       localStorage.setItem("adminRol", aktifRol);
       baslatPanel();
-    } else {
-      alert("Hatalı Şifre!");
-      pinSil();
-    }
+    } else { alert("Hatalı Şifre!"); pinSil(); }
   } catch(e) { alert("Hata: " + e.message); }
 }
 
@@ -201,17 +200,15 @@ function cikisYap() {
   location.reload();
 }
 
-window.onload = () => {
-  if(localStorage.getItem("adminGiris") === "evet") baslatPanel();
-};
+window.onload = () => { if(localStorage.getItem("adminGiris") === "evet") baslatPanel(); };
 
-// --- SİPARİŞ LİSTELEME (HATA DÜZELTİLDİ) ---
+// --- SİPARİŞ LİSTELEME (DÜZELTİLDİ) ---
 function listeleSiparisler() {
   const filtre = document.getElementById("durumFiltre").value;
   
   db.collection("siparisler").orderBy("tarih", "desc").onSnapshot(snapshot => {
     const container = document.getElementById("siparisListesi");
-    container.innerHTML = ""; // Temizle ve yeniden yaz
+    container.innerHTML = ""; 
 
     snapshot.forEach(doc => {
       const data = doc.data();
@@ -219,22 +216,21 @@ function listeleSiparisler() {
 
       const tarih = data.tarih?.toDate().toLocaleTimeString("tr-TR", {hour:'2-digit', minute:'2-digit'}) || "";
       
-      // HATA DÜZELTMESİ BURADA: Yeni veri yapısına (name_tr, qty) uyumlu hale getirdim
-      // Eğer eski veri varsa (.ad, .adet) onu kullanır, yoksa yeniyi.
+      // *** KRİTİK DÜZELTME BURADA ***
+      // Hem eski veri (ad, adet) hem yeni veri (name_tr, qty) kontrol ediliyor
       let urunHTML = "";
-      data.urunler.forEach(u => {
-          const isim = u.name_tr || u.ad || "Bilinmeyen Ürün"; // Hem eski hem yeni
-          const adet = u.qty || u.adet || 1; // Hem eski hem yeni
-          urunHTML += `<div class="product-item"><span>${isim}</span> <b>x${adet}</b></div>`;
-      });
+      if(data.urunler && Array.isArray(data.urunler)) {
+          data.urunler.forEach(u => {
+              const isim = u.name_tr || u.ad || "Bilinmeyen Ürün"; // Önce yeni, sonra eski
+              const adet = u.qty || u.adet || 1; 
+              urunHTML += `<div class="product-item"><span>${isim}</span> <b>x${adet}</b></div>`;
+          });
+      }
 
+      const silBtn = aktifRol === "admin" ? `<button class="btn-action btn-del" onclick="sil('${doc.id}')">Sil</button>` : "";
+      
       const card = document.createElement("div");
       card.className = "order-card";
-      
-      // Yetki Kontrolü (Silme butonu sadece Admin'e)
-      const silBtn = aktifRol === "admin" ? `<button class="btn-action btn-del" onclick="sil('${doc.id}')">Sil</button>` : "";
-      const iptalBtn = `<button class="btn-action btn-cancel" onclick="durumGuncelle('${doc.id}', 'İptal')">İptal</button>`;
-
       card.innerHTML = `
         <div class="card-header">
             <span class="masa-badge">${data.masa || '?'} ${data.oda || ''}</span>
@@ -242,49 +238,61 @@ function listeleSiparisler() {
         </div>
         <div class="product-list">${urunHTML}</div>
         <div class="card-footer">
-            <span class="status-badge status-${data.durum}">${data.durum}</span>
+            <span style="font-weight:600; color:var(--text-muted)">${data.durum}</span>
             <span class="total-price">₺${data.toplam}</span>
         </div>
         <div class="actions">
             <button class="btn-action btn-prep" onclick="durumGuncelle('${doc.id}', 'Hazirlaniyor')">Hazırla</button>
             <button class="btn-action btn-done" onclick="durumGuncelle('${doc.id}', 'Teslim')">Teslim</button>
-            ${iptalBtn}
+            <button class="btn-action btn-cancel" onclick="durumGuncelle('${doc.id}', 'İptal')">İptal</button>
             ${silBtn}
         </div>
       `;
       container.appendChild(card);
+      
+      // Yeni sipariş sesi
+      if(snapshot.docChanges().some(c => c.type === 'added' && c.doc.id === doc.id)) {
+         ding.play().catch(()=>{});
+      }
     });
   });
 }
 
-// --- ÇAĞRILARI LİSTELE ---
+// --- ÇAĞRILARI LİSTELE (KART YAPISI) ---
 function listeleCagrilar() {
   db.collection("cagrilar").orderBy("zaman", "desc").onSnapshot(snapshot => {
-    const div = document.getElementById("cagriListesi");
-    div.innerHTML = "";
+    const container = document.getElementById("cagriListesi");
+    const section = document.getElementById("callsSection");
+    
+    if(snapshot.empty) {
+        section.style.display = "none";
+        return;
+    }
+    section.style.display = "block";
+    container.innerHTML = "";
     
     snapshot.forEach(doc => {
         const d = doc.data();
         const saat = d.zaman?.toDate().toLocaleTimeString("tr-TR") || "";
         const tipIcon = d.tip === "Bilişim" ? "💻" : "👋";
+        const tipText = d.tip === "Bilişim" ? "Teknik Destek" : "Garson Çağrısı";
         
-        // Admin değilse ve Bilişim ise gösterme
         if(d.tip === "Bilişim" && aktifRol !== "admin") return;
 
-        div.innerHTML += `
-            <div class="call-card">
-                <div class="call-info">
-                    <span class="call-icon">${tipIcon}</span>
-                    <div>
-                        <div style="font-weight:700">${d.tip}</div>
-                        <div style="font-size:0.9rem">${d.masa} - ${saat}</div>
-                    </div>
+        const card = document.createElement("div");
+        card.className = "call-card";
+        card.innerHTML = `
+            <div class="call-info">
+                <span class="call-icon">${tipIcon}</span>
+                <div class="call-details">
+                    <h3>${tipText}</h3>
+                    <p>Masa: <b>${d.masa}</b> • ${saat}</p>
                 </div>
-                <button class="btn-action btn-done" style="width:auto" onclick="yanitla('${doc.id}')">Tamam</button>
             </div>
+            <button class="btn-action btn-done" style="flex:0; min-width:80px;" onclick="yanitla('${doc.id}')">Tamam</button>
         `;
+        container.appendChild(card);
         
-        // Yeni çağrıda ses çal (sadece yeni eklendiyse)
         if(snapshot.docChanges().some(c => c.type === 'added' && c.doc.id === doc.id)) {
              ding.play().catch(()=>{});
         }
@@ -301,7 +309,7 @@ function durumGuncelle(id, durum) {
             const data = doc.data();
             data.durum = durum;
             data.kasiyer = aktifRol;
-            data.tarih = new Date(); // İşlem tarihi
+            data.tarih = new Date();
             
             db.collection("arsiv").add(data).then(() => {
                 db.collection("siparisler").doc(id).delete();
@@ -322,12 +330,9 @@ function yanitla(id) {
 }
 
 function sil(id) {
-    if(confirm("Sipariş kalıcı olarak silinecek?")) {
-        db.collection("siparisler").doc(id).delete();
-    }
+    if(confirm("Sipariş kalıcı olarak silinecek?")) db.collection("siparisler").doc(id).delete();
 }
 
-// --- TEMA & YARDIMCI ---
 function toggleDarkMode() {
     document.body.classList.toggle("dark");
     localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
