@@ -10,6 +10,9 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
   <style>
     :root {
       --bg-body: #f1f5f9; --bg-card: #ffffff; --text-main: #1e293b; --text-muted: #64748b;
@@ -27,7 +30,7 @@
     /* Header & Controls */
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
     .header h1 { margin: 0; font-size: 1.5rem; }
-    .controls { display: flex; gap: 10px; }
+    .controls { display: flex; gap: 10px; align-items: center; }
     .controls button, .controls select { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: 0.2s; font-family: inherit;}
     .controls button:hover { background: var(--border); }
 
@@ -44,11 +47,10 @@
     #pinPad button { padding: 15px; font-size: 1.2rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); cursor: pointer; }
     .pin-clear { background: var(--danger) !important; color: white !important; }
 
-    /* --- IZGARA YAPISI (Grid) --- */
+    /* --- SIPARIS KARTLARI (Grid) --- */
     .section-title { font-size: 1.2rem; font-weight: 600; margin: 30px 0 15px 0; border-bottom: 2px solid var(--border); padding-bottom: 10px; display:flex; align-items:center; gap:10px; }
     .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
     
-    /* Sipariş Kartı */
     .order-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); position: relative; animation: slideIn 0.3s ease; }
     @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     
@@ -69,7 +71,7 @@
     .btn-cancel { background: var(--text-muted); flex:0.4; }
     .btn-del { background: var(--danger); flex:0.4; }
 
-    /* Çağrı Kartı (YENİ) */
+    /* --- ÇAĞRI KARTLARI (Grid) --- */
     .call-card { 
         background: var(--bg-card); border: 1px solid var(--danger); border-left: 5px solid var(--danger);
         border-radius: var(--radius); padding: 15px; box-shadow: var(--shadow);
@@ -126,7 +128,7 @@
     <div class="controls">
       <button onclick="toggleDarkMode()">🌙 Tema</button>
       <select id="durumFiltre" onchange="listeleSiparisler()">
-        <option value="Tümü">Tümü</option>
+        <option value="Tümü">Tüm Siparişler</option>
         <option value="Beklemede">Beklemede</option>
         <option value="Hazirlaniyor">Hazırlanıyor</option>
       </select>
@@ -135,17 +137,17 @@
     </div>
   </div>
 
-  <div id="callsSection" style="display:none">
-      <div class="section-title">🔔 Garson Çağrıları</div>
-      <div class="grid-container" id="cagriListesi"></div>
-  </div>
-
   <div class="section-title">📝 Siparişler</div>
   <div class="grid-container" id="siparisListesi">
     </div>
 
+  <div id="callsSection" style="display:none; margin-top:40px;">
+      <div class="section-title" style="border-color:var(--danger)">🔔 Garson Çağrıları</div>
+      <div class="grid-container" id="cagriListesi"></div>
+  </div>
+
 <script>
-// --- FIREBASE ---
+// --- FIREBASE AYARLARI ---
 const firebaseConfig = {
   apiKey: "AIzaSyC2kYwYuv7drDw0zViXYN4DqpppbtP_coY",
   authDomain: "altunga-siparis.firebaseapp.com",
@@ -160,7 +162,7 @@ const db = firebase.firestore();
 const ding = document.getElementById("ding");
 let aktifRol = "";
 
-// --- GİRİŞ ---
+// --- GİRİŞ İŞLEMLERİ ---
 function hazirla(rol) {
   aktifRol = rol;
   document.querySelectorAll('.giris-btn').forEach(b => b.style.display='none');
@@ -177,6 +179,7 @@ function pinSil() { document.getElementById("sifreInput").value = ""; }
 async function girisYap() {
   const sifre = document.getElementById("sifreInput").value;
   if (!sifre) return alert("Şifre giriniz");
+
   try {
     const doc = await db.collection("kullanicilar").doc(aktifRol).get();
     if (doc.exists && doc.data().sifre === sifre) {
@@ -202,7 +205,7 @@ function cikisYap() {
 
 window.onload = () => { if(localStorage.getItem("adminGiris") === "evet") baslatPanel(); };
 
-// --- SİPARİŞ LİSTELEME (DÜZELTİLDİ) ---
+// --- SİPARİŞ LİSTELEME (DÜZELTİLDİ: name_tr || ad) ---
 function listeleSiparisler() {
   const filtre = document.getElementById("durumFiltre").value;
   
@@ -216,12 +219,11 @@ function listeleSiparisler() {
 
       const tarih = data.tarih?.toDate().toLocaleTimeString("tr-TR", {hour:'2-digit', minute:'2-digit'}) || "";
       
-      // *** KRİTİK DÜZELTME BURADA ***
-      // Hem eski veri (ad, adet) hem yeni veri (name_tr, qty) kontrol ediliyor
+      // *** KRİTİK DÜZELTME ***
       let urunHTML = "";
       if(data.urunler && Array.isArray(data.urunler)) {
           data.urunler.forEach(u => {
-              const isim = u.name_tr || u.ad || "Bilinmeyen Ürün"; // Önce yeni, sonra eski
+              const isim = u.name_tr || u.ad || "Bilinmeyen Ürün"; 
               const adet = u.qty || u.adet || 1; 
               urunHTML += `<div class="product-item"><span>${isim}</span> <b>x${adet}</b></div>`;
           });
@@ -258,7 +260,7 @@ function listeleSiparisler() {
   });
 }
 
-// --- ÇAĞRILARI LİSTELE (KART YAPISI) ---
+// --- ÇAĞRILARI LİSTELE (KART YAPISI + ALTTA) ---
 function listeleCagrilar() {
   db.collection("cagrilar").orderBy("zaman", "desc").onSnapshot(snapshot => {
     const container = document.getElementById("cagriListesi");
