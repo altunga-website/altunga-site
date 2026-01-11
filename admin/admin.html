@@ -104,8 +104,7 @@
     <div id="girisSecim">
       <h2 style="color:var(--text-main)">Altunga Yönetim</h2>
       <button class="giris-btn admin-btn" onclick="hazirla('admin')">🗝️ Yönetici</button>
-      <button class="giris-btn kasiyer-btn" onclick="hazirla('kasiyer1')">👤 Kasiyer Cafer</button>
-      <button class="giris-btn kasiyer-btn" onclick="hazirla('kasiyer2')">👤 Kasiyer Mustafa</button>
+      <button class="giris-btn kasiyer-btn" onclick="hazirla('kasiyer2')">☕ Teras Cafe</button>
 
       <div id="sifreBox">
         <input type="password" id="sifreInput" readonly placeholder="******">
@@ -193,7 +192,11 @@ async function girisYap() {
 function baslatPanel() {
   document.getElementById("girisOverlay").style.display = "none";
   aktifRol = localStorage.getItem("adminRol");
-  document.getElementById("aktifKullanici").innerText = `Giriş: ${aktifRol.toUpperCase()}`;
+  
+  // Görünen ismi burada da güncellemek şık olur
+  let gorunenIsim = aktifRol === 'kasiyer2' ? 'TERAS CAFE' : aktifRol.toUpperCase();
+  document.getElementById("aktifKullanici").innerText = `Giriş: ${gorunenIsim}`;
+  
   listeleSiparisler();
   listeleCagrilar();
 }
@@ -205,7 +208,7 @@ function cikisYap() {
 
 window.onload = () => { if(localStorage.getItem("adminGiris") === "evet") baslatPanel(); };
 
-// --- SİPARİŞ LİSTELEME (DÜZELTİLDİ: name_tr || ad) ---
+// --- SİPARİŞ LİSTELEME ---
 function listeleSiparisler() {
   const filtre = document.getElementById("durumFiltre").value;
   
@@ -219,7 +222,6 @@ function listeleSiparisler() {
 
       const tarih = data.tarih?.toDate().toLocaleTimeString("tr-TR", {hour:'2-digit', minute:'2-digit'}) || "";
       
-      // *** KRİTİK DÜZELTME ***
       let urunHTML = "";
       if(data.urunler && Array.isArray(data.urunler)) {
           data.urunler.forEach(u => {
@@ -252,7 +254,6 @@ function listeleSiparisler() {
       `;
       container.appendChild(card);
       
-      // Yeni sipariş sesi
       if(snapshot.docChanges().some(c => c.type === 'added' && c.doc.id === doc.id)) {
          ding.play().catch(()=>{});
       }
@@ -260,7 +261,7 @@ function listeleSiparisler() {
   });
 }
 
-// --- ÇAĞRILARI LİSTELE (KART YAPISI + ALTTA) ---
+// --- ÇAĞRILARI LİSTELE ---
 function listeleCagrilar() {
   db.collection("cagrilar").orderBy("zaman", "desc").onSnapshot(snapshot => {
     const container = document.getElementById("cagriListesi");
