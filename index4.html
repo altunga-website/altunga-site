@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paragraf Sıralama</title>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <style>
+        :root {
+            --bg-left: #f9f9f9;
+            --bg-right: #ffffff;
+            --header-color: #5d4037;
+            --text-color: #333;
+            --border-color: #e0e0e0;
+            --success-color: #2e7d32;
+            --success-bg: #e8f5e9;
+            --error-color: #c62828;
+            --error-bg: #ffebee;
+            --btn-check: #333;
+            --btn-retry: #757575;
+            --btn-show: #1976d2; /* Çözüm butonu için mavi ton */
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Segoe UI', 'Times New Roman', serif;
+            background-color: #eceff1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Ana Kapsayıcı */
+        .activity-container {
+            display: flex;
+            width: 1100px;
+            height: 650px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            overflow: hidden;
+            border: 1px solid #dcdcdc;
+        }
+
+        /* SOL PANEL */
+        .left-panel {
+            width: 30%;
+            background-color: var(--bg-left);
+            padding: 35px;
+            box-sizing: border-box;
+            border-right: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .left-panel h1 {
+            font-family: 'Georgia', serif;
+            font-size: 1.8rem;
+            color: #222;
+            margin: 0 0 5px 0;
+        }
+
+        .left-panel h2 {
+            font-family: 'Georgia', serif;
+            font-size: 1.1rem;
+            font-style: italic;
+            color: var(--header-color);
+            margin-bottom: 25px;
+            font-weight: normal;
+        }
+
+        .instruction {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        .instruction p {
+            margin-bottom: 15px;
+        }
+
+        /* SAĞ PANEL */
+        .right-panel {
+            width: 70%;
+            background-color: var(--bg-right);
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* Liste Alanı */
+        .list-viewport {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #sortable-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Kart Stili */
+        .item {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 12px 15px;
+            transition: all 0.3s ease; /* Animasyon eklendi */
+        }
+
+        .item:hover {
+            border-color: #aaa;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            transform: translateY(-1px);
+        }
+        
+        /* Sol Tutamaç */
+        .drag-handle-left {
+            flex-shrink: 0;
+            width: 25px;
+            color: #ccc;
+            font-size: 1.4rem;
+            margin-right: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: grab;
+        }
+        .item:active .drag-handle-left { cursor: grabbing; }
+
+        /* İçerik */
+        .item-content {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 1rem;
+            line-height: 1.4;
+            color: #333;
+            flex-grow: 1;
+        }
+
+        /* Sağ Kontroller (Oklar) */
+        .move-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-left: 15px;
+        }
+
+        .move-controls svg {
+            width: 20px;
+            height: 20px;
+            fill: #999;
+            cursor: pointer;
+            transition: fill 0.2s;
+        }
+
+        .move-controls svg:hover { fill: #555; }
+        .move-up { margin-bottom: 2px; }
+        .move-down { margin-top: 2px; }
+
+        /* Kontrol Sonrası Renkler */
+        .item.correct {
+            background-color: var(--success-bg);
+            border-color: var(--success-color);
+        }
+        .item.wrong {
+            background-color: var(--error-bg);
+            border-color: var(--error-color);
+        }
+
+        /* ALT PANEL (Butonlar) - ORTALI */
+        .footer-controls {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 70px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 30px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .btn-check {
+            background-color: var(--btn-check);
+            color: #fff;
+        }
+        .btn-check:hover { background-color: #000; }
+
+        .btn-retry {
+            background-color: var(--btn-retry);
+            color: #fff;
+            display: none;
+        }
+        .btn-retry:hover { background-color: #616161; }
+
+        .btn-show-answer {
+            background-color: var(--btn-show);
+            color: #fff;
+            display: none;
+        }
+        .btn-show-answer:hover { background-color: #1565c0; }
+
+        #result-text {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            min-height: 24px;
+        }
+
+        /* Mobil Uyumluluk */
+        @media (max-width: 900px) {
+            body { padding: 10px; height: auto; display: block; }
+            .activity-container {
+                width: 100%;
+                height: auto;
+                flex-direction: column;
+            }
+            .left-panel, .right-panel {
+                width: 100%;
+                height: auto;
+            }
+            .left-panel { border-right: none; border-bottom: 1px solid #eee; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="activity-container">
+        <div class="left-panel">
+            <h1>Paragraf Sıralama</h1>
+            <h2>DUHA KOCA OĞLU DELİ DUMRUL BOYU</h2>
+            <div class="instruction">
+                <p>Yan tarafta Duha Koca Oğlu Deli Dumrul Boyu hikâyesinden alınan parçalar karışık hâlde verilmiştir.</p>
+                <p>Olay örgüsünü dikkate alarak parçaları anlamlı bir bütün oluşturacak şekilde sıralayınız.</p>
+                <p style="margin-top:20px; font-size: 0.9rem; color: #888;"><em>Sıralamayı tamamlayınca "Kontrol Et" butonuna basınız.</em></p>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            
+            <div class="list-viewport">
+                <div id="sortable-list">
+                    </div>
+            </div>
+
+            <div class="footer-controls">
+                <div id="result-text"></div>
+                
+                <div class="button-group">
+                    <button id="check-btn" class="btn btn-check" onclick="checkOrder()">Kontrol Et</button>
+                    <button id="retry-btn" class="btn btn-retry" onclick="resetActivity()">Tekrar Dene</button>
+                    <button id="show-answer-btn" class="btn btn-show-answer" onclick="showSolution()">Çözümü Göster</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- GÜNCELLENMİŞ SENARYO VERİSİ ---
+        // ID'ler doğru sıralamayı (1'den 5'e) temsil eder.
+        const activityData = [
+            { 
+                id: 1, 
+                content: "<i>(Sahnenin bir köşesinde kaba, sağlam ahşaptan yapılmış bir köprü vardır. Sahnenin diğer köşesinde bir obanın çadırları, eşyaları görülmektedir.)</i>" 
+            },
+            { 
+                id: 2, 
+                content: "<i>(Dumrul, köprünün başında güçlü bir duruşla bir yolcudan para alırken görülür. Karşısında tedirgin bir yolcu, parayı korkuyla uzatır.)</i>" 
+            },
+            { 
+                id: 3, 
+                content: "<i>(Gür bir sesle)</i> Geç bakalım bre! Geç de, şu koskoca Oğuz elinde benim köprümden para vermeden geçen yiğit var mıymış görsünler! Otuz üç akçe! Geçmeyenden kırk! <i>(Yolcu hızla uzaklaşır. Dumrul keyifle güler.)</i> Benden deli, benden güçlü er var mıdır ki çıksın savaşsın benimle! Kahramanlığım Rum'a, Şam'a gitsin, ün salsın!" 
+            },
+            { 
+                id: 4, 
+                content: "<i>(Tam bu sırada, obadan gelen feryatlar ve ağıtlar iyice yükselir, Dumrul'un bu coşkusunu keser. Dumrul sinirlenerek sesin geldiği yöne döner.)</i>" 
+            },
+            { 
+                id: 5, 
+                content: "<b>DELİ DUMRUL:</b> <i>(Sinirle kılıcına dokunarak)</i> Bre! Ne oluyor orada? Benim köprümün yanında bu ne gürültü, bu ne kara feryat? Huzurumu kim bozuyor!" 
+            }
+        ];
+
+        let sortableInstance;
+        const listEl = document.getElementById('sortable-list');
+        const checkBtn = document.getElementById('check-btn');
+        const retryBtn = document.getElementById('retry-btn');
+        const showAnswerBtn = document.getElementById('show-answer-btn');
+        const resultText = document.getElementById('result-text');
+
+        document.addEventListener('DOMContentLoaded', initActivity);
+
+        function initActivity() {
+            listEl.innerHTML = "";
+            resultText.innerText = "";
+            checkBtn.style.display = "inline-block";
+            retryBtn.style.display = "none";
+            showAnswerBtn.style.display = "none";
+            enableControls();
+
+            // Listeyi Karıştır
+            let shuffled = [...activityData];
+            shuffleArray(shuffled);
+
+            shuffled.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'item';
+                div.setAttribute('data-id', item.id);
+                // HTML yapısı
+                div.innerHTML = `
+                    <div class="drag-handle-left">≡</div>
+                    <div class="item-content">${item.content}</div>
+                    <div class="move-controls">
+                        <svg class="move-up" viewBox="0 0 24 24" onclick="moveUp(${item.id})">
+                            <path d="M7.41 15.41L12 10.83L16.59 15.41L18 14L12 8L6 14L7.41 15.41Z" />
+                        </svg>
+                        <svg class="move-down" viewBox="0 0 24 24" onclick="moveDown(${item.id})">
+                            <path d="M7.41 8.59L12 13.17L16.59 8.59L18 10L12 16L6 10L7.41 8.59Z" />
+                        </svg>
+                    </div>
+                `;
+                listEl.appendChild(div);
+            });
+
+            if(sortableInstance) sortableInstance.destroy();
+            sortableInstance = new Sortable(listEl, {
+                animation: 150,
+                handle: '.drag-handle-left', 
+                ghostClass: 'sortable-ghost'
+            });
+        }
+
+        function moveUp(itemId) {
+            const item = document.querySelector(`.item[data-id='${itemId}']`);
+            const previousItem = item.previousElementSibling;
+            if (previousItem) {
+                listEl.insertBefore(item, previousItem);
+            }
+        }
+
+        function moveDown(itemId) {
+            const item = document.querySelector(`.item[data-id='${itemId}']`);
+            const nextItem = item.nextElementSibling;
+            if (nextItem) {
+                listEl.insertBefore(nextItem, item);
+            }
+        }
+
+        function disableControls() {
+            sortableInstance.option("disabled", true);
+            document.querySelectorAll('.move-controls svg').forEach(svg => {
+                svg.style.pointerEvents = 'none';
+                svg.style.fill = '#ccc';
+            });
+        }
+
+        function enableControls() {
+            if(sortableInstance) sortableInstance.option("disabled", false);
+        }
+
+        function checkOrder() {
+            disableControls();
+            
+            const items = document.querySelectorAll('.item');
+            let correctCount = 0;
+
+            items.forEach((item, index) => {
+                const currentId = parseInt(item.getAttribute('data-id'));
+                const correctPosition = index + 1;
+
+                item.classList.remove('correct', 'wrong');
+
+                if (currentId === correctPosition) {
+                    item.classList.add('correct');
+                    correctCount++;
+                } else {
+                    item.classList.add('wrong');
+                }
+            });
+
+            if (correctCount === activityData.length) {
+                resultText.innerHTML = "<span style='color:#2e7d32'>Tebrikler. Sıralama doğru.</span>";
+                checkBtn.style.display = "none";
+                retryBtn.style.display = "inline-block"; // Yeniden çözmek isterse
+                retryBtn.innerText = "Tekrar Başlat";
+            } else {
+                resultText.innerHTML = `<span style='color:#c62828'>${correctCount} / ${activityData.length} doğru.</span>`;
+                checkBtn.style.display = "none";
+                retryBtn.style.display = "inline-block";
+                retryBtn.innerText = "Tekrar Dene";
+                showAnswerBtn.style.display = "inline-block"; // Çözümü Göster butonu açılır
+            }
+        }
+
+        // Çözümü Göster Fonksiyonu
+        function showSolution() {
+            // Mevcut öğeleri al
+            const items = Array.from(listEl.children);
+            
+            // Veri ID'sine göre sırala (Doğru sıralama 1,2,3,4,5)
+            items.sort((a, b) => {
+                return parseInt(a.getAttribute('data-id')) - parseInt(b.getAttribute('data-id'));
+            });
+
+            // Listeyi temizle ve doğru sırayla ekle
+            listEl.innerHTML = "";
+            items.forEach(item => {
+                item.classList.remove('wrong');
+                item.classList.add('correct'); // Hepsini yeşil yap
+                listEl.appendChild(item);
+            });
+
+            // Butonları yönet
+            showAnswerBtn.style.display = "none";
+            retryBtn.innerText = "Tekrar Başlat";
+            resultText.innerHTML = "<span style='color:#1976d2'>İşte doğru sıralama.</span>";
+        }
+
+        function resetActivity() {
+            initActivity();
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+    </script>
+</body>
+</html>
