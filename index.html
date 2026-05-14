@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -54,14 +55,15 @@
     /* --- HEADER --- */
     header {
       position: fixed; top: 0; left: 0; right: 0; height: 70px;
-      background: var(--bg-header); backdrop-filter: blur(12px);
+      background: var(--bg-header); backdrop-filter: blur(15px);
       border-bottom: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 20px; z-index: 5000; box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      padding: 0 25px; z-index: 5000; box-shadow: 0 4px 25px rgba(0,0,0,0.03);
     }
-    .brand { display: flex; align-items: center; gap: 10px; }
-    .brand img { height: 40px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
-    .brand h1 { font-size: 1rem; font-weight: 700; margin: 0; text-transform: uppercase; color: var(--text-main); }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand img { height: 42px; width: 42px; object-fit: contain; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1)); transition: 0.3s; }
+    .brand:hover img { transform: rotate(-5deg) scale(1.05); }
+    .brand h1 { font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-main); letter-spacing: -0.5px; }
     .controls { display: flex; align-items: center; gap: 10px; }
     .lang-select { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px; font-weight: 600; cursor: pointer; }
     .theme-btn { background: transparent; border: none; font-size: 1.2rem; cursor: pointer; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
@@ -75,14 +77,15 @@
     .slider-container:active { cursor: grabbing; }
 
     .slider-item { 
-      min-width: 150px; height: 100px; 
-      background: linear-gradient(to bottom, #ffffff 40%, #cbd5e1 100%);
-      border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); 
+      min-width: 155px; height: 110px; 
+      background: linear-gradient(145deg, #ffffff, #f1f5f9);
+      border-radius: 16px; border: 1px solid var(--border); 
       position: relative; flex-shrink: 0; cursor: pointer; 
-      box-shadow: var(--shadow); transition: transform 0.2s;
-      display: flex; flex-direction: column; justify-content: space-between; padding: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.04); transition: all 0.3s ease;
+      display: flex; flex-direction: column; justify-content: space-between; padding: 12px;
     }
-    body.dark-mode .slider-item { background: linear-gradient(to bottom, #1e293b 40%, #0f172a 100%); border: 1px solid rgba(255,255,255,0.1); }
+    body.dark-mode .slider-item { background: linear-gradient(145deg, #1e293b, #0f172a); border: 1px solid rgba(255,255,255,0.05); }
+    .slider-item:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); border-color: var(--primary); }
     .slider-item:active { transform: scale(0.96); }
 
     .slider-name { font-size: 0.85rem; font-weight: 700; text-align: center; color: var(--text-main); width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -93,10 +96,18 @@
     /* --- GRID --- */
     .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; }
     @media (min-width: 600px) { .menu-grid { grid-template-columns: repeat(3, 1fr); } }
-    .category-card { background: var(--bg-card); border-radius: var(--radius); height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; border: 1px solid var(--border); box-shadow: var(--shadow); cursor: pointer; transition: transform 0.2s; position: relative; overflow: hidden; }
-    .category-card:active { transform: scale(0.96); border-color: var(--primary); }
-    .category-card img { width: 55px; height: 55px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
-    .category-card h3 { margin: 0; font-size: 0.95rem; font-weight: 600; color: var(--text-main); text-align: center; }
+    .category-card { 
+      background: var(--bg-card); border-radius: 20px; height: 140px; 
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; 
+      border: 1px solid var(--border); box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
+      cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+      position: relative; overflow: hidden; 
+    }
+    .category-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: var(--primary); }
+    .category-card:active { transform: scale(0.96); }
+    .category-card img { width: 65px; height: 65px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); transition: 0.3s; }
+    .category-card:hover img { transform: scale(1.1); }
+    .category-card h3 { margin: 0; font-size: 1rem; font-weight: 600; color: var(--text-main); text-align: center; }
 
     /* --- MODAL (KATMAN YÜKSELTİLDİ) --- */
     .modal-overlay { 
@@ -151,7 +162,7 @@
     .fab-btn:active { transform: scale(0.95); }
     .btn-zil { width: 55px; background: var(--bg-card); color: var(--primary); border: 2px solid var(--primary); font-size: 1.5rem; }
     .btn-sepet { background: linear-gradient(135deg, var(--primary), #2563eb); color: white; padding: 0 25px; min-width: 140px; position: relative; }
-    .cart-badge { position: absolute; top: -8px; right: 0; background: #ef4444; color: white; font-size: 0.75rem; font-weight: 700; min-width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--bg-body); box-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .cart-badge { position: absolute; top: -8px; right: 0; background: #ef4444; color: white; font-size: 0.75rem; font-weight: 700; min-width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--bg-body); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     @keyframes popIn { from{transform: scale(0);} to{transform: scale(1);} }
     #loader { text-align: center; margin-top: 50px; color: var(--text-muted); }
     .alert-box { position: fixed; top: 90px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 24px; border-radius: 30px; font-size: 0.9rem; z-index: 110000; box-shadow: 0 5px 15px rgba(0,0,0,0.3); opacity: 0; transition: 0.3s; pointer-events: none; }
@@ -210,8 +221,8 @@
     <div class="cart-footer" id="cartFooter" style="display:none;">
       <div class="total-row"><span id="lblTotal">Toplam</span><span id="cartTotalValue" style="color:var(--accent);">₺0</span></div>
       <div class="input-row">
-        <input type="text" id="masaInput" class="cart-input" placeholder="Masa No">
-        <input type="text" id="odaInput" class="cart-input" placeholder="Oda No">
+        <input type="text" id="masaInput" class="cart-input" placeholder="Masa No" style="border-radius: 12px 0 0 12px; border-right: none;">
+        <input type="text" id="odaInput" class="cart-input" placeholder="Oda No" style="border-radius: 0 12px 12px 0;">
       </div>
       <button class="order-btn" onclick="sendOrder()" id="btnOrder">Siparişi Onayla</button>
       <button class="clear-btn" onclick="clearCart()" id="btnClear">Sepeti Temizle</button>
@@ -263,7 +274,7 @@
       "İçecekler": { tr: "İçecekler", en: "Drinks" }, "Atıştırmalık": { tr: "Atıştırmalık", en: "Snacks" }, "Şekerleme": { tr: "Şekerleme", en: "Candy" }, "Fast Food": { tr: "Fast Food", en: "Fast Food" }, "Dondurma": { tr: "Dondurma", en: "Ice Cream" }, "Döner": { tr: "Döner", en: "Doner" }, "Tost": { tr: "Tost", en: "Toast" }, "Su": { tr: "Su", en: "Water" }, "Gazlı İçecekler": { tr: "Gazlı İçecekler", en: "Fizzy Drinks" }, "Maden Suyu": { tr: "Maden Suyu", en: "Mineral Water" }, "Enerji İçeceği": { tr: "Enerji İçeceği", en: "Energy Drink" }, "Soğuk Çay": { tr: "Soğuk Çay", en: "Ice Tea" }, "Soğuk Kahve": { tr: "Soğuk Kahve", en: "Iced Coffee" }, "Meyve Suyu": { tr: "Meyve Suyu", en: "Fruit Juice" }, "Cips": { tr: "Cips", en: "Chips" }, "Bisküvi": { tr: "Bisküvi", en: "Biscuit" }, "Gofret & Çikolata": { tr: "Gofret & Çikolata", en: "Wafer & Chocolate" }, "Kek": { tr: "Kek", en: "Cake" }, "Kraker": { tr: "Kraker", en: "Cracker" }, "Patso": { tr: "Patso", en: "Patso" }, "Tavuk Döner": { tr: "Tavuk Döner", en: "Chicken Doner" }, "Et Döner": { tr: "Et Döner", en: "Meat Doner" }, "Algida": { tr: "Algida", en: "Algida" }, "Cornetto": { tr: "Cornetto", en: "Cornetto" }, "Magnum": { tr: "Magnum", en: "Magnum" }, "Boom Boom": { tr: "Boom Boom", en: "Boom Boom" }, "Classics": { tr: "Classics", en: "Classics" }, "Stick": { tr: "Stick", en: "Stick" }, "Max": { tr: "Max", en: "Max" }, "Diğer": { tr: "Diğer", en: "Other" }
     };
 
-    const catImages = { "İçecekler": "icecekler.png", "Atıştırmalık": "cips.png", "Şekerleme": "jelibon.png", "Fast Food": "patso.png", "Dondurma": "dondurma.png", "Döner": "doner.png", "Tost": "tost.png" };
+    let catSettings = {}; // Kategori ikonları için admin ayarları
 
     let menuData = {};
     let cart = [];
@@ -290,6 +301,11 @@
 
     async function fetchMenu() {
       try {
+        // Kategori ayarlarını (ikonlar vb.) çek
+        const catSnap = await db.collection("category_settings").get();
+        catSettings = {};
+        catSnap.forEach(doc => { catSettings[doc.id] = doc.data(); });
+
         const snapshot = await db.collection("menu_items").get();
         menuData = {};
         const allProducts = [];
@@ -338,14 +354,30 @@
     function renderGrid() {
       const grid = document.getElementById("menuGrid");
       grid.innerHTML = "";
-      Object.keys(menuData).forEach(rawCat => {
-        const cat = menuData[rawCat];
-        const imgPath = catImages[rawCat] || 'logo.png';
+      
+      // Kategorileri sıraya göre diz
+      const sortedCats = Object.keys(menuData).sort((a, b) => {
+        const orderA = (catSettings[a] && catSettings[a].order) || 999;
+        const orderB = (catSettings[b] && catSettings[b].order) || 999;
+        return orderA - orderB;
+      });
+
+      sortedCats.forEach(rawCat => {
+        const setting = catSettings[rawCat] || {};
+        const icon = setting.icon || "logo.png";
         const displayTitle = getTrans(rawCat);
         const div = document.createElement("div");
         div.className = "category-card";
         div.onclick = () => openCategory(rawCat);
-        div.innerHTML = `<img src="${imgPath}" onerror="this.src='logo.png'"><h3>${displayTitle}</h3>`;
+        
+        let iconHtml = "";
+        if (icon.length < 15) {
+            iconHtml = `<span style="font-size:2.5rem; display:block; margin-bottom:10px;">${icon}</span>`;
+        } else {
+            iconHtml = `<img src="${icon}" onerror="this.src='logo.png'">`;
+        }
+        
+        div.innerHTML = `${iconHtml}<h3>${displayTitle}</h3>`;
         grid.appendChild(div);
       });
     }
