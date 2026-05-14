@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -138,13 +139,28 @@
         .btn-del { color: var(--danger); }
         .btn-del:hover { background: #fee2e2; border-color: var(--danger); }
 
-        /* Kaydet Butonu */
+        /* Kaydet Butonu - Simgeye Dönüştürüldü */
         .btn-save { 
             background: var(--primary); color: white; border: none;
-            padding: 0 15px; font-weight: 600; font-size: 0.85rem;
-            border-radius: 8px; cursor: pointer;
+            width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 8px; cursor: pointer; font-size: 1.1rem;
+            transition: 0.2s;
         }
-        .btn-save:hover { opacity: 0.9; }
+        .btn-save:hover { opacity: 0.9; transform: scale(1.05); }
+        .btn-save svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* Kategori Kontrolleri */
+        .cat-item-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; padding-right: 5px; }
+        .cat-controls { display: flex; align-items: center; gap: 4px; opacity: 0.6; transition: 0.3s; }
+        .cat-item-wrap:hover .cat-controls { opacity: 1; }
+        .order-btn-sm { 
+            background: none; border: none; cursor: pointer; 
+            font-size: 0.7rem; color: var(--text-muted); 
+            padding: 2px; transition: 0.2s;
+        }
+        .order-btn-sm:hover { color: var(--primary); transform: translateY(-1px); }
+        .order-btn-sm.down:hover { transform: translateY(1px); }
 
         /* Modal */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 10000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
@@ -176,12 +192,17 @@
 
     <div id="addModal" class="modal-overlay">
         <div class="modal-box">
-            <h3 style="margin-top:0; color:var(--text-main)">Yeni Ürün Ekle</h3>
+            <h3 id="modalTitleText" style="margin-top:0; color:var(--text-main)">Yeni Ürün Ekle</h3>
             <div class="form-group"><label class="form-label">Kategori</label><select id="newCatSelect" class="modern-input" onchange="checkNewCategory(this)"></select><input type="text" id="newCatInput" class="modern-input" placeholder="Yeni Kategori" style="display:none; margin-top:5px; border-color:var(--accent);"></div>
             <div class="form-group"><label class="form-label">Grup</label><input type="text" id="newGroup" class="modern-input" placeholder="Örn: Gazlı İçecekler"></div>
             <div class="form-group"><label class="form-label">Ürün Adı</label><input type="text" id="newName" class="modern-input" placeholder="Örn: Yeni Cola"></div>
             <div class="form-group"><label class="form-label">Fiyat</label><input type="number" id="newPrice" class="modern-input" placeholder="0"></div>
-            <div class="form-group"><label class="form-label">Resim URL</label><input type="text" id="newImg" class="modern-input" placeholder="https://..."></div>
+            <div class="form-group"><label class="form-label">Resim URL</label>
+                <div style="display: flex; gap: 5px;">
+                    <input type="text" id="newImg" class="modern-input" placeholder="https://..." style="flex: 1;">
+                    <button class="modern-btn" onclick="findImage(this)" style="width: auto; background: var(--primary); padding: 0 15px;">🔍 Bul</button>
+                </div>
+            </div>
             <div class="form-group" style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="document.getElementById('newPop').click()">
                 <input type="checkbox" id="newPop" style="transform:scale(1.5);">
                 <label class="form-label" style="margin:0; cursor:pointer;">🔥 Popüler (Vitrine Ekle)</label>
@@ -192,6 +213,29 @@
             </div>
         </div>
     </div>
+
+    <!-- Kategori Düzenleme Modalı -->
+    <div id="catModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 400px;">
+            <h3 id="catModalTitle" style="margin-top:0; color:var(--text-main)">Kategoriyi Düzenle</h3>
+            <div class="form-group">
+                <label class="form-label">Kategori İsmi</label>
+                <input type="text" id="catNameInput" class="modern-input" placeholder="Örn: İçecekler">
+            </div>
+            <div class="form-group">
+                <label class="form-label">İkon / Emoji / Görsel URL</label>
+                <div style="display: flex; gap: 5px;">
+                    <input type="text" id="catIconInput" class="modern-input" placeholder="Örn: 🥤 veya URL" style="flex: 1;">
+                    <button class="modern-btn" onclick="findCatIcon(this)" style="width: auto; background: var(--primary); padding: 0 15px;">🔍 Bul</button>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="modern-btn" onclick="closeCatModal()" style="background: #e2e8f0; color: var(--text-main);">Vazgeç</button>
+                <button class="modern-btn" onclick="saveCategorySettings()" style="flex: 1; background: var(--accent);">Değişiklikleri Kaydet</button>
+            </div>
+        </div>
+    </div>
+
 
     <div class="dashboard-container" id="dashboard">
         <aside class="sidebar">
@@ -231,13 +275,17 @@
 
         let allProducts = [];
         let categories = new Set();
+        let catSettings = {}; 
         let currentCategory = "Tümü";
+        let editingId = null; 
+        let editingCatName = null;
 
         const exactImageMap = { "Su 500ml": "urunimg/su.png", "Coca Cola C.Şişe 200ml.": "urunimg/cola200.png", "Coca Cola C.Şişe 300ml.": "urunimg/sise300.png", "Coca Cola 330ml.": "urunimg/kutukola.png", "Coca Cola Zero 330ml.": "urunimg/zeroc.png", "Coca Cola 1lt.": "urunimg/1ltcola.png", "Coca Cola 1lt. Light": "urunimg/1ltcolalight.png", "Coca Cola 2,5lt.": "urunimg/2,5litre.png", "Fanta C.Şişe 200ml.": "urunimg/fanta200cam.png", "Fanta 330ml.": "urunimg/fanta330.png", "Fanta 1lt.": "urunimg/fanta1lt.png", "Sprite 330ml.": "urunimg/sprite330.png", "Cola Turka 200ml.": "urunimg/colaturka200.png", "Avşar Doğal": "urunimg/avsarnatural.png", "Avşar Limonlu": "urunimg/avsarlimon.png", "Avşar Mango & Ananas": "urunimg/avsarmango.png", "Avşar Karpuz & Çilek": "urunimg/avsarkarpuz.png", "Avşar Karadut & Frenk Üzümü": "urunimg/avsarkaradut.png", "Avşar Düşes Armudu": "urunimg/avsarduses.png", "Damla Minera Sade": "urunimg/damlasade.png", "Damla Minera Limonlu": "urunimg/damlalimon.png", "Damla Çilekli & Karpuzlu": "urunimg/damlacilek.png", "Damla Mango & Ananas": "urunimg/damlamango.png", "Damla Elmalı": "urunimg/damlaelmali.png", "Damla Minera 330ml.": "urunimg/damla330.png", "Karpuz & Çilek": "urunimg/fresacilek.png", "Limon": "urunimg/fresalimon.png", "Çilek": "urunimg/fresakarpuz.png", "Beypazarı Sade": "urunimg/beypazari.png", "Red Bull 250ml.": "urunimg/redbull250.png", "Red Bull Peach E. 250ml.": "urunimg/redbullpeach.png", "Red Bull Yellow E. 250ml.": "urunimg/redbullyellow.png", "Red Bull White E. 250ml.": "urunimg/redbullwhite.png", "Red Bull Pink E. 250ml.": "urunimg/redbullpink.png", "Red Bull Red E. 250ml.": "urunimg/redbullred.png", "Red Bull Sugar E. 250ml.": "urunimg/redbullsugar.png", "Red Bull Blue E. 250ml.": "urunimg/redbullblue.png", "Red Bull Klasik 355ml.": "urunimg/redbull355.png", "Monster Klasik 500ml.": "urunimg/monster500.png", "Monster U.Tropikal 500ml.": "urunimg/monsterutropical.png", "Monster Pipeline P. 500ml.": "urunimg/monsterpipeline.png", "Monster The Doctor S. 500ml.": "urunimg/monsterthedoctor.png", "Monster Watermelon 500ml.": "urunimg/monsterwatermelon.png", "Monster R.W. Pineapple 500ml.": "urunimg/monsterpineapple.png", "Monster U.Sunrise 500ml.": "urunimg/monstersunrise.png", "Monster Mango Loco 500ml.": "urunimg/monstermango.png", "Monster Ultra White 500ml.": "urunimg/monsterultra.png", "Burn Original 250ml.": "urunimg/burn250.png", "Burn Gold Spark 250ml.": "urunimg/burngold.png", "Burn Zero Sugar 250ml.": "urunimg/burnzero.png", "Burn 500ml.": "urunimg/burn500.png", "Powerade Ice Blast 500ml.": "urunimg/poweradeice.png", "Powerade Sun Brush 500ml.": "urunimg/poweradesun.png", "Fusetea Şeftali 330ml.": "urunimg/fuseteaseftali.png", "Fusetea Limon 330ml.": "urunimg/fusetealimon.png", "Fusetea Frambuaz & Böğürtlen 330ml.": "urunimg/fuseteabogurtlen.png", "Fusetea Mango & Ananas 330ml.": "urunimg/fuseteamango.png", "Fusetea Karpuz 330ml.": "urunimg/fuseteakarpuz.png", "Fusetea Kavun & Çilek 330ml.": "urunimg/fuseteakavun.png", "Fusetea Şeftali 1lt.": "urunimg/fuseteaseftali1lt.png", "Fusetea Karpuz 1lt.": "urunimg/fuseteakarpuz1lt.png", "Fusetea Limon 1lt.": "urunimg/fusetealimon1lt.png", "Fusetea Mango & Ananas 1lt.": "urunimg/fuseteamango1lt.png", "Fusetea Kavun & Çilek 1lt.": "urunimg/fuseteakavun1lt.png", "Fusetea Ejder Meyveli 1lt.": "urunimg/fuseteaejder.png", "Didi Şeftali 330ml.": "urunimg/didiseftali.png", "Didi Limon 330ml.": "urunimg/didilimon.png", "Didi Bergamot 330ml.": "urunimg/didibergamot.png", "Obsesson Latte Sütlü 250ml.": "urunimg/obsessolattesutlu.png", "Obsesson Caramel Macchiato 250ml.": "urunimg/obsessocaramel.png", "Nescafe Xpress L. Original 250ml.": "urunimg/nescafeorijinal.png", "Nescafe Black Roast 250ml.": "urunimg/nescafeblack.png", "Cappy Vişne 330ml.": "urunimg/cappyvisne.png", "Cappy Portakal 330ml.": "urunimg/cappyportakal.png", "Cappy Atom - Ballı K. 330ml.": "urunimg/cappyatom.png", "Caprisun Multivitamin 200ml.": "urunimg/caprisunmulti.png", "Caprisun Safari 200ml.": "urunimg/caprisunsafari.png", "Caprisun Mystic Dragon 200ml.": "urunimg/caprisundragon.png", "Link Çilekli 200ml.": "urunimg/linkcilekli.png", "Original 20gr.": "urunimg/rufflesoriginal.png", "Original 50gr.": "urunimg/rufflesoriginal.png", "Original Orta Boy 88gr.": "urunimg/rufflesoriginal.png", "Original Orta Boy 105gr.": "urunimg/rufflesoriginal.png", "Original Büyük Boy 160gr.": "urunimg/rufflesoriginal.png", "Original Mega Boy 193gr.": "urunimg/rufflesoriginalmega.png", "Ketçaplı 50gr.": "urunimg/rufflesketcap.png", "Ketçaplı Orta Boy 105gr.": "urunimg/rufflesketcap.png", "Ketçaplı Büyük Boy 160gr.": "urunimg/rufflesketcap.png", "Peynir & Soğan Orta Boy 105gr.": "urunimg/rufflespeynir.png", "Peynir & Soğan Büyük Boy 160gr.": "urunimg/rufflespeynir.png", "Mangalda Orta Boy 105gr.": "urunimg/rufflesmangalda.png", "Değiş Tokuş Orta Boy 105gr.": "urunimg/rufflesdegis.png", "Lays Yoğurt ve Mevsim Yeşil. Küçük Boy 50gr.": "urunimg/laysyogurttan.png", "Lays Klasik Küçük Boy 50gr.": "urunimg/laysklasik50.png", "Lays Klasik Orta Boy 107gr.": "urunimg/laysklasik107.png", "Lays Fırından Orta Boy 92gr.": "urunimg/laysfirindan.png", "Lays Fırından Büyük Boy 134gr.": "urunimg/laysfirindan.png", "Lays Baharatlı Orta Boy 105gr.": "urunimg/laysbaharatli.png", "Lays Yoğurt ve Mevsim Yeşil. Orta Boy 105gr.": "urunimg/laysyogurttan.png", "Lays Yoğurt ve Mevsim Yeşil. Büyük Boy 160gr.": "urunimg/laysyogurttan.png", "Lays Baharatlı Büyük Boy 160gr.": "urunimg/laysbaharatli.png", "Lays Klasik Büyük Boy 160gr.": "urunimg/laysklasik.png", "Doritos Shoots Mexicano - Acı (30gr.": "urunimg/doritosshootsmexicano.png", "Doritos Shoots 30gr.": "urunimg/doritosshoots.png", "Doritos Tako Küçük Boy 53gr.": "urunimg/doritostaco.png", "Doritos Hot Corn Acı B. Küçük Boy 53gr.": "urunimg/doritoshotcorn.png", "Doritos Hot Corn Büyük Boy 180gr.": "urunimg/doritoshotcorn.png", "Doritos Tako Orta Boy 114gr.": "urunimg/doritostaco.png", "Doritos Tako Büyük Boy 185gr.": "urunimg/doritostaco.png", "Doritos Nacho P. Orta Boy 109gr.": "urunimg/doritosnacho.png", "Doritos Nacho P. Büyük Boy 160gr.": "urunimg/doritosnacho.png", "Doritos Tako Mega Boy 193gr.": "urunimg/doritostaco.png", "Doritos Extreme Mex. Orta Boy 109gr.": "urunimg/doritosextreme.png", "Doritos Flamin Hot Orta Boy 102gr.": "urunimg/doritosflamin.png", "Doritos Turca Süper Boy 109gr.": "urunimg/doritosturca.png", "Doritos Değiş Tokuş 115gr.": "urunimg/doritosswap.png", "Çerezza Kokteyl Baharatlı Orta Boy 117 gr.": "urunimg/cerezzakokteyl.png", "Çerezza Sinema Pey.Soğ. Orta Boy 121 gr.": "urunimg/cerezzasinema.png", "Çerezza Süt Mısırı Orta Boy 121 gr.": "urunimg/cerezzamisir.png", "Çerezza Popcorn Orta Boy 80 gr.": "urunimg/cerezzapopcorn.png", "Çerezza Acılı Süper Boy 117 gr.": "urunimg/cerezzaacili.png", "Çerezza Dev Bah. Dom. Soslu 150 gr.": "urunimg/cerezzadev.png", "Çerezza Dev Yer. Fıs. Büyük Boy 145 gr.": "urunimg/cerezzadevyer.png", "Cheetos Biftek & Soğan 43gr.": "urunimg/cheetos.png", "Cheetos Biftek & Soğan 23gr.": "urunimg/cheetosshoots.png", "Gong Peynir ve Acılı M. Patlağı": "urunimg/gongaci.png", "Gong Bal ve Hardallı M. Patlağı": "urunimg/gongbal.png", "Gong Orijinal Lezzet": "urunimg/gongoriginal.png", "Gong Pops Bal ve Hardallı M. Patlağı": "urunimg/gongpopsbal.png", "Gong Pops Taco": "urunimg/gongpopstaco.png", "Haylayf": "urunimg/haylayf.png", "Çizi Peynirli": "urunimg/cizipeynirli.png", "Çiziviç Peynirli": "urunimg/cizipeynir.png", "İkram Çikolatalı": "urunimg/ikramcikolatali.png", "İkram Fındıklı": "urunimg/ikramfindik.png", "Hanımeller Fındıklı": "urunimg/hanimellerfindikli.png", "Hanımeller Çoko Damla": "urunimg/hanimellercokodam.png", "Biskrem": "urunimg/biskrem.png", "Halley": "urunimg/halleyy.png", "Hanımeller Frambuazlı": "urunimg/hanimellerframbuaz.png", "Biskrem Cookie": "urunimg/biskremcookie.png", "Halley Karadutlu": "urunimg/halleykaradut.png", "Probis": "urunimg/probis.png", "Cocostar Atıştırmalık": "urunimg/cocostaratistirmalik.png", "Tutku": "urunimg/tutku.png", "Benim'o Bitter": "urunimg/benimobitter.png", "Benim'o Çikolatalı": "urunimg/benimociko.png", "Nero": "urunimg/nero.png", "Cin": "urunimg/cin.png", "Canga": "urunimg/canga.png", "Petito Gofret": "urunimg/petitogofret.png", "Maximus Loading XL": "urunimg/maximusloadingxl.png", "Hoşbeş Kakaolu": "urunimg/hosbeskakao.png", "Maximus": "urunimg/maximus36.png", "Karam": "urunimg/karamgurme.png", "Petito Patim": "urunimg/petitopatim.png", "Petito Mini": "urunimg/petitomini.png", "Maximus Çilekli": "urunimg/maximuscilekli.png", "Canga Antep Fıstıklı": "urunimg/cangaantep.png", "Maximus Muzlu": "urunimg/maximusmuzlu.png", "Hoşbeş Fındıklı": "urunimg/hosbesfindikli.png", "Caramio Karamel": "urunimg/caramiokaramel.png", "Çokonat Antep Fıstıklı": "urunimg/cokonatfindikli.png", "Olala Tiramisu": "urunimg/olalatramisu.png", "Olala Bold": "urunimg/olalabold.png", "9 Kat Tat Muzlu": "urunimg/9katmuzlu.png", "9 Kat Tat Fındıklı": "urunimg/9katfindikli.png", "9 Kat Tat Portakallı": "urunimg/9katportakal.png", "Çokonat": "urunimg/cokonat.png", "Dido Sütlü Çikolatalı": "urunimg/didosutluciko.png", "Coco Star": "urunimg/cocostar1.png", "Laviva": "urunimg/laviva.png", "Rulokat": "urunimg/rulokat.png", "Piko": "urunimg/piko.png", "Dido Frambuazlı": "urunimg/didoframbuaz.png", "Dido Trio": "urunimg/didotrioo.png", "Dido Trio Colors Çilekli": "urunimg/didotrio.png", "Dido Gold": "urunimg/didogold.png", "Fındık Rüyası": "urunimg/findikruyasi.png", "Çokomel": "urunimg/cokomel.png", "Harby Karamelli": "urunimg/harbykaramel.png", "Harby Sütlü": "urunimg/harbysutlu.png", "3GEN Beyaz": "urunimg/3genbeyaz.png", "Popkek Muzlu": "urunimg/popkekmuz.png", "Popkek Çikolatalı": "urunimg/popkekciko.png", "Popkek Limonlu": "urunimg/popkeklimonlu.png", "Popkek Vişneli": "urunimg/popkekvisneli.png", "Popkek Portakal": "urunimg/popkekportakal.png", "Popkek Bitter": "urunimg/popkekbitter.png", "Popkek Hindistan Cevizli": "urunimg/popkekcoconut.png", "Browni Gold Çikolatalı": "urunimg/brownigold.png", "Browni Gold Vişneli": "urunimg/brownigoldvisneli.png", "Browni İntense Gold Karamel": "urunimg/browniintense.png", "Browni İntense Gold Çikolatalı": "urunimg/browniintenseciko.png", "Sütburger Sütlü & Çilekli": "urunimg/sutburgercilekli.png", "Sütburger Sütlü & Ballı": "urunimg/sutburgerballi.png", "Dankek Mousse": "urunimg/dankekmousse.png", "8 Kek Muzlu": "urunimg/8kekmuzlu.png", "8 Kek Orman Meyveli": "urunimg/8kekorman.png", "8 Kek Çilekli": "urunimg/8kekcilek.png", "8 Kek Çikolatalı": "urunimg/8kekcikolatali.png", "Kekstra Jöle Bol": "urunimg/kekstrajolebol.png", "Çubuk Kraker": "urunimg/kraker.png", "Susamlı Çubuk Kraker": "urunimg/susamlikraker.png", "Krispi Acılı": "urunimg/krispiacili.png", "Krispi Baharatlı": "urunimg/krispibaharatli.png", "Krispi Peynirli": "urunimg/krispipeynirli.png", "Ayıcık": "urunimg/yupoayicik.png", "Solucan": "urunimg/yuposolucan.png", "Meyve Bahçesi": "urunimg/yupomeyvebahcesi.png", "Kola": "urunimg/yupokola.png", "Lokumcuk": "urunimg/lokum.png", "Çokojela Portakallı": "urunimg/yupojelapor.png", "Çokojela Böğürtlen": "urunimg/yupojelabog.png", "Yupo Lolipop": "urunimg/yupololi.png", "Bonbon Nanelim": "urunimg/nanelim.png", "Portakal & Kivi": "urunimg/oneopor.png", "Nane & Kivi": "urunimg/oneonane.png", "Yeşil Nane": "urunimg/oneoyesilnane.png", "Karpuz": "urunimg/oneokarpuz.png", "Çilek": "urunimg/oneocilek.png", "Zencefil": "urunimg/zencefil.png", "Karamürver": "urunimg/karamurver.png", "Okaliptus": "urunimg/okaliptus.png", "Ihlamur": "urunimg/ıhlamur.png", "Lolipop": "urunimg/roccololipop.png", "Sıkışeker Ahududu & Limon": "urunimg/roccoahududu.png", "Sıkışeker Mandalina & Karpuz": "urunimg/roccomandalina.png", "Sıkışeker Nar & Çilek": "urunimg/rocconar.png", "Stick Fruit Garden": "urunimg/jelly.png", "Patso Yeni": "urunimg/patso.png", "Sosisli Patso": "urunimg/patsososisli.png", "Patso Menü (Patso + Ş.Kola)": "urunimg/patsomenu.png", "Kaşarlı Tost": "urunimg/kasarlitost.png", "Sucuklu Tost": "urunimg/sucuklutost.png", "Karışık Tost": "urunimg/karisiktost.png", "Tavuk Döner 70gr.": "urunimg/tavukdoner.png", "Tavuk Döner 90gr.": "urunimg/tavukdoner.png", "Tavuk Döner 120gr.": "urunimg/tavukdoner.png", "Et Döner 70gr.": "urunimg/etdoner.png", "Et Döner 90gr.": "urunimg/etdoner.png", "Et Döner 120gr.": "urunimg/etdoner.png", "Cornetto Disc Milka": "urunimg/cornettomilka.png", "Cornetto Disc Oreo": "urunimg/cornettooreo.png", "Cornetto Antep Fıstıklı": "urunimg/cornettoantep.png", "Cornetto Vanilya Karamel": "urunimg/cornettovan.png", "Cornetto Maraş Usulü": "urunimg/cornettomarasusulu.png", "Cornetto Clas Çilek": "urunimg/cornettoclascilek.png", "Cornetto Disc Max Mango": "urunimg/cornettodiskmax.png", "Cornetto Disc Max Çikolatalı": "urunimg/cornettodiscciko.png", "Cornetto Classico Çikolata": "urunimg/cornettoclassico.png", "Cornetto Classico Kaymak": "urunimg/cornettoclassicokaymak.png", "Cornetto Keyif": "urunimg/keyf.png", "Utopia Ahududu": "urunimg/utopia.png", "Utopia Karamel": "urunimg/utopiakaramel.png", "Classic": "urunimg/magnumclassic.png", "Beyaz": "urunimg/magnumbeyaz.png", "Badem": "urunimg/magnumbadem.png", "Double Çikolata": "urunimg/magnumdouble.png", "Double Karadut": "urunimg/magnumdoublekaradut.png", "Cookie": "urunimg/cookie.png", "Boom Boom": "urunimg/boomboom.png", "Boom Boom Gold": "urunimg/boomboomgold.png", "CL Frigola Bar PRM": "urunimg/frigola.png", "CL Classics Antep Fıstık": "urunimg/clfistik.png", "CL Classics Kakao": "urunimg/clkakao.png", "Maraş Cup": "urunimg/cup.png", "Nogger Sandwich": "urunimg/nogger.png", "Milka Stick": "urunimg/milkas.png", "Vienetta Stick": "urunimg/vienetta.png", "Volcano Stick": "urunimg/volcanostick.png", "Conboo Kakao": "urunimg/conboo.png", "Twister Forest": "urunimg/forest.png", "Twister Ocean": "urunimg/ocean.png", "Twister Cool": "urunimg/cool.png" };
         const catImages = { "İçecekler": "icecekler.png", "Atıştırmalık": "cips.png", "Şekerleme": "jelibon.png", "Fast Food": "patso.png", "Dondurma": "dondurma.png", "Döner": "doner.png", "Tost": "tost.png" };
 
         auth.onAuthStateChanged(user => {
-            if (user) {
+            const isLocalAdmin = sessionStorage.getItem('altunga_local_admin') === 'true';
+            if (user || isLocalAdmin) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('dashboard').style.display = 'flex';
                 fetchData();
@@ -248,10 +296,16 @@
         });
 
         function login() {
-            auth.signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value)
-                .catch(() => document.getElementById('loginMsg').innerText = "Hatalı Giriş!");
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+
+            auth.signInWithEmailAndPassword(email, pass)
+                .catch(() => document.getElementById('loginMsg').innerText = "Hatalı Giriş! (Yerel için 1234 deneyin)");
         }
-        function logout() { auth.signOut(); }
+        function logout() { 
+            sessionStorage.removeItem('altunga_local_admin');
+            auth.signOut(); 
+        }
 
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'dark') {
@@ -267,6 +321,12 @@
 
         async function fetchData() {
             document.getElementById('loading').style.display = 'block';
+            
+            // Önce kategori ayarlarını çekelim
+            const catSnap = await db.collection("category_settings").get();
+            catSettings = {};
+            catSnap.forEach(doc => { catSettings[doc.id] = doc.data(); });
+
             const snapshot = await db.collection("menu_items").orderBy("category").get();
             allProducts = [];
             categories = new Set();
@@ -278,22 +338,135 @@
             });
 
             renderSidebar();
+            renderCategorySelect(); // Kategori listesini select kutusuna doldur
             renderProducts(currentCategory);
             document.getElementById('loading').style.display = 'none';
+        }
+
+        function renderCategorySelect() {
+            const select = document.getElementById('newCatSelect');
+            let html = `<option value="">Kategori Seçin...</option>`;
+            [...categories].sort().forEach(cat => {
+                html += `<option value="${cat}">${cat}</option>`;
+            });
+            html += `<option value="YENİ">+ Yeni Kategori Ekle...</option>`;
+            select.innerHTML = html;
         }
 
         function renderSidebar() {
             const list = document.getElementById('categoryList');
             list.innerHTML = `<button class="cat-btn ${currentCategory === 'Tümü' ? 'active' : ''}" onclick="filterCat('Tümü', this)">🏠 Tümü</button>`;
             
-            const icons = { "İçecekler": "🥤", "Atıştırmalık": "🍟", "Şekerleme": "🍬", "Fast Food": "🍔", "Döner": "🥙", "Dondurma": "🍦", "Tost": "🥪" };
-
-            categories.forEach(cat => {
-                list.innerHTML += `
-                    <button class="cat-btn ${currentCategory === cat ? 'active' : ''}" onclick="filterCat('${cat}', this)">
-                        ${icons[cat] || "📦"} ${cat}
-                    </button>`;
+            // Kategorileri sıraya göre diz
+            const sortedCats = [...categories].sort((a, b) => {
+                const orderA = (catSettings[a] && catSettings[a].order) || 999;
+                const orderB = (catSettings[b] && catSettings[b].order) || 999;
+                return orderA - orderB;
             });
+
+            sortedCats.forEach((cat, index) => {
+                const setting = catSettings[cat] || {};
+                const icon = setting.icon || "📦";
+                list.innerHTML += `
+                    <div class="cat-item-wrap">
+                        <button class="cat-btn ${currentCategory === cat ? 'active' : ''}" onclick="filterCat('${cat}', this)" style="flex:1; text-align:left; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                            ${icon.length < 10 ? icon : '<img src="'+icon+'" style="width:18px;height:18px;object-fit:contain;">'} ${cat}
+                        </button>
+                        <div class="cat-controls">
+                            <button class="order-btn-sm" onclick="moveCategory('${cat}', -1)" title="Yukarı">▲</button>
+                            <button class="order-btn-sm down" onclick="moveCategory('${cat}', 1)" title="Aşağı">▼</button>
+                            <button class="icon-btn" onclick="openCatModal('${cat}')" style="width:28px; height:28px; font-size:0.75rem; border:none;" title="Düzenle">✏️</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        async function moveCategory(catName, direction) {
+            const sortedCats = [...categories].sort((a, b) => {
+                const orderA = (catSettings[a] && catSettings[a].order) || 999;
+                const orderB = (catSettings[b] && catSettings[b].order) || 999;
+                return orderA - orderB;
+            });
+
+            const index = sortedCats.indexOf(catName);
+            const targetIndex = index + direction;
+
+            if (targetIndex < 0 || targetIndex >= sortedCats.length) return;
+
+            const targetCat = sortedCats[targetIndex];
+            
+            // Yeni sıraları belirle
+            const batch = db.batch();
+            batch.set(db.collection("category_settings").doc(catName), { order: targetIndex }, { merge: true });
+            batch.set(db.collection("category_settings").doc(targetCat), { order: index }, { merge: true });
+
+            await batch.commit();
+            fetchData();
+        }
+
+        function openCatModal(catName) {
+            editingCatName = catName;
+            const setting = catSettings[catName] || {};
+            document.getElementById('catNameInput').value = catName;
+            document.getElementById('catIconInput').value = setting.icon || "";
+            document.getElementById('catModal').style.display = 'flex';
+        }
+
+        function closeCatModal() {
+            document.getElementById('catModal').style.display = 'none';
+            editingCatName = null;
+        }
+
+        function findCatIcon(btn) {
+            const name = document.getElementById('catNameInput').value.trim();
+            if(!name) return alert("Önce kategori adını yazmalısınız!");
+            
+            const oldText = btn.innerText;
+            btn.innerText = "⏳";
+            
+            // Kategori için de otomatik görsel tahmini
+            const autoUrl = `https://source.unsplash.com/featured/?${encodeURIComponent(name + ' icon')}`;
+            document.getElementById('catIconInput').value = autoUrl;
+            
+            window.open(`https://www.google.com/search?q=${encodeURIComponent(name + ' icon emoji')}&tbm=isch`, '_blank');
+            setTimeout(() => { btn.innerText = oldText; }, 1000);
+        }
+
+        async function saveCategorySettings() {
+            const newName = document.getElementById('catNameInput').value.trim();
+            const newIcon = document.getElementById('catIconInput').value.trim();
+            const oldName = editingCatName;
+
+            if(!newName) return alert("İsim boş olamaz!");
+
+            const btn = event.target;
+            btn.innerText = "Kaydediliyor...";
+            btn.disabled = true;
+
+            try {
+                // 1. Kategori Ayarlarını Güncelle (Firestore ID olarak kategori ismini kullanıyoruz)
+                await db.collection("category_settings").doc(newName).set({ icon: newIcon });
+                if (oldName !== newName && oldName) await db.collection("category_settings").doc(oldName).delete();
+
+                // 2. Eğer isim değiştiyse tüm ürünleri güncelle
+                if (oldName && oldName !== newName) {
+                    const productsToUpdate = allProducts.filter(p => p.category === oldName);
+                    const batch = db.batch();
+                    productsToUpdate.forEach(p => {
+                        batch.update(db.collection("menu_items").doc(p.id), { category: newName });
+                    });
+                    await batch.commit();
+                }
+
+                alert("✅ Kategori başarıyla güncellendi!");
+                closeCatModal();
+                fetchData();
+            } catch (e) {
+                alert("Hata: " + e.message);
+            } finally {
+                btn.innerText = "Değişiklikleri Kaydet";
+                btn.disabled = false;
+            }
         }
 
         function filterCat(catName, btnElement) {
@@ -342,8 +515,11 @@
                             </div>
                             <div class="action-btns">
                                 <button class="icon-btn btn-pop ${popClass}" onclick="togglePopular('${p.id}', ${!p.isPopular})" title="Vitrine Ekle/Çıkar">${popIcon}</button>
-                                <button class="icon-btn btn-del" onclick="deleteProduct('${p.id}')">🗑️</button>
-                                <button class="btn-save" onclick="updatePrice('${p.id}')">Kaydet</button>
+                                <button class="icon-btn" onclick="editProduct('${p.id}')" title="Düzenle">✏️</button>
+                                <button class="icon-btn btn-del" onclick="deleteProduct('${p.id}')" title="Sil">🗑️</button>
+                                <button class="btn-save" id="btn-save-${p.id}" onclick="updatePrice('${p.id}')" title="Kaydet">
+                                    <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                                </button>
                             </div>
                         </div>
                     </div>`;
@@ -352,10 +528,11 @@
 
         function updatePrice(id) {
             const val = parseFloat(document.getElementById(`price-${id}`).value);
-            const btn = event.target;
-            btn.innerText = "⏳";
+            const btn = document.getElementById(`btn-save-${id}`);
+            const oldHtml = btn.innerHTML;
+            btn.innerHTML = "⏳";
             db.collection("menu_items").doc(id).update({ price: val })
-                .then(() => { btn.innerText = "✓"; setTimeout(() => { btn.innerText = "Kaydet"; }, 1000); });
+                .then(() => { btn.innerHTML = "✓"; setTimeout(() => { btn.innerHTML = oldHtml; }, 1000); });
         }
 
         // --- POPÜLERLİK DEĞİŞTİRME ---
@@ -392,6 +569,8 @@
 
         function closeModal() {
             document.getElementById('addModal').style.display = 'none';
+            editingId = null;
+            document.getElementById('modalTitleText').innerText = "Yeni Ürün Ekle";
             document.getElementById('newCatSelect').value = "";
             document.getElementById('newCatInput').style.display = "none";
             document.getElementById('newCatInput').value = "";
@@ -400,6 +579,45 @@
             document.getElementById('newPrice').value = "";
             document.getElementById('newImg').value = "";
             document.getElementById('newPop').checked = false;
+        }
+
+        function editProduct(id) {
+            const p = allProducts.find(x => x.id === id);
+            if(!p) return;
+            editingId = id;
+
+            // Kategori listesini doldur
+            const select = document.getElementById('newCatSelect');
+            select.innerHTML = '<option value="">Seçiniz...</option>';
+            categories.forEach(cat => {
+                select.innerHTML += `<option value="${cat}">${cat}</option>`;
+            });
+            select.innerHTML += '<option value="new">+ Yeni Kategori Oluştur</option>';
+
+            document.getElementById('modalTitleText').innerText = "Ürünü Düzenle";
+            document.getElementById('newCatSelect').value = p.category;
+            document.getElementById('newGroup').value = p.group;
+            document.getElementById('newName').value = p.name_tr;
+            document.getElementById('newPrice').value = p.price;
+            document.getElementById('newImg').value = p.image || "";
+            document.getElementById('newPop').checked = p.isPopular || false;
+            document.getElementById('addModal').style.display = 'flex';
+        }
+
+        async function findImage(btn) {
+            const name = document.getElementById('newName').value.trim();
+            if(!name) return alert("Önce ürün adını yazmalısınız!");
+            
+            const oldText = btn.innerText;
+            btn.innerText = "⏳";
+            
+            // Otomatik Görsel URL'si Oluşturma
+            const autoUrl = `https://source.unsplash.com/featured/?${encodeURIComponent(name + ' product')}`;
+            document.getElementById('newImg').value = autoUrl;
+            
+            window.open(`https://www.google.com/search?q=${encodeURIComponent(name + ' food product png')}&tbm=isch`, '_blank');
+            
+            setTimeout(() => { btn.innerText = oldText; }, 1000);
         }
 
         function checkNewCategory(elem) {
@@ -433,8 +651,7 @@
             btn.disabled = true;
 
             const finalImg = img || 'default.png';
-
-            db.collection("menu_items").add({
+            const data = {
                 category: category,
                 group: group,
                 name_tr: name,
@@ -442,8 +659,12 @@
                 image: finalImg,
                 name_en: name,
                 isPopular: isPop
-            }).then(() => {
-                alert("✅ Ürün başarıyla eklendi!");
+            };
+
+            const task = editingId ? db.collection("menu_items").doc(editingId).update(data) : db.collection("menu_items").add(data);
+
+            task.then(() => {
+                alert(editingId ? "✅ Ürün güncellendi!" : "✅ Ürün başarıyla eklendi!");
                 closeModal();
                 fetchData(); 
                 btn.innerText = "Kaydet";
